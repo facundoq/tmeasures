@@ -1,0 +1,24 @@
+numpy --no-binary=numpy
+scipy --no-binary=scipy
+numba
+protobuf
+six
+matplotlib
+scikit-image
+scikit-learn
+h5py
+ipython
+jupyter
+argcomplete
+torchvision
+progressbar2
+torchsummary
+requests
+nose
+nptyping
+Pillow
+opencv-python
+imageio
+Shapely
+imgaug
+texttable

@@ -1,0 +1,10 @@
+
+# see https://pytorch.org/get-started/locally/ to choose the correct torch version
+
+# cuda 9.0
+#torch
+
+# cuda 10.0, python 3.6
+https://download.pytorch.org/whl/cu100/torch-1.0.1.post2-cp36-cp36m-linux_x86_64.whl
+
+

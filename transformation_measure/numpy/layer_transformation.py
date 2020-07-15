@@ -63,7 +63,7 @@ class ConvAggregation(Enum):
 
         results=[]
         for layer in r.layers:
-            # if conv average out spatial dims
+            # assume layers with 3 dims are conv
             if len(layer.shape) == 3:
                 flat_activations=self.apply3D(layer)
                 assert len(flat_activations.shape) == 1,f"After collapsing, the activation shape should have only one dimension. Found vector with shape {flat_activations.shape} instead."

@@ -65,7 +65,7 @@ setup(
         "numpy",
         "scipy",
         "torch",
-        "matplotlib"
+        "matplotlib",
     ],
 
     package_data={

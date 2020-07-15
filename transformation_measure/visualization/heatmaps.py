@@ -1,7 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from typing import List
-from transformation_measure.measure.base import MeasureResult
+from transformation_measure import MeasureResult
 import transformation_measure as tm
 from pathlib import Path
 

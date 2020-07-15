@@ -1,16 +1,16 @@
-from transformation_measure import Measure,ActivationsIterator,MeasureResult
+from transformation_measure import NumpyMeasure,ActivationsIterator,MeasureResult
 import transformation_measure as tm
 from multiprocessing import Queue
 from .multithreaded_layer_measure import LayerMeasure,PerLayerMeasure,ActivationsOrder
 import numpy as np
-from transformation_measure.measure.stats_running import RunningMeanAndVarianceWelford,RunningMeanWelford,RunningMeanSimple
+from transformation_measure.numpy.stats_running import RunningMeanAndVarianceWelford,RunningMeanWelford,RunningMeanSimple
 from scipy.stats import norm
 
 
 default_alpha=0.99
 default_sign=1
 
-class GoodfellowGlobalVarianceNormal(Measure):
+class GoodfellowGlobalVarianceNormal(NumpyMeasure):
     thresholds_key="thresholds"
 
     def __init__(self, alpha:float=default_alpha, sign:int=default_sign):
@@ -48,7 +48,7 @@ class GoodfellowGlobalVarianceNormal(Measure):
 
         return MeasureResult(layers_g, activations_iterator.layer_names(), self,extra_values={self.thresholds_key:thresholds})
 
-class GoodfellowLocalVarianceNormal(Measure):
+class GoodfellowLocalVarianceNormal(NumpyMeasure):
 
     def __init__(self, thresholds:[np.ndarray],sign:int=default_sign):
         super().__init__()
@@ -77,7 +77,7 @@ class GoodfellowLocalVarianceNormal(Measure):
 
 
 
-class GoodfellowNormal(Measure):
+class GoodfellowNormal(NumpyMeasure):
     g_key="global"
     l_key="local"
 

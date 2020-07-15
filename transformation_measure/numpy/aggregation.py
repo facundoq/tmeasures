@@ -1,12 +1,5 @@
 import scipy.spatial.distance
 import numpy as np
-# import ray
-#
-# import multiprocessing
-# pool = multiprocessing.Pool(4)
-# from joblib import Parallel,delayed
-#
-# parallel = Parallel(n_jobs=2,max_nbytes=1e32)
 
 class DistanceAggregation:
 
@@ -16,9 +9,8 @@ class DistanceAggregation:
         self.distance=distance
 
 
-    @property
-    def name(self):
-        return f"DA(normalize={self.normalize},keep_feature_maps={self.keep_feature_maps},distance={self.distance}" # TODO add parenthesis at the end
+    def __repr__(self):
+        return f"DA(normalize={self.normalize},keep_feature_maps={self.keep_feature_maps},distance={self.distance})"
 
     def normalize_activations(self,x:np.ndarray):
         c,n,d=x.shape

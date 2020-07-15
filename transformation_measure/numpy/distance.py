@@ -1,22 +1,18 @@
-from .base import Measure,MeasureResult
-from transformation_measure.iterators.activations_iterator import ActivationsIterator
-from transformation_measure import ConvAggregation
-import numpy as np
-from transformation_measure.measure.stats_running import RunningMeanAndVarianceWelford,RunningMeanWelford
-from typing import List
-from enum import Enum
+from .base import NumpyMeasure
+from transformation_measure.activations_iterator import ActivationsIterator
+from transformation_measure import ConvAggregation, MeasureResult
+from transformation_measure.numpy.stats_running import RunningMeanWelford
 from .quotient import divide_activations
-from sklearn.metrics.pairwise import euclidean_distances
-import sklearn
 from .aggregation import DistanceAggregation
 
-class TransformationDistance(Measure):
+
+class TransformationDistance(NumpyMeasure):
     def __init__(self, distance_aggregation:DistanceAggregation):
         super().__init__()
         self.distance_aggregation=distance_aggregation
 
     def __repr__(self):
-        return f"TD(da={self.distance_aggregation.name})"
+        return f"TD(da={self.distance_aggregation})"
 
 
     def eval(self,activations_iterator:ActivationsIterator)->MeasureResult:
@@ -42,13 +38,13 @@ class TransformationDistance(Measure):
         return "TD"
 
 
-class SampleDistance(Measure):
+class SampleDistance(NumpyMeasure):
     def __init__(self, distance_aggregation: DistanceAggregation):
         super().__init__()
         self.distance_aggregation = distance_aggregation
 
     def __repr__(self):
-        return f"SD(da={self.distance_aggregation.name})"
+        return f"SD(da={self.distance_aggregation})"
 
     def eval(self,activations_iterator:ActivationsIterator)->MeasureResult:
         layer_names = activations_iterator.layer_names()
@@ -73,7 +69,7 @@ class SampleDistance(Measure):
 
 
 
-class NormalizedDistance(Measure):
+class NormalizedDistance(NumpyMeasure):
     def __init__(self, distance_aggregation: DistanceAggregation,conv_aggregation:ConvAggregation):
         self.distance_aggregation = distance_aggregation
         self.td = TransformationDistance(distance_aggregation)
@@ -87,14 +83,14 @@ class NormalizedDistance(Measure):
         td_result = self.td.eval(activations_iterator)
         sd_result = self.sd.eval(activations_iterator)
 
-        td_result = td_result.collapse_convolutions(self.conv_aggregation)
-        sd_result = sd_result.collapse_convolutions(self.conv_aggregation)
+        td_result = self.conv_aggregation.collapse_convolutions(td_result)
+        sd_result = self.conv_aggregation.collapse_convolutions(sd_result)
 
         result = divide_activations(td_result.layers, sd_result.layers)
         return MeasureResult(result, activations_iterator.layer_names(), self)
 
     def __repr__(self):
-        return f"ND(ca={self.conv_aggregation.value},da={self.distance_aggregation.name})"
+        return f"ND(ca={self.conv_aggregation.value},da={self.distance_aggregation})"
 
 
     def name(self):

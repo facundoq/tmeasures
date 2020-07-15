@@ -1,9 +1,9 @@
-from transformation_measure import Measure,ActivationsIterator,MeasureResult
+from transformation_measure import NumpyMeasure,ActivationsIterator,MeasureResult
 import transformation_measure as tm
 from multiprocessing import Queue
 from .multithreaded_layer_measure import LayerMeasure,PerLayerMeasure,ActivationsOrder
 import numpy as np
-from transformation_measure.measure.stats_running import RunningMeanAndVarianceWelford,RunningMeanWelford,RunningMeanSimple
+from transformation_measure.numpy.stats_running import RunningMeanAndVarianceWelford,RunningMeanWelford,RunningMeanSimple
 
 class GlobalVariance(LayerMeasure):
 
@@ -103,7 +103,7 @@ class LocalFiringRateMeasure(PerLayerMeasure):
 
         return LocalVariance(i, name,self.thresholds[i],self.sign)
 
-class GoodfellowMeasure(Measure):
+class GoodfellowMeasure(NumpyMeasure):
 
 
     def __init__(self,activations_percentage=0.01,sign=1):

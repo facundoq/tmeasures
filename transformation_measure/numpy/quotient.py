@@ -1,5 +1,7 @@
-from .base import Measure,MeasureResult,ActivationsByLayer
-from transformation_measure.iterators.activations_iterator import ActivationsIterator
+from .base import NumpyMeasure
+from ..measure import ActivationsByLayer
+from .. import MeasureResult
+from transformation_measure.activations_iterator import ActivationsIterator
 import numpy as np
 
 
@@ -30,8 +32,8 @@ def divide_activations(num:ActivationsByLayer, den:ActivationsByLayer)->Activati
         measures.append(normalized_measure)
     return measures
 
-class QuotientMeasure(Measure):
-    def __init__(self, numerator_measure:Measure,denominator_measure:Measure):
+class QuotientMeasure(NumpyMeasure):
+    def __init__(self, numerator_measure:NumpyMeasure, denominator_measure:NumpyMeasure):
         super().__init__()
         self.numerator_measure=numerator_measure
         self.denominator_measure=denominator_measure

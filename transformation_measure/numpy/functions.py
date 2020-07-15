@@ -1,4 +1,4 @@
-from transformation_measure.measure.stats_running import RunningMeanAndVarianceWelford,RunningMeanAndVariance
+from transformation_measure.numpy.stats_running import RunningMeanAndVarianceWelford,RunningMeanAndVariance
 from enum import Enum
 import numpy as np
 

@@ -1,5 +1,6 @@
 import abc
 import torch
+
 class TransformationAdapter:
 
     @abc.abstractmethod

@@ -1,6 +1,6 @@
-from transformation_measure.iterators.activations_iterator import ActivationsIterator
-from transformation_measure import MeasureResult,Measure
-from transformation_measure.measure.stats_running import RunningMeanAndVarianceWelford,RunningMeanWelford
+from transformation_measure.activations_iterator import ActivationsIterator
+from transformation_measure import MeasureResult,NumpyMeasure
+from transformation_measure.numpy.stats_running import RunningMeanWelford
 from .quotient import divide_activations
 
 from .distance import DistanceAggregation
@@ -8,7 +8,7 @@ from .distance import DistanceAggregation
 def list_get_all(list:[],indices:[int])->[]:
     return [list[i] for i in indices]
 
-class BaseDistanceSameEquivarianceMeasure(Measure):
+class BaseDistanceSameEquivarianceMeasure(NumpyMeasure):
     def __init__(self, distance_aggregation:DistanceAggregation):
         super().__init__()
         self.distance_aggregation=distance_aggregation
@@ -17,7 +17,7 @@ class TransformationDistanceSameEquivariance(BaseDistanceSameEquivarianceMeasure
 
 
     def __repr__(self):
-        return f"TDSE(da={self.distance_aggregation.name})"
+        return f"TDSE(da={self.distance_aggregation})"
 
     def name(self)->str:
         return "Transformation Distance Same-Equivariance"
@@ -43,11 +43,12 @@ class TransformationDistanceSameEquivariance(BaseDistanceSameEquivarianceMeasure
         return MeasureResult(means,activations_iterator.layer_names(),self)
 
 
+
 class SampleDistanceSameEquivariance(BaseDistanceSameEquivarianceMeasure):
 
 
     def __repr__(self):
-        return f"SDSE(da={self.distance_aggregation.name})"
+        return f"SDSE(da={self.distance_aggregation})"
 
     def name(self)->str:
         return "Sample Distance Same-Equivariance"
@@ -74,7 +75,7 @@ class SampleDistanceSameEquivariance(BaseDistanceSameEquivarianceMeasure):
         return MeasureResult(means,activations_iterator.layer_names(),self)
 
 
-class NormalizedDistanceSameEquivariance(Measure):
+class NormalizedDistanceSameEquivariance(NumpyMeasure):
     def __init__(self, distance_aggregation:DistanceAggregation):
         super().__init__()
         self.distance_aggregation=distance_aggregation
@@ -83,7 +84,7 @@ class NormalizedDistanceSameEquivariance(Measure):
 
 
     def __repr__(self):
-        return f"NDSE(da={self.distance_aggregation.name})"
+        return f"NDSE(da={self.distance_aggregation})"
 
     def name(self)->str:
         return "Normalized Distance Same-Equivariance"

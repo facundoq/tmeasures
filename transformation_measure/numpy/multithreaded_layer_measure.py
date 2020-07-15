@@ -1,12 +1,11 @@
-from .base import Measure,MeasureResult
-from transformation_measure.iterators.activations_iterator import ActivationsIterator
+from .base import NumpyMeasure
+from .. import MeasureResult
+from transformation_measure.activations_iterator import ActivationsIterator
 
 import multiprocessing
 from queue import Queue
 from threading import Thread
 
-import time
-import numpy as np
 import abc
 
 class LayerMeasure(abc.ABC):
@@ -37,7 +36,7 @@ class ActivationsOrder(Enum):
     TransformationsFirst = "tf"
     SamplesFirst = "sf"
 
-class PerLayerMeasure(Measure,abc.ABC):
+class PerLayerMeasure(NumpyMeasure, abc.ABC):
 
     def __init__(self,activations_order:ActivationsOrder,queue_max_size=1,multiprocess=False):
         if multiprocess:

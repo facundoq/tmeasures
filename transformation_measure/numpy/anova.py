@@ -1,9 +1,11 @@
-from .base import Measure,MeasureResult,ActivationsByLayer
-from transformation_measure.iterators.activations_iterator import ActivationsIterator
-from transformation_measure.measure.stats_running import RunningMeanAndVarianceWelford,RunningMeanWelford
+from .base import NumpyMeasure
+from ..measure import ActivationsByLayer
+from .. import MeasureResult
+from transformation_measure.activations_iterator import ActivationsIterator
+from transformation_measure.numpy.stats_running import RunningMeanWelford
 import scipy.stats
 
-class AnovaMeasure(Measure):
+class AnovaMeasure(NumpyMeasure):
     # alpha = degree of confidence
     # Typically 0.90, 0.95, 0.99
     def __init__(self, alpha:float=0.99,bonferroni:bool=True):
@@ -41,7 +43,7 @@ class AnovaMeasure(Measure):
     def abbreviation(self):
         return self.name()
 
-class AnovaFMeasure(Measure):
+class AnovaFMeasure(NumpyMeasure):
     def __init__(self):
         super().__init__()
 

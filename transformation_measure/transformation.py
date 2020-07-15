@@ -11,14 +11,10 @@ class Transformation:
         pass
 
 
-class TransformationSet(Sized, Iterable[Transformation]):
+class TransformationSet(list,Sized, Iterable[Transformation]):
 
-    @abc.abstractmethod
-    def __iter__(self)->Iterator[Transformation]:
-        pass
-
-    def __len__(self):
-        return len(list(self.__iter__()))
+    def __init__(self,members):
+        super().__init__(members)
 
     @abc.abstractmethod
     def id(self):

@@ -1,3 +1,6 @@
+# TODO move to experiments?
+import transformation_measure.measure
+
 params = {
     # 'text.latex.preamble': ['\\usepackage{gensymb}'],
 
@@ -37,16 +40,15 @@ plt.rc('text', usetex=False)
 import numpy as np
 from typing import List
 from pathlib import Path
-from experiment import variance
-from transformation_measure.measure.stats_running import  RunningMeanAndVarianceWelford
+from transformation_measure.numpy.stats_running import  RunningMeanAndVarianceWelford
 import transformation_measure as tm
 from matplotlib.lines import Line2D
 
-from experiments.language import l
+from ..language import l
 
 default_y_lim=1.4
 
-def plot_collapsing_layers_different_models(results:List[variance.VarianceExperimentResult], filepath:Path, labels=None, title="", linestyles=None, colors=None, legend_location=None, markers:[[int]]=None,ylim=None):
+def plot_collapsing_layers_different_models(results:List[transformation_measure.measure.MeasureResult], filepath:Path, labels=None, title="", linestyles=None, colors=None, legend_location=None, markers:[[int]]=None, ylim=None):
     if ylim is None:
         ylim = default_y_lim
     f=plt.figure(dpi=300)
@@ -61,16 +63,16 @@ def plot_collapsing_layers_different_models(results:List[variance.VarianceExperi
     if linestyles is None and n<=4:
         linestyles=["-","--",":","-."]
 
-    result_layers = np.array([len(r.measure_result.layer_names) for r in results])
+    result_layers = np.array([len(r.layer_names) for r in results])
     min_n, max_n = result_layers.min(), result_layers.max()
     max_value=0
     # x_result_most_layers=np.zeros(1)
     for i, result in enumerate(results):
-        n_layers = len(result.measure_result.layers)
+        n_layers = len(result.layers)
         x = np.linspace(0,100,n_layers,endpoint=True)
         # if n_layers>=x_result_most_layers.size:
         #     x_result_most_layers=x
-        y = result.measure_result.per_layer_average()
+        y = result.per_layer_average()
         max_value = max(max_value, y.max())
         if labels is None:
             label = None
@@ -191,11 +193,8 @@ def get_colors(colors:np.ndarray,n:int)->np.ndarray:
 def get_dpi(n:int):
     return min(350, max(150, n * 15))
 
-def plot_collapsing_layers_same_model(results:List[variance.VarianceExperimentResult], filepath:Path, labels:[str]=None, title="", linestyles=None, plot_mean=False, colors=None, legend_location=None, mark_layers:[int]=None,ylim=None):
-    results=[r.measure_result for r in results]
-    plot_collapsing_layers_same_model_mr(results,filepath,labels,title,linestyles,plot_mean,colors,legend_location,mark_layers,ylim)
 
-def plot_collapsing_layers_same_model_mr(results:List[tm.MeasureResult], filepath:Path, labels:[str]=None, title="", linestyles=None, plot_mean=False, colors=None, legend_location=None, mark_layers:[int]=None,ylim=None):
+def plot_collapsing_layers_same_model(results:List[transformation_measure.measure.MeasureResult], filepath:Path, labels:[str]=None, title="", linestyles=None, plot_mean=False, colors=None, legend_location=None, mark_layers:[int]=None, ylim=None):
     if ylim is None:
         ylim = default_y_lim
 

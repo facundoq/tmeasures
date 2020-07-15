@@ -1,8 +1,7 @@
-from .base import Measure,MeasureResult
-from transformation_measure.iterators.activations_iterator import ActivationsIterator
-from transformation_measure.measure.stats_running import RunningMeanAndVarianceWelford,RunningMeanWelford
-from .distance import DistanceAggregation
-import scipy.spatial.distance as distance_functions
+from .base import NumpyMeasure
+from .. import MeasureResult
+from transformation_measure.activations_iterator import ActivationsIterator
+from transformation_measure.numpy.stats_running import RunningMeanWelford
 import numpy as np
 
 def list_get_all(list:[],indices:[int])->[]:
@@ -36,7 +35,7 @@ class DistanceFunction:
     def __repr__(self):
         return f"DF(normalize={self.normalize})"
 
-class DistanceSameEquivarianceSimple(Measure):
+class DistanceSameEquivarianceSimple(NumpyMeasure):
     def __init__(self, distance_function:DistanceFunction):
         super().__init__()
         self.distance_function=distance_function

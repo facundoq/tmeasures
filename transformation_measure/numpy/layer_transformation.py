@@ -1,5 +1,6 @@
 import numpy as np
 from enum import Enum
+from .. import MeasureResult
 
 class ConvAggregation(Enum):
     mean = "mean"
@@ -52,3 +53,22 @@ class ConvAggregation(Enum):
         flat_activations = function(layer,axis=(1,2))
 
         return flat_activations
+
+
+
+    # todo put this functionality somewhere
+    def collapse_convolutions(self,r:MeasureResult)->MeasureResult:
+        if self == ConvAggregation.none:
+            return r
+
+        results=[]
+        for layer in r.layers:
+            # if conv average out spatial dims
+            if len(layer.shape) == 3:
+                flat_activations=self.apply3D(layer)
+                assert len(flat_activations.shape) == 1,f"After collapsing, the activation shape should have only one dimension. Found vector with shape {flat_activations.shape} instead."
+            else:
+                flat_activations = layer.copy()
+            results.append(flat_activations)
+
+        return MeasureResult(results,r.layer_names,r.measure)

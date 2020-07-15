@@ -1,6 +1,8 @@
 import matplotlib
 import matplotlib.pyplot as plt
-from transformation_measure.measure.base import MeasureResult,Measure
+from transformation_measure.numpy.base import NumpyMeasure
+from .. import MeasureResult
+
 
 def discrete_colormap(n:int=16,base_colormap="rainbow",):
     colors = plt.cm.get_cmap(base_colormap, n)(range(n))
@@ -16,7 +18,7 @@ def labels_for_measure_results(ms:[MeasureResult]):
 def label_for_measure_result(m:MeasureResult):
     return label_for_measure(m.measure)
 from experiments.language import l
-def label_for_measure(m:Measure):
+def label_for_measure(m:NumpyMeasure):
     return l.measure_name(m)
 def labels_for_measures(ms:[MeasureResult]):
     return [label_for_measure(m) for m in ms]
@@ -26,9 +28,8 @@ def get_sequential_colors(values):
     colors = cmap(values)
     return colors
 
-from .layers import plot_collapsing_layers_same_model,plot_collapsing_layers_same_model_mr,plot_collapsing_layers_different_models
+from .layers import plot_collapsing_layers_same_model,plot_collapsing_layers_different_models
 from .heatmaps import plot_heatmap
-from .accuracies import plot_accuracies,plot_accuracies_single_model
 from .features import plot_invariant_feature_maps_pytorch,plot_invariant_feature_maps
 
 

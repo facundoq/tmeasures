@@ -1,11 +1,11 @@
-from transformation_measure import ConvAggregation
-from transformation_measure import MeasureFunction, QuotientMeasure
-from transformation_measure.iterators.activations_iterator import ActivationsIterator
-from transformation_measure.measure.stats_running import RunningMeanAndVarianceWelford, RunningMeanWelford,RunningMeanAndVarianceNaive
-from .base import Measure, MeasureResult
+from transformation_measure import ConvAggregation, MeasureResult
+from transformation_measure import MeasureFunction
+from transformation_measure.activations_iterator import ActivationsIterator
+from transformation_measure.numpy.stats_running import RunningMeanAndVarianceWelford, RunningMeanWelford
+from .base import NumpyMeasure
 from .quotient import divide_activations
 
-class TransformationVariance(Measure):
+class TransformationVariance(NumpyMeasure):
     def __init__(self, measure_function:MeasureFunction=MeasureFunction.std):
         super().__init__()
         self.measure_function = measure_function
@@ -30,7 +30,7 @@ class TransformationVariance(Measure):
                     # apply function to conv layers
                     # update the mean over all transformations for this sample
                     transformation_variances_running[i].update_all(layer_activations)
-            # update the mean with the measure sample of all transformations of x
+            # update the mean with the numpy sample of all transformations of x
             for i in range(n_layers):
                 layer_measure = self.measure_function.apply_running(transformation_variances_running[i])
                 mean_running[i].update(layer_measure)
@@ -43,7 +43,7 @@ class TransformationVariance(Measure):
     def abbreviation(self):
         return "TV"
 
-class SampleVariance(Measure):
+class SampleVariance(NumpyMeasure):
     def __init__(self, measure_function: MeasureFunction=MeasureFunction.std):
         super().__init__()
         self.measure_function = measure_function
@@ -83,7 +83,7 @@ class SampleVariance(Measure):
 
 
 
-class NormalizedVariance(Measure):
+class NormalizedVariance(NumpyMeasure):
     def __init__(self, conv_aggregation: ConvAggregation,measure_function: MeasureFunction=MeasureFunction.std):
         self.sv = SampleVariance(measure_function)
         self.tv = TransformationVariance(measure_function)

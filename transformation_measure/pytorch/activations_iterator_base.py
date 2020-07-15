@@ -1,9 +1,7 @@
-from transformation_measure.iterators.activations_iterator import ActivationsIterator
+from transformation_measure.activations_iterator import ActivationsIterator
 
 import torch
-from torch import nn
-from torch.utils.data import DataLoader
-from transformation_measure.iterators.pytorch_image_dataset import ImageDataset
+from torch.utils.data import DataLoader,Dataset
 
 from transformation_measure import TransformationSet, Transformation
 from transformation_measure.adapters import TransformationAdapter
@@ -31,14 +29,14 @@ class ObservableLayersModule(nn.Module):
 
 class PytorchActivationsIterator(ActivationsIterator):
 
-    def __init__(self, model: ObservableLayersModule, dataset, transformations: TransformationSet, batch_size,
+    def __init__(self, model: ObservableLayersModule, dataset:Dataset, transformations: TransformationSet, batch_size,
                  num_workers, use_cuda,adapter: TransformationAdapter=None):
 
         self.model = model
         self.dataset = dataset
         self.transformations = transformations
 
-        self.image_dataset = ImageDataset(self.dataset)
+        self.dataset = dataset
         self.batch_size = batch_size
         self.num_workers = num_workers
         self.use_cuda = use_cuda
@@ -56,7 +54,7 @@ class PytorchActivationsIterator(ActivationsIterator):
         return self.transformations
     def transformations_first(self):
         for t_i, transformation in enumerate(self.transformations):
-            dataloader = DataLoader(self.image_dataset, batch_size=self.batch_size, shuffle=False,
+            dataloader = DataLoader(self.dataset, batch_size=self.batch_size, shuffle=False,
                                     num_workers=self.num_workers, drop_last=True, pin_memory=True)
             yield transformation, self.samples_activation(t_i, transformation, dataloader)
 
@@ -66,11 +64,11 @@ class PytorchActivationsIterator(ActivationsIterator):
      '''
 
     def samples_first(self):
-        dataloader = DataLoader(self.image_dataset, batch_size=self.batch_size, shuffle=False,
+        dataloader = DataLoader(self.dataset, batch_size=self.batch_size, shuffle=False,
                                 num_workers=self.num_workers, drop_last=True)
 
         with torch.no_grad():
-            for batch, y_true in dataloader:
+            for batch in dataloader:
                 batch_cpu = batch
                 if self.use_cuda:
                     batch = batch.cuda()
@@ -114,7 +112,7 @@ class PytorchActivationsIterator(ActivationsIterator):
 class NormalPytorchActivationsIterator(PytorchActivationsIterator):
 
     def samples_activation(self, t_i, transformation, dataloader):
-        for batch, _ in dataloader:
+        for batch in dataloader:
             if self.use_cuda:
                 batch = batch.cuda()
             batch = self.transform_batch(transformation, batch)
@@ -139,7 +137,7 @@ class InvertedPytorchActivationsIterator(PytorchActivationsIterator):
 
     def samples_activation(self, t_i, transformation, dataloader):
         self.activations_transformer = None
-        for batch, _ in dataloader:
+        for batch in dataloader:
             if self.use_cuda:
                 batch = batch.cuda()
             batch = self.transform_batch(transformation, batch)
@@ -193,7 +191,7 @@ class InvertedPytorchActivationsIterator(PytorchActivationsIterator):
 class BothPytorchActivationsIterator(PytorchActivationsIterator):
 
     def samples_activation(self, t_i, transformation, dataloader):
-        for batch, _ in dataloader:
+        for batch in dataloader:
             if self.use_cuda:
                 batch = batch.cuda()
 

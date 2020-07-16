@@ -46,7 +46,7 @@ class MeasureResult:
             stds.append(layer_std)
         return np.array(means),np.array(stds)
 
-    def remove_layers(self,remove_indices:[int])->'MeasureResult'':
+    def remove_layers(self,remove_indices:[int])->'MeasureResult':
         n = len(self.layer_names)
         all_indices=set(list(range(n)))
         keep_indices = list(all_indices.difference(set(remove_indices)))

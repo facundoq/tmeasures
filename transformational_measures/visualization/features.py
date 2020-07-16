@@ -1,8 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-
 import transformational_measures.measure
-
 import transformational_measures as tm
 from pathlib import Path
 

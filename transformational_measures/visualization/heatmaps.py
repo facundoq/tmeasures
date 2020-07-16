@@ -29,6 +29,7 @@ def plot_heatmap(m:MeasureResult,filepath:Path, vmin=None, vmax=None):
 
     n = len(m.layer_names)
     f, axes = plt.subplots(1, n, dpi=150)
+    mappable=None
     for i, (activation, name) in enumerate(zip(m.layers, m.layer_names)):
         # print(activation.shape,activation.min(),activation.max())
         ax = axes[i]

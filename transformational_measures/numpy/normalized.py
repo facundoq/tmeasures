@@ -94,8 +94,8 @@ class NormalizedVariance(NumpyMeasure):
         tv_result=self.tv.eval(activations_iterator)
         sv_result=self.sv.eval(activations_iterator)
 
-        tv_result = tv_result.collapse_convolutions(self.conv_aggregation)
-        sv_result = sv_result.collapse_convolutions(self.conv_aggregation)
+        tv_result = self.conv_aggregation.collapse_convolutions(tv_result)
+        sv_result = self.conv_aggregation.collapse_convolutions(sv_result)
 
         result=divide_activations(tv_result.layers,sv_result.layers)
         return MeasureResult(result, activations_iterator.layer_names(), self)

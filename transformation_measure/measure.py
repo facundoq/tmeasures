@@ -1,15 +1,15 @@
-from __future__ import annotations
+#from __future__ import annotations
 from typing import List
 import numpy as np
 import abc
-# from transformation_measure import ConvAggregation
+
 from transformation_measure.numpy.stats_running import RunningMeanWelford
 from .utils import get_all
 
 ActivationsByLayer = [np.ndarray]
 
 class MeasureResult:
-    def __init__(self,layers:ActivationsByLayer,layer_names:List[str],measure:Measure,extra_values=dict()):
+    def __init__(self,layers:ActivationsByLayer,layer_names:List[str],measure:'Measure',extra_values=dict()):
         # if len(layers) != len(layer_names):
             # print(len(layers),len(layer_names))
             # print(layer_names)
@@ -67,7 +67,7 @@ class MeasureResult:
 
 
 class StratifiedMeasureResult(MeasureResult):
-    def __init__(self, layers:ActivationsByLayer, layer_names:List[str], measure:Measure, class_measures:List[MeasureResult], class_labels:List[str]):
+    def __init__(self, layers:ActivationsByLayer, layer_names:List[str], measure:'Measure', class_measures:List[MeasureResult], class_labels:List[str]):
         super().__init__(layers,layer_names,measure)
         self.class_measures=class_measures
         self.class_labels=class_labels

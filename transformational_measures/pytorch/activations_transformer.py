@@ -1,8 +1,8 @@
 
 from typing import Tuple
 import torch
-from transformation_measure import TransformationSet
-import transformation_measure as tm
+from transformational_measures import TransformationSet
+import transformational_measures as tm
 
 def list_get_all(list:[],indices:[int])->[]:
     return [list[i] for i in indices]

@@ -1,10 +1,10 @@
 from .base import NumpyMeasure
 import numpy as np
 from .layer_transformation import ConvAggregation
-from transformation_measure.numpy.stats_running import RunningMeanAndVarianceWelford,RunningMeanWelford
-import transformation_measure as tm
+from transformational_measures.numpy.stats_running import RunningMeanAndVarianceWelford,RunningMeanWelford
+import transformational_measures as tm
 from multiprocessing import Queue
-from transformation_measure import MeasureFunction, MeasureResult
+from transformational_measures import MeasureFunction, MeasureResult
 
 from .multithreaded_layer_measure import LayerMeasure,PerLayerMeasure,ActivationsOrder
 

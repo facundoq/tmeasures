@@ -11,8 +11,8 @@ from .numpy.layer_transformation import ConvAggregation
 from .numpy.quotient import QuotientMeasure,divide_activations
 
 
-from transformation_measure.activations_iterator import ActivationsIterator
-from transformation_measure.pytorch import *
+from transformational_measures.activations_iterator import ActivationsIterator
+from transformational_measures.pytorch import *
 
 from .numpy.multithreaded_layer_measure import PerLayerMeasure,LayerMeasure,SamplesFirstPerLayerMeasure,TransformationsFirstPerLayerMeasure
 
@@ -33,7 +33,7 @@ from .numpy.goodfellow_prob import GoodfellowNormal,GoodfellowLocalVarianceNorma
 
 from .adapters import TransformationAdapter,PytorchNumpyImageTransformationAdapter,NumpyPytorchImageTransformationAdapter
 
-from transformation_measure import language
+from transformational_measures import language
 
 def set_language(l:language.Language):
     language.l=l

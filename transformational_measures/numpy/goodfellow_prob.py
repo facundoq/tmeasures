@@ -1,9 +1,9 @@
-from transformation_measure import NumpyMeasure,ActivationsIterator,MeasureResult
-import transformation_measure as tm
+from transformational_measures import NumpyMeasure,ActivationsIterator,MeasureResult
+import transformational_measures as tm
 from multiprocessing import Queue
 from .multithreaded_layer_measure import LayerMeasure,PerLayerMeasure,ActivationsOrder
 import numpy as np
-from transformation_measure.numpy.stats_running import RunningMeanAndVarianceWelford,RunningMeanWelford,RunningMeanSimple
+from transformational_measures.numpy.stats_running import RunningMeanAndVarianceWelford,RunningMeanWelford,RunningMeanSimple
 from scipy.stats import norm
 
 

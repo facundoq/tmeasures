@@ -1,6 +1,6 @@
 import matplotlib
 import matplotlib.pyplot as plt
-from transformation_measure.numpy.base import NumpyMeasure
+from transformational_measures.numpy.base import NumpyMeasure
 from .. import MeasureResult
 
 

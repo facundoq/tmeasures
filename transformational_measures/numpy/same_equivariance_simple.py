@@ -1,7 +1,7 @@
 from .base import NumpyMeasure
 from .. import MeasureResult
-from transformation_measure.activations_iterator import ActivationsIterator
-from transformation_measure.numpy.stats_running import RunningMeanWelford
+from transformational_measures.activations_iterator import ActivationsIterator
+from transformational_measures.numpy.stats_running import RunningMeanWelford
 import numpy as np
 
 def list_get_all(list:[],indices:[int])->[]:

@@ -1,8 +1,8 @@
 from .base import NumpyMeasure
 from .. import MeasureResult
-from transformation_measure.activations_iterator import ActivationsIterator
+from transformational_measures.activations_iterator import ActivationsIterator
 import numpy as np
-from transformation_measure.numpy.stats_running import RunningMeanWelford
+from transformational_measures.numpy.stats_running import RunningMeanWelford
 
 from abc import abstractmethod
 

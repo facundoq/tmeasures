@@ -2,7 +2,7 @@
 import abc
 from typing import List
 
-import transformation_measure as tm
+import transformational_measures as tm
 import numpy as np
 
 

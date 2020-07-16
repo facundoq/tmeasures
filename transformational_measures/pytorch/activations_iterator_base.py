@@ -1,14 +1,14 @@
-from transformation_measure.activations_iterator import ActivationsIterator
+from transformational_measures.activations_iterator import ActivationsIterator
 
 import torch
 from torch.utils.data import DataLoader,Dataset
 
-from transformation_measure import TransformationSet, Transformation
-from transformation_measure.adapters import TransformationAdapter
+from transformational_measures import TransformationSet, Transformation
+from transformational_measures.adapters import TransformationAdapter
 
 from abc import abstractmethod
 from torch import nn
-import transformation_measure as tm
+import transformational_measures as tm
 import abc
 from .activations_transformer import ActivationsTransformer
 

@@ -3,7 +3,7 @@ from typing import List
 import numpy as np
 import abc
 
-from transformation_measure.numpy.stats_running import RunningMeanWelford
+from transformational_measures.numpy.stats_running import RunningMeanWelford
 from .utils import get_all
 
 ActivationsByLayer = [np.ndarray]

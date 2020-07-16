@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from transformation_measure import MeasureResult
-import transformation_measure as tm
+from transformational_measures import MeasureResult
+import transformational_measures as tm
 from pathlib import Path
 
 def get_limit(m:MeasureResult, op_code:str):

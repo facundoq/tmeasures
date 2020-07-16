@@ -1,7 +1,7 @@
-from transformation_measure import ConvAggregation, MeasureResult
-from transformation_measure import MeasureFunction
-from transformation_measure.activations_iterator import ActivationsIterator
-from transformation_measure.numpy.stats_running import RunningMeanAndVarianceWelford, RunningMeanWelford
+from transformational_measures import ConvAggregation, MeasureResult
+from transformational_measures import MeasureFunction
+from transformational_measures.activations_iterator import ActivationsIterator
+from transformational_measures.numpy.stats_running import RunningMeanAndVarianceWelford, RunningMeanWelford
 from .base import NumpyMeasure
 from .quotient import divide_activations
 

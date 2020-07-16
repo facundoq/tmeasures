@@ -1,6 +1,6 @@
 from .base import NumpyMeasure
 from .. import MeasureResult
-from transformation_measure.activations_iterator import ActivationsIterator
+from transformational_measures.activations_iterator import ActivationsIterator
 
 import multiprocessing
 from queue import Queue

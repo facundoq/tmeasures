@@ -1,9 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-import transformation_measure.measure
+import transformational_measures.measure
 from pytorch.numpy_dataset import NumpyDataset
-import transformation_measure as tm
+import transformational_measures as tm
 from pathlib import Path
 from experiment import measure
 import datasets
@@ -123,7 +123,7 @@ def indices_of_largest_k(a,k):
     # ind.sort()
     return indices[-k:]
 
-def select_feature_maps(measure_result: transformation_measure.measure.MeasureResult, most_invariant_k:int, least_invariant_k:int):
+def select_feature_maps(measure_result: transformational_measures.measure.MeasureResult, most_invariant_k:int, least_invariant_k:int):
     feature_indices_per_layer=[]
     feature_scores_per_layer = []
     values=measure_result.layers

@@ -1,6 +1,6 @@
 
 
-from transformation_measure.activations_iterator import ActivationsIterator
+from transformational_measures.activations_iterator import ActivationsIterator
 import numpy as np
 from typing import  List
 from .. import MeasureResult, StratifiedMeasureResult

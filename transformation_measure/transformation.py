@@ -1,4 +1,3 @@
-from __future__ import annotations
 from typing import List,Tuple,Sized,Iterable,Iterator
 import numpy as np
 import torch
@@ -25,7 +24,7 @@ class TransformationSet(list,Sized, Iterable[Transformation]):
         pass
 
     @abc.abstractmethod
-    def copy(self)->TransformationSet:
+    def copy(self)->'TransformationSet':
         pass
 
 class IdentityTransformation(Transformation):

@@ -258,3 +258,4 @@ class BothPytorchActivationsIterator(PytorchActivationsIterator):
 
     def layer_names(self) -> [str]:
         return self.activations_transformer.layer_names
+

@@ -13,7 +13,7 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 
 url="https://github.com/facundoq/transformational_measures"
-VERSION="0.1alpha"
+VERSION="0.2alpha"
 
 class UploadCommand(Command):
     """Support setup.py upload."""
@@ -53,7 +53,7 @@ class UploadCommand(Command):
 
 
 setup(
-    name="Transformational Measures",
+    name="transformational-measures",
     version=VERSION,
     python_requires='>=3.6',
     packages=find_packages(),

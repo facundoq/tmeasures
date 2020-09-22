@@ -43,7 +43,7 @@ class ActivationsTransformer:
             layer_transformation_set: tm.TransformationSet = transformation_set.copy()
             # print(len(transformation_set),"vs",len(layer_transformation_set))
             # layer_transformation_set.set_pytorch(False)
-            layer_transformation_set.set_input_shape((h, w, c))
+            #layer_transformation_set.set_input_shape((h, w, c))
             layer_transformation_set_list = list(layer_transformation_set)
             if inverse:
                 layer_transformation_set_list = [l.inverse() for l in layer_transformation_set_list]

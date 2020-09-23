@@ -6,6 +6,7 @@ import os
 import transformational_measures as tm
 import torch
 from torch import nn
+import pickle
 
 # Class for PyTorch models that return intermediate results
 from transformational_measures.pytorch import ObservableLayersModule
@@ -225,10 +226,10 @@ for measure in measures:
         print(f"Evaluating measure {measure}...")
 
     # evaluate measure
-    meaure_result = measure.eval(iterator,verbose=True)
+    measure_result = measure.eval(iterator,verbose=True)
 
     # Save result
-    import pickle
+
     with open(result_filepath, 'wb') as f:
         pickle.dump(measure_result, f)
     # Load result (optional, in case you don't want to run the above or your session died)

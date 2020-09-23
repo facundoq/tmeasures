@@ -12,6 +12,8 @@ class MeasureTransformation(ABC):
 class IdentityTransformation(MeasureTransformation):
     def apply(self,r:MeasureResult):
         return r
+    def __repr__(self):
+        return self.__class__.__name__
 
 class AggregateFunction(Enum):
     mean = "mean"
@@ -25,7 +27,8 @@ class AggregateFunction(Enum):
                 }
     def get_function(self):
         return self.functions()[self]
-
+    def __repr__(self):
+        return self.value
 
 
 class AggregateTransformation(MeasureTransformation):
@@ -50,7 +53,8 @@ class AggregateTransformation(MeasureTransformation):
             results.append(flat_activations)
 
         return MeasureResult(results,r.layer_names,r.measure,r.extra_values)
-
+    def __repr__(self):
+        return f"{self.__class__.__name__}(f={self.f},axis={self.axis})"
 # def apply(self, layer:np.ndarray) -> np.ndarray:
 #     '''
 #     :param layer:  a 4D np array (else apply no aggregation)

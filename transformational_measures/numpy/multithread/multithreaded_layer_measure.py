@@ -1,5 +1,5 @@
-from .base import NumpyMeasure
-from .. import MeasureResult
+from transformational_measures.numpy.base import NumpyMeasure
+from transformational_measures import MeasureResult
 from transformational_measures.activations_iterator import ActivationsIterator
 
 import multiprocessing

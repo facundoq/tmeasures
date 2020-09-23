@@ -1,4 +1,6 @@
-from transformational_measures import ConvAggregation, MeasureResult
+import transformational_measures as tm
+
+from transformational_measures import MeasureTransformation, MeasureResult
 from transformational_measures.activations_iterator import ActivationsIterator
 from transformational_measures.numpy.stats_running import RunningMeanAndVarianceWelford, RunningMeanWelford
 from .base import NumpyMeasure
@@ -11,7 +13,7 @@ class TransformationVarianceSameEquivariance(NumpyMeasure):
     def __repr__(self):
         return f"TVSE()"
 
-    def eval(self, activations_iterator: ActivationsIterator) -> MeasureResult:
+    def eval(self, activations_iterator: ActivationsIterator,verbose=False) -> MeasureResult:
         activations_iterator = activations_iterator.get_inverted_activations_iterator()
 
         mean_running = None
@@ -36,10 +38,7 @@ class TransformationVarianceSameEquivariance(NumpyMeasure):
         # calculate the final mean over all samples (for each layer)
         mean_variances = [b.mean() for b in mean_running]
         return MeasureResult(mean_variances, activations_iterator.layer_names(), self)
-    def name(self):
-        return "Transformation Variance Same Equivariance"
-    def abbreviation(self):
-        return "TVSE"
+
 
 class SampleVarianceSameEquivariance(NumpyMeasure):
     def __init__(self):
@@ -48,8 +47,7 @@ class SampleVarianceSameEquivariance(NumpyMeasure):
     def __repr__(self):
         return f"SVSE()"
 
-
-    def eval(self, activations_iterator: ActivationsIterator) -> MeasureResult:
+    def eval(self, activations_iterator: ActivationsIterator,verbose=False) -> MeasureResult:
         activations_iterator:ActivationsIterator = activations_iterator.get_inverted_activations_iterator()
         ts = list(map(str, (activations_iterator.get_transformations())))
         print(f"{len(ts)} transformation")
@@ -77,29 +75,27 @@ class SampleVarianceSameEquivariance(NumpyMeasure):
 
         mean_variances = [b.mean() for b in mean_variances_running]
         return MeasureResult(mean_variances, activations_iterator.layer_names(), self)
-    def name(self):
-        return "Sample Variance Same Equivariance"
-    def abbreviation(self):
-        return "SVSE"
+
 
 
 
 class NormalizedVarianceSameEquivariance(NumpyMeasure):
-    def __init__(self, conv_aggregation: ConvAggregation):
+    def __init__(self, pre_normalization_transformation: MeasureTransformation=tm.IdentityTransformation()):
         self.sv = SampleVarianceSameEquivariance()
         self.tv = TransformationVarianceSameEquivariance()
-        self.conv_aggregation = conv_aggregation
+        self.pre_normalization_transformation = pre_normalization_transformation
 
     transformation_key=TransformationVarianceSameEquivariance.__name__
     sample_key=SampleVarianceSameEquivariance.__name__
 
-    def eval(self, activations_iterator: ActivationsIterator) -> MeasureResult:
+    def eval(self, activations_iterator: ActivationsIterator,verbose=False) -> MeasureResult:
 
         sample_result=self.sv.eval(activations_iterator)
         transformation_result = self.tv.eval(activations_iterator)
 
-        transformation_result = transformation_result.collapse_convolutions(self.conv_aggregation)
-        sample_result = sample_result.collapse_convolutions(self.conv_aggregation)
+        # TODO REFACTOR NEW layer_transformation.py
+        transformation_result = self.pre_normalization_transformation.apply(transformation_result)
+        sample_result = self.pre_normalization_transformation.apply(sample_result)
 
         extra_values={ self.transformation_key:transformation_result,
                        self.sample_key:sample_result,
@@ -109,7 +105,7 @@ class NormalizedVarianceSameEquivariance(NumpyMeasure):
         return MeasureResult(result, transformation_result.layer_names, self,extra_values)
 
     def __repr__(self):
-        ca = f"ca={self.conv_aggregation.value}"
+        ca = f"ca={self.pre_normalization_transformation}"
 
         return f"NVSE({ca})"
     def name(self):

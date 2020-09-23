@@ -1,9 +1,9 @@
 from transformational_measures import NumpyMeasure,ActivationsIterator,MeasureResult
 import transformational_measures as tm
 from multiprocessing import Queue
-from .multithreaded_layer_measure import LayerMeasure,PerLayerMeasure,ActivationsOrder
+from transformational_measures.numpy.multithread.multithreaded_layer_measure import LayerMeasure,PerLayerMeasure,ActivationsOrder
 import numpy as np
-from transformational_measures.numpy.stats_running import RunningMeanAndVarianceWelford,RunningMeanWelford,RunningMeanSimple
+from transformational_measures.numpy.stats_running import RunningMeanAndVarianceWelford, RunningMeanSimple
 from scipy.stats import norm
 
 class GlobalVarianceNormal(LayerMeasure):

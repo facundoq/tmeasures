@@ -43,8 +43,12 @@ class DistanceSameEquivarianceSimple(NumpyMeasure):
     def __repr__(self):
         return f"DSES(df={self.distance_function})"
 
+    def name(self)->str:
+        return "Distance Same-Equivariance Simple"
+    def abbreviation(self):
+        return "DSES"
 
-    def eval(self,activations_iterator:ActivationsIterator)->MeasureResult:
+    def eval(self,activations_iterator:ActivationsIterator,verbose=False)->MeasureResult:
         activations_iterator = activations_iterator.get_both_iterator()
         mean_running=None
 
@@ -62,7 +66,3 @@ class DistanceSameEquivarianceSimple(NumpyMeasure):
         return MeasureResult(means,activations_iterator.layer_names(),self)
 
 
-    def name(self)->str:
-        return "Distance Same-Equivariance Simple"
-    def abbreviation(self):
-        return "DSES"

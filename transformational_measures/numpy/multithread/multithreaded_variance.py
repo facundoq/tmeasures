@@ -1,6 +1,6 @@
-from .base import NumpyMeasure
+from transformational_measures.numpy.base import NumpyMeasure
 import numpy as np
-from .layer_transformation import ConvAggregation
+from transformational_measures.numpy.layer_transformation import MeasureTransformation
 from transformational_measures.numpy.stats_running import RunningMeanAndVarianceWelford,RunningMeanWelford
 import transformational_measures as tm
 from multiprocessing import Queue
@@ -10,7 +10,7 @@ from .multithreaded_layer_measure import LayerMeasure,PerLayerMeasure,Activation
 
 class VarianceLayerMeasure(LayerMeasure):
 
-    def __init__(self,id:int,name:str,measure_function: MeasureFunction,conv_aggregation:ConvAggregation):
+    def __init__(self, id:int, name:str, measure_function: MeasureFunction, conv_aggregation:MeasureTransformation):
         super().__init__(id,name)
         self.conv_aggregation=conv_aggregation
         self.measure_function=measure_function
@@ -32,7 +32,7 @@ class VarianceLayerMeasure(LayerMeasure):
         return m.mean()
 
 class VarianceMeasure(PerLayerMeasure):
-    def __init__(self,order:ActivationsOrder,measure_function: MeasureFunction, conv_aggregation: ConvAggregation):
+    def __init__(self, order:ActivationsOrder, measure_function: MeasureFunction, conv_aggregation: MeasureTransformation):
         super().__init__(order)
         self.measure_function = measure_function
         self.conv_aggregation = conv_aggregation
@@ -41,13 +41,13 @@ class VarianceMeasure(PerLayerMeasure):
         return VarianceLayerMeasure(i,name,self.measure_function,self.conv_aggregation)
 
 class TransformationVarianceMeasure(VarianceMeasure):
-    def __init__(self,measure_function: MeasureFunction, conv_aggregation: ConvAggregation):
+    def __init__(self, measure_function: MeasureFunction, conv_aggregation: MeasureTransformation):
         super().__init__(ActivationsOrder.SamplesFirst,measure_function,conv_aggregation)
     def __repr__(self):
         return f"TVM(f={self.measure_function.value},ca={self.conv_aggregation.value})"
 
 class SampleVarianceMeasure(VarianceMeasure):
-    def __init__(self,measure_function: MeasureFunction, conv_aggregation: ConvAggregation):
+    def __init__(self, measure_function: MeasureFunction, conv_aggregation: MeasureTransformation):
         super().__init__(ActivationsOrder.TransformationsFirst,measure_function,conv_aggregation)
 
     def __repr__(self):
@@ -55,7 +55,7 @@ class SampleVarianceMeasure(VarianceMeasure):
 
 class NormalizedVarianceMeasure(tm.QuotientMeasure):
 
-    def __init__(self,measure_function: MeasureFunction, conv_aggregation:ConvAggregation):
+    def __init__(self, measure_function: MeasureFunction, conv_aggregation:MeasureTransformation):
         sm = SampleVarianceMeasure(measure_function, conv_aggregation)
         ttm = TransformationVarianceMeasure(measure_function, conv_aggregation)
         super().__init__(ttm,sm)

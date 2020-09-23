@@ -3,7 +3,7 @@ from transformational_measures import MeasureResult,NumpyMeasure
 from transformational_measures.numpy.stats_running import RunningMeanWelford
 from .quotient import divide_activations
 
-from .distance import DistanceAggregation
+from .distance_invariance import DistanceAggregation
 
 def list_get_all(list:[],indices:[int])->[]:
     return [list[i] for i in indices]
@@ -14,8 +14,6 @@ class BaseDistanceSameEquivarianceMeasure(NumpyMeasure):
         self.distance_aggregation=distance_aggregation
 
 class TransformationDistanceSameEquivariance(BaseDistanceSameEquivarianceMeasure):
-
-
     def __repr__(self):
         return f"TDSE(da={self.distance_aggregation})"
 
@@ -25,7 +23,7 @@ class TransformationDistanceSameEquivariance(BaseDistanceSameEquivarianceMeasure
         return "TDSE"
 
 
-    def eval(self,activations_iterator:ActivationsIterator)->MeasureResult:
+    def eval(self,activations_iterator:ActivationsIterator,verbose=False)->MeasureResult:
         activations_iterator = activations_iterator.get_inverted_activations_iterator()
         mean_running= None
 
@@ -46,7 +44,6 @@ class TransformationDistanceSameEquivariance(BaseDistanceSameEquivarianceMeasure
 
 class SampleDistanceSameEquivariance(BaseDistanceSameEquivarianceMeasure):
 
-
     def __repr__(self):
         return f"SDSE(da={self.distance_aggregation})"
 
@@ -56,7 +53,7 @@ class SampleDistanceSameEquivariance(BaseDistanceSameEquivarianceMeasure):
         return "SDSE"
 
 
-    def eval(self,activations_iterator:ActivationsIterator)->MeasureResult:
+    def eval(self,activations_iterator:ActivationsIterator,verbose=False)->MeasureResult:
         activations_iterator = activations_iterator.get_inverted_activations_iterator()
         mean_running= None
 
@@ -93,10 +90,10 @@ class NormalizedDistanceSameEquivariance(NumpyMeasure):
     transformation_key=TransformationDistanceSameEquivariance.__name__
     sample_key=SampleDistanceSameEquivariance.__name__
 
-    def eval(self,activations_iterator:ActivationsIterator) ->MeasureResult:
+    def eval(self,activations_iterator:ActivationsIterator,verbose=False) ->MeasureResult:
 
-        transformation_result = self.transformation_measure.eval(activations_iterator)
-        sample_result = self.sample_measure.eval(activations_iterator)
+        transformation_result = self.transformation_measure.eval(activations_iterator,verbose)
+        sample_result = self.sample_measure.eval(activations_iterator,verbose)
         result=divide_activations(transformation_result.layers,sample_result.layers)
 
         extra_values={ self.transformation_key:transformation_result,

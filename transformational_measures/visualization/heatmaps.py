@@ -22,7 +22,7 @@ def plot_heatmap(m:MeasureResult,filepath:Path, vmin=None, vmax=None):
         if vmin>0:
             vmin=0
 
-    m=tm.ConvAggregation.mean.collapse_convolutions(m)
+    m=tm.AggregateTransformation(tm.AggregateFunction.mean,[0]).apply(m)
 
     # for l in m.layers:
     #     print(l.shape, np.sum(np.isinf(l)))

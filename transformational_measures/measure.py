@@ -2,6 +2,7 @@
 from typing import List
 import numpy as np
 import abc
+import re
 
 from transformational_measures.numpy.stats_running import RunningMeanWelford
 from .utils import get_all
@@ -85,13 +86,27 @@ class Measure(abc.ABC):
     def id(self):
         return str(self)
 
-    @abc.abstractmethod
-    def name(self):
-        pass
+    # @abc.abstractmethod
+    # def name(self):
+    #     pass
+    #
+    # @abc.abstractmethod
+    # def abbreviation(self):
+    #     pass
 
-    @abc.abstractmethod
+    # Returns the name of the measure, separated by spaces
+    def name(self):
+        # get first part before parenthesis (if any)
+        class_name = self.__class__.__name__
+        result = class_name.split("(")[0]
+        # add a space before capitalized words
+        result = re.sub( r"([A-Z])", r" \1", result)
+        return result
+
+    # generates an abbreviation of the measure, based on its name
     def abbreviation(self):
-        pass
+        initials=re.findall('[A-Z]', self.name())
+        return "".join(initials)
 
     @abc.abstractmethod
     def eval(self)->MeasureResult:

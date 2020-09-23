@@ -1,16 +1,23 @@
 import scipy.spatial.distance
 import numpy as np
+from abc import ABC,abstractmethod
 
-class DistanceAggregation:
+class ActivationsTransformation(ABC):
+
+    @abstractmethod
+    def apply(self,activations:np.ndarray):
+        pass
+
+class DistanceAggregation(ActivationsTransformation):
 
     def __init__(self, normalize:bool, keep_shape:bool, distance="euclidean"):
         self.normalize=normalize
-        self.keep_feature_maps=keep_shape
+        self.keep_shape=keep_shape
         self.distance=distance
 
 
     def __repr__(self):
-        return f"DA(normalize={self.normalize},keep_feature_maps={self.keep_feature_maps},distance={self.distance})"
+        return f"DA(normalize={self.normalize},keep_shape={self.keep_shape},distance={self.distance})"
 
     def normalize_activations(self,x:np.ndarray):
         c,n,d=x.shape
@@ -28,15 +35,16 @@ class DistanceAggregation:
     def convert_to_cnd_format(self,x:np.ndarray):
         l = len(x.shape)
         # Convert x to shape (n, features, dim_features)
-        if l == 4:
-            n, c, h, w = x.shape
-            if self.keep_feature_maps:
-                # consider feature maps as a whole object of size h*w
-                x = x.reshape((n, c, h * w))
+        if l > 2:
+            n, features, = x.shape[0:2]
+            if self.keep_shape:
+                # consider dims 2+ as a single dim
+                # dim 0 is the number
+                x = x.reshape((n, features, -1))
 
             else:
                 # consider every element of the feature map as a distinct activation
-                x = x.reshape((n, c * h * w, 1))
+                x = x.reshape((n, -1, 1))
         elif l == 2:
             n,c=x.shape
             x = x.reshape((n, c, 1))

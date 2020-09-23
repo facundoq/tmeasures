@@ -5,21 +5,21 @@ from transformational_measures.activations_iterator import ActivationsIterator
 from transformational_measures.numpy.stats_running import RunningMeanWelford
 import scipy.stats
 
-class AnovaMeasure(NumpyMeasure):
+class ANOVAInvariance(NumpyMeasure):
     # alpha = degree of confidence
     # Typically 0.90, 0.95, 0.99
     def __init__(self, alpha:float=0.99,bonferroni:bool=True):
         super().__init__()
-        self.anova_f_measure=AnovaFMeasure()
+        self.anova_f_measure=ANOVAFInvariance()
         assert(alpha>0)
         assert (alpha <1)
         self.alpha=alpha
         self.bonferroni=bonferroni
 
     def __repr__(self):
-        return f"AnovaMeasure(alpha={self.alpha},bonferroni={self.bonferroni})"
+        return f"ANOVAI(α={self.alpha},b={self.bonferroni})"
 
-    def eval(self, activations_iterator: ActivationsIterator) -> MeasureResult:
+    def eval(self, activations_iterator: ActivationsIterator,verbose=False) -> MeasureResult:
         f_result=self.anova_f_measure.eval(activations_iterator)
         d_b=f_result.extra_values["d_b"]
         d_w = f_result.extra_values["d_w"]
@@ -43,15 +43,16 @@ class AnovaMeasure(NumpyMeasure):
     def abbreviation(self):
         return self.name()
 
-class AnovaFMeasure(NumpyMeasure):
+class ANOVAFInvariance(NumpyMeasure):
     def __init__(self):
         super().__init__()
 
 
     def __repr__(self):
-        return f"AnovaFMeasure()"
+        return f"{self.__class__.__name__}()"
 
-    def eval(self,activations_iterator:ActivationsIterator)->MeasureResult:
+
+    def eval(self,activations_iterator:ActivationsIterator,verbose=False)->MeasureResult:
 
         # calculate mean(X_t)
         u_t,n_t=self.eval_means_per_transformation(activations_iterator)
@@ -152,7 +153,4 @@ class AnovaFMeasure(NumpyMeasure):
             means_per_transformation.append([rm.mean() for rm in samples_variances_running])
         return means_per_transformation,samples_per_transformation
 
-    def name(self):
-        return "ANOVA F-score"
-    def abbreviation(self):
-        return "ANOVAF"
+

@@ -12,7 +12,7 @@ import abc
 class NumpyMeasure(Measure):
 
     @abc.abstractmethod
-    def eval(self,activations_iterator:ActivationsIterator)-> MeasureResult:
+    def eval(self,activations_iterator:ActivationsIterator,verbose=False)-> MeasureResult:
         '''
 
         '''

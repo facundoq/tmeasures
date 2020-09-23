@@ -6,22 +6,21 @@ from .measure import MeasureResult, StratifiedMeasureResult
 
 from .numpy.base import NumpyMeasure
 
-from .numpy.functions import MeasureFunction
-from .numpy.layer_transformation import ConvAggregation
+from transformational_measures.numpy.multithread.functions import MeasureFunction
+from .numpy.layer_transformation import MeasureTransformation,AggregateConvolutions,AggregateTransformation,AggregateFunction,IdentityTransformation
 from .numpy.quotient import QuotientMeasure,divide_activations
 
 
 from transformational_measures.activations_iterator import ActivationsIterator
 from transformational_measures.pytorch import *
 
-from .numpy.multithreaded_layer_measure import PerLayerMeasure,LayerMeasure,SamplesFirstPerLayerMeasure,TransformationsFirstPerLayerMeasure
+from transformational_measures.numpy.multithread.multithreaded_layer_measure import PerLayerMeasure,LayerMeasure,SamplesFirstPerLayerMeasure,TransformationsFirstPerLayerMeasure
 
-from .numpy.multithreaded_variance import TransformationVarianceMeasure,SampleVarianceMeasure,NormalizedVarianceMeasure
-from .numpy.normalized import NormalizedVariance,SampleVariance,TransformationVariance
-from .numpy.anova import AnovaMeasure,AnovaFMeasure
-from .numpy.distance import NormalizedDistance,SampleDistance,TransformationDistance,DistanceAggregation
+from .numpy.variance_invariance import NormalizedVarianceInvariance,SampleVarianceInvariance,TransformationVarianceInvariance
+from .numpy.anova import ANOVAInvariance,ANOVAFInvariance
+from .numpy.distance_invariance import NormalizedDistanceInvariance,SampleDistanceInvariance,TransformationDistanceInvariance,DistanceAggregation
 
-from .numpy.distance_equivariance import NormalizedDistanceSameEquivariance,TransformationDistanceSameEquivariance,SampleDistanceSameEquivariance
+from .numpy.distance_same_equivariance import NormalizedDistanceSameEquivariance,TransformationDistanceSameEquivariance,SampleDistanceSameEquivariance
 
 from .numpy.variance_same_equivariance import NormalizedVarianceSameEquivariance,TransformationVarianceSameEquivariance,SampleVarianceSameEquivariance
 
@@ -29,7 +28,7 @@ from .numpy.same_equivariance_simple import DistanceSameEquivarianceSimple,Dista
 
 
 from .numpy.goodfellow import GoodfellowMeasure
-from .numpy.goodfellow_prob import GoodfellowNormal,GoodfellowLocalVarianceNormal,GoodfellowGlobalVarianceNormal
+from .numpy.goodfellow_prob import GoodfellowNormal,GoodfellowNormalLocal,GoodfellowNormalGlobal
 
 from .adapters import TransformationAdapter,PytorchNumpyImageTransformationAdapter,NumpyPytorchImageTransformationAdapter
 

@@ -41,9 +41,9 @@ class QuotientMeasure(NumpyMeasure):
     def __repr__(self):
         return f"QM({self.numerator_measure}_DIV_{self.denominator_measure})"
 
-    def eval(self,activations_iterator:ActivationsIterator)->MeasureResult:
-        v_transformations = self.numerator_measure.eval(activations_iterator)
-        v_samples=self.denominator_measure.eval(activations_iterator)
+    def eval(self,activations_iterator:ActivationsIterator,verbose=False)->MeasureResult:
+        v_transformations = self.numerator_measure.eval(activations_iterator,verbose=False)
+        v_samples=self.denominator_measure.eval(activations_iterator,verbose=False)
         v=divide_activations(v_transformations.layers, v_samples.layers)
 
         layer_names = activations_iterator.layer_names()

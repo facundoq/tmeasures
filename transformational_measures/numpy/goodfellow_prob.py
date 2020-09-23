@@ -1,26 +1,36 @@
 from transformational_measures import NumpyMeasure,ActivationsIterator,MeasureResult
 import transformational_measures as tm
 from multiprocessing import Queue
-from .multithreaded_layer_measure import LayerMeasure,PerLayerMeasure,ActivationsOrder
+from transformational_measures.numpy.multithread.multithreaded_layer_measure import LayerMeasure,PerLayerMeasure,ActivationsOrder
 import numpy as np
 from transformational_measures.numpy.stats_running import RunningMeanAndVarianceWelford,RunningMeanWelford,RunningMeanSimple
 from scipy.stats import norm
-
+from tqdm import tqdm
 
 default_alpha=0.99
 default_sign=1
 
-class GoodfellowGlobalVarianceNormal(NumpyMeasure):
+class GoodfellowNormalGlobal(NumpyMeasure):
     thresholds_key="thresholds"
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}(gp={self.alpha})"
+
+    # def name(self):
+    #     return "GoodfellowNormalGlobal"
+    #
+    # def abbreviation(self):
+    #     return "GGN"
 
     def __init__(self, alpha:float=default_alpha, sign:int=default_sign):
         super().__init__()
         self.alpha = alpha
         self.sign=sign
 
-    def eval(self,activations_iterator: ActivationsIterator)->MeasureResult:
+    def eval(self,activations_iterator: ActivationsIterator,verbose=False)->MeasureResult:
         running_means = [RunningMeanAndVarianceWelford() for i in activations_iterator.layer_names()]
-        for transformation, samples_activations_iterator in activations_iterator.transformations_first():
+
+        for transformation, samples_activations_iterator in tqdm(activations_iterator.transformations_first(),disable=not verbose):
             for x, batch_activations in samples_activations_iterator:
                 for j, activations in enumerate(batch_activations):
                     if self.sign != 1: activations *= self.sign
@@ -48,17 +58,20 @@ class GoodfellowGlobalVarianceNormal(NumpyMeasure):
 
         return MeasureResult(layers_g, activations_iterator.layer_names(), self,extra_values={self.thresholds_key:thresholds})
 
-class GoodfellowLocalVarianceNormal(NumpyMeasure):
+class GoodfellowNormalLocal(NumpyMeasure):
 
     def __init__(self, thresholds:[np.ndarray],sign:int=default_sign):
         super().__init__()
         self.thresholds = thresholds
         self.sign=sign
 
-    def eval(self,activations_iterator: ActivationsIterator)->MeasureResult:
+    def __repr__(self):
+        return f"{self.__class__.__name__}"
+
+    def eval(self,activations_iterator: ActivationsIterator,verbose=False)->MeasureResult:
         running_means = [RunningMeanWelford() for i in activations_iterator.layer_names()]
 
-        for x,transformation_activations  in activations_iterator.samples_first():
+        for x,transformation_activations  in tqdm(activations_iterator.samples_first(),disable=not verbose):
             for x_transformed, activations in transformation_activations:
                 for i, layer_activations in enumerate(activations):
 
@@ -77,6 +90,8 @@ class GoodfellowLocalVarianceNormal(NumpyMeasure):
 
 
 
+
+
 class GoodfellowNormal(NumpyMeasure):
     g_key="global"
     l_key="local"
@@ -88,12 +103,12 @@ class GoodfellowNormal(NumpyMeasure):
         self.alpha=alpha
         self.sign=sign
 
-    def eval(self,activations_iterator:ActivationsIterator):
-        self.g = GoodfellowGlobalVarianceNormal(self.alpha, self.sign)
-        g_result = self.g.eval(activations_iterator)
-        thresholds = g_result.extra_values[GoodfellowGlobalVarianceNormal.thresholds_key]
-        self.l = GoodfellowLocalVarianceNormal(thresholds, self.sign)
-        l_result = self.l.eval(activations_iterator)
+    def eval(self,activations_iterator:ActivationsIterator,verbose=False):
+        self.g = GoodfellowNormalGlobal(self.alpha, self.sign)
+        g_result = self.g.eval(activations_iterator,verbose)
+        thresholds = g_result.extra_values[GoodfellowNormalGlobal.thresholds_key]
+        self.l = GoodfellowNormalLocal(thresholds, self.sign)
+        l_result = self.l.eval(activations_iterator,verbose)
 
         ratio = tm.divide_activations(l_result.layers,g_result.layers)
         extra = {self.g_key:g_result,self.l_key:l_result}
@@ -106,6 +121,7 @@ class GoodfellowNormal(NumpyMeasure):
 
     def name(self):
         return "Goodfellow Normal"
+
     def abbreviation(self):
         return "GFN"
 

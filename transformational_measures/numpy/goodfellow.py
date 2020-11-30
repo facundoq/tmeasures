@@ -5,7 +5,7 @@ from transformational_measures.numpy.multithread.multithreaded_layer_measure imp
 import numpy as np
 from transformational_measures.numpy.stats_running import RunningMeanSimple
 
-class GlobalVariance(LayerMeasure):
+class GoodfellowGlobalInvariance(LayerMeasure):
 
     def __init__(self, id:int, name:str, activation_percentage:float,sign:int):
         super().__init__(id,name)
@@ -45,7 +45,7 @@ class GlobalVariance(LayerMeasure):
     def get_final_result(self):
         return self.g
 
-class LocalVariance(LayerMeasure):
+class GoodfellowLocalInvariance(LayerMeasure):
 
     def __init__(self, id:int, name:str, threshold:float,sign:int):
         super().__init__(id,name)
@@ -74,13 +74,13 @@ class GlobalFiringRateMeasure(PerLayerMeasure):
         super().__init__(ActivationsOrder.TransformationsFirst)
         self.activation_percentage:float=activation_percentage
         self.sign:int=sign
-        self.layer_measures:{int,GlobalVariance}={}
+        self.layer_measures:{int, GoodfellowGlobalInvariance}={}
 
     def __repr__(self):
         return f"G()"
 
     def generate_layer_measure(self, i:int, name:str) -> LayerMeasure:
-        layer_measure = GlobalVariance(i, name,self.activation_percentage,self.sign)
+        layer_measure = GoodfellowGlobalInvariance(i, name, self.activation_percentage, self.sign)
         self.layer_measures[i]=layer_measure
         return layer_measure
 
@@ -101,9 +101,9 @@ class LocalFiringRateMeasure(PerLayerMeasure):
 
     def generate_layer_measure(self, i:int, name:str) -> LayerMeasure:
 
-        return LocalVariance(i, name,self.thresholds[i],self.sign)
+        return GoodfellowLocalInvariance(i, name, self.thresholds[i], self.sign)
 
-class GoodfellowMeasure(NumpyMeasure):
+class GoodfellowInvariance(NumpyMeasure):
 
 
     def __init__(self,activations_percentage=0.01,sign=1):

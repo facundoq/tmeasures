@@ -26,10 +26,7 @@ class NumpyMeasure(Measure):
         '''
         variance_per_class = [self.eval(iterator) for iterator in classes_iterators]
         stratified_measure_layers = self.mean_variance_over_classes(variance_per_class)
-        # TODO think of a better way to do this; parameter?
-        # think of a "filter lay
-        # rs" function that selects on which layers to calculate the numpy
-        # then the layer names of the results is the same as that of the activations_iterator
+
         layer_names= variance_per_class[0].layer_names
 
         return StratifiedMeasureResult(stratified_measure_layers, layer_names, self, variance_per_class, class_labels)

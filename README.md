@@ -20,7 +20,8 @@ The Transformational Measures (TM) library allows neural network designers to ev
 
 # PyTorch API
 
-TODO describe
+[Measuring invariance to rotations for a simple CNN on MNIST (google collab)](https://colab.research.google.com/github/facundoq/transformational_measures/blob/master/doc/Variance%20to%20rotations%20of%20a%20CNN%20trained%20on%20MNIST%20with%20PyTorch.ipynb)
+
 
 # TensorFlow API
 

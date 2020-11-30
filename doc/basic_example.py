@@ -7,7 +7,7 @@ import transformational_measures as tm
 import torch
 from torch import nn
 import pickle
-
+from pathlib import Path
 # Class for PyTorch models that return intermediate results
 from transformational_measures.pytorch import ObservableLayersModule
 
@@ -136,6 +136,8 @@ use_cuda = torch.cuda.is_available()
 torch.manual_seed(args.seed)
 device = torch.device("cuda" if use_cuda else "cpu")
 
+results_path=Path("results")
+
 # DATASET
 base_preprocessing=[
         transforms.ToTensor(),
@@ -159,15 +161,22 @@ test_loader = torch.utils.data.DataLoader(dataset2,args.test_batch_size)
 
 
 # TRAIN
-model = CNN((1,28,28)).to(device)
-print(f"Training network with device: {device}")
-optimizer = optim.Adadelta(model.parameters(), lr=args.lr)
+model_path=results_path/ "model.pickle"
 
-scheduler = StepLR(optimizer, step_size=1, gamma=args.gamma)
-for epoch in range(1, args.epochs + 1):
-    train(args, model, device, train_loader, optimizer, epoch)
-    test(model, device, test_loader)
-    scheduler.step()
+if model_path.exists():
+    model = torch.load(model_path)
+else:
+    model = CNN((1,28,28)).to(device)
+    print(f"Training network with device: {device}")
+    optimizer = optim.Adadelta(model.parameters(), lr=args.lr)
+
+    scheduler = StepLR(optimizer, step_size=1, gamma=args.gamma)
+    for epoch in range(1, args.epochs + 1):
+        train(args, model, device, train_loader, optimizer, epoch)
+        test(model, device, test_loader)
+        scheduler.step()
+
+    torch.save(model,model_path)
 
 
 # # Measure model's invariance  to rotations
@@ -196,18 +205,18 @@ transformations=AffineGenerator(r=rotation_parameters)
 
 # Define an iterator over activations for pytorch
 iterator = tm.NormalPytorchActivationsIterator(model, dataset_nolabels, transformations, 
-                                                batch_size=64,num_workers=1,use_cuda=use_cuda)
+                                                batch_size=128,num_workers=3,use_cuda=use_cuda)
 
 # evaluate measure, with the iterator
 
 
 da=tm.DistanceAggregation(normalize=True,keep_shape=True)
 #mean_pnt = tm.AggregateTransformation(tm.AggregateFunction.mean)
-mean_pnt = tm.AggregateConvolutions()
+mean_pnt = tm.AggregateTransformation(axis=(0,))
 measures = [
 
     tm.ANOVAInvariance(),
-    tm.GoodfellowNormal(),
+    tm.GoodfellowNormalInvariance(),
     tm.NormalizedVarianceInvariance(),
     tm.NormalizedVarianceInvariance(pre_normalization_transformation=mean_pnt),
     tm.NormalizedDistanceInvariance(da),
@@ -215,10 +224,11 @@ measures = [
     tm.NormalizedVarianceSameEquivariance(),
     tm.NormalizedDistanceSameEquivariance(da),
 ]
+
 for measure in measures:
 
     exp_id=f"rot{degree_range}_{measure}"
-    result_filepath=f'{exp_id}_result.pickle'
+    result_filepath= results_path / f'{exp_id}_result.pickle'
     if os.path.exists(result_filepath):
         print(f"Measure {measure} already evaluated,skipping ")
         continue
@@ -238,9 +248,9 @@ for measure in measures:
 
     from transformational_measures import visualization
     results=[measure_result]
-    plot_filepath=f"{exp_id}_by_layers.png"
+    plot_filepath=results_path / f"{exp_id}_by_layers.png"
     visualization.plot_collapsing_layers_same_model(results, plot_filepath)
-    heatmap_filepath=f"{exp_id}_heatmap.png"
+    heatmap_filepath=results_path / f"{exp_id}_heatmap.png"
     visualization.plot_heatmap(measure_result,heatmap_filepath)
     #
 

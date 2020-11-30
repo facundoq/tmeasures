@@ -10,7 +10,7 @@ from tqdm import tqdm
 default_alpha=0.99
 default_sign=1
 
-class GoodfellowNormalGlobal(NumpyMeasure):
+class GoodfellowNormalGlobalInvariance(NumpyMeasure):
     thresholds_key="thresholds"
 
     def __repr__(self):
@@ -58,7 +58,7 @@ class GoodfellowNormalGlobal(NumpyMeasure):
 
         return MeasureResult(layers_g, activations_iterator.layer_names(), self,extra_values={self.thresholds_key:thresholds})
 
-class GoodfellowNormalLocal(NumpyMeasure):
+class GoodfellowNormalLocalInvariance(NumpyMeasure):
 
     def __init__(self, thresholds:[np.ndarray],sign:int=default_sign):
         super().__init__()
@@ -92,7 +92,7 @@ class GoodfellowNormalLocal(NumpyMeasure):
 
 
 
-class GoodfellowNormal(NumpyMeasure):
+class GoodfellowNormalInvariance(NumpyMeasure):
     g_key="global"
     l_key="local"
 
@@ -104,10 +104,10 @@ class GoodfellowNormal(NumpyMeasure):
         self.sign=sign
 
     def eval(self,activations_iterator:ActivationsIterator,verbose=False):
-        self.g = GoodfellowNormalGlobal(self.alpha, self.sign)
+        self.g = GoodfellowNormalGlobalInvariance(self.alpha, self.sign)
         g_result = self.g.eval(activations_iterator,verbose)
-        thresholds = g_result.extra_values[GoodfellowNormalGlobal.thresholds_key]
-        self.l = GoodfellowNormalLocal(thresholds, self.sign)
+        thresholds = g_result.extra_values[GoodfellowNormalGlobalInvariance.thresholds_key]
+        self.l = GoodfellowNormalLocalInvariance(thresholds, self.sign)
         l_result = self.l.eval(activations_iterator,verbose)
 
         ratio = tm.divide_activations(l_result.layers,g_result.layers)

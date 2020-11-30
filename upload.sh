@@ -1,6 +1,6 @@
 #pip install --upgrade twine setuptools sdist
 
-# Run once
+# Run once (OLD, not required anymore)
 #python setup.py register
 
 # Then

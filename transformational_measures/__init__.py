@@ -27,8 +27,8 @@ from .numpy.variance_same_equivariance import NormalizedVarianceSameEquivariance
 from .numpy.same_equivariance_simple import DistanceSameEquivarianceSimple,DistanceFunction
 
 
-from .numpy.goodfellow import GoodfellowMeasure
-from .numpy.goodfellow_prob import GoodfellowNormal,GoodfellowNormalLocal,GoodfellowNormalGlobal
+from .numpy.goodfellow import GoodfellowInvariance
+from .numpy.goodfellow_prob import GoodfellowNormalInvariance,GoodfellowNormalLocalInvariance,GoodfellowNormalGlobalInvariance
 
 from .adapters import TransformationAdapter,PytorchNumpyImageTransformationAdapter,NumpyPytorchImageTransformationAdapter
 

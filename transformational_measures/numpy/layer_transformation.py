@@ -32,6 +32,7 @@ class AggregateFunction(Enum):
 
 
 class AggregateTransformation(MeasureTransformation):
+
     def __init__(self, f:AggregateFunction=AggregateFunction.mean, axis:Tuple[int]=None):
          self.f = f
          if axis is None:
@@ -41,20 +42,27 @@ class AggregateTransformation(MeasureTransformation):
             self.axis = axis # axis to keep
 
     def apply(self, r:MeasureResult)->MeasureResult:
-        collapse_function= self.f.get_function()
+        aggregate_function= self.f.get_function()
         results=[]
         for layer in r.layers:
             # only apply to layers with at least max(self.axis) dims
-            if len(layer.shape)-1 >= max(self.axis):
-                flat_activations = collapse_function(layer,axis=self.axis)
-                assert len(flat_activations.shape) == len(self.axis),f"After collapsing, the activation shape should have only {len(self.axis)} dimensions. Found vector with shape {flat_activations.shape} instead."
+            dims= len(layer.shape)
+            if max(self.axis) < dims:
+                diff = set(range(dims)).difference(set(self.axis))
+                diff = tuple(diff)
+                flat_activations = aggregate_function(layer,axis=diff)
+                # assert len(flat_activations.shape) == len(self.axis),f"After collapsing, the activation shape should have only {len(self.axis)} dimensions. Found vector with shape {flat_activations.shape} instead."
             else:
                 flat_activations = layer.copy()
             results.append(flat_activations)
 
         return MeasureResult(results,r.layer_names,r.measure,r.extra_values)
     def __repr__(self):
-        return f"{self.__class__.__name__}(f={self.f},axis={self.axis})"
+        return f"{self.__class__.__name__}(f={self.f.value},axis={self.axis})"
+
+
+
+
 # def apply(self, layer:np.ndarray) -> np.ndarray:
 #     '''
 #     :param layer:  a 4D np array (else apply no aggregation)

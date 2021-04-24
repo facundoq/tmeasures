@@ -50,8 +50,7 @@ class SampleVarianceSameEquivariance(NumpyMeasure):
     def eval(self, activations_iterator: ActivationsIterator,verbose=False) -> MeasureResult:
         activations_iterator:ActivationsIterator = activations_iterator.get_inverted_activations_iterator()
         ts = list(map(str, (activations_iterator.get_transformations())))
-        print(f"{len(ts)} transformation")
-        print("\n".join(ts))
+
 
         mean_variances_running = None
 

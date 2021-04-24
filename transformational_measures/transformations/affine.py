@@ -3,7 +3,7 @@ from transformational_measures.transformation import Transformation,Transformati
 from typing import Tuple,Iterator
 import itertools
 import abc
-
+import torch
 TranslationParameter = Tuple[float, float]
 ScaleParameter = Tuple[float, float]
 RotationParameter = float
@@ -25,6 +25,9 @@ class AffineParameters:
         sx,sy=s
         s=(1/sx,1/sy)
         return AffineParameters(r,s,t)
+    def as_tensor(self):
+        r,(sx,sy),(tx,ty) = self.r,self.s,self.t
+        return torch.tensor([r,sx,sy,tx,ty])
 
     def __repr__(self):
         r, s, t = self
@@ -47,6 +50,8 @@ class AffineTransformation(Transformation):
     @abc.abstractmethod
     def inverse(self):
         pass
+    def parameters(self):
+        return self.ap.as_tensor()
 
 def ifnone(x,v):
     if x is None:

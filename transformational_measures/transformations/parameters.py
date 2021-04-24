@@ -75,13 +75,15 @@ class UniformRotation(TransformationParameters):
         if n<0: raise ValueError(f"Wrong value for n")
         if  angles <0 or angles >360: raise ValueError(f"Wrong angle range {angles}")
         self.angles=angles
-
         super().__init__(self.values())
 
     def values(self):
         if self.n==0:
             return [0]
         else:
+            # TODO change to -self.angles to self.angles and use 180 as max
+            # So that changes in angle correspond more closely to changes in
+            # transformation "complexity"
             return np.linspace(0, self.angles, self.n)
 
     def id(self):

@@ -9,6 +9,8 @@ class Transformation:
     def __call__(self, x):
         pass
 
+    def parameters(self):
+        return np.array([])
 
 class TransformationSet(list,Sized, Iterable[Transformation]):
 

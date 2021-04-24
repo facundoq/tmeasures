@@ -162,9 +162,5 @@ def plot_invariant_feature_maps(plot_folderpath:Path, activations_iterator:tm.Ac
                 plot_activations(features, feature_indices, invariance_scores, x_transformed, transformations,filepath)
 
 
-# TODO move to experiments
-# def plot_invariant_feature_maps_pytorch(plot_folderpath:Path, model:torch.nn.Module, dataset:datasets.ClassificationDataset, transformations:tm.TransformationSet, result:tm.MeasureExperimentResult, images=8, most_invariant_k:int=4, least_invariant_k:int=4, conv_aggregation=tm.ConvAggregation.mean):
-#     numpy_dataset = NumpyDataset(dataset.x_test[:images,:],dataset.y_test[:images])
-#     iterator = tm.NormalStrategy(model, numpy_dataset, transformations, batch_size=32)
-#     plot_invariant_feature_maps(plot_folderpath,iterator,result,most_invariant_k,least_invariant_k,conv_aggregation)
+
 

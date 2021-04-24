@@ -117,10 +117,10 @@ class GoodfellowNormalInvariance(NumpyMeasure):
 
 
     def __repr__(self):
-        return f"GoodfellowNormal(gp={self.alpha})"
+        return f"{self.__class__.__name__}(gp={self.alpha})"
 
     def name(self):
-        return "Goodfellow Normal"
+        return "Goodfellow Normal Invariance"
 
     def abbreviation(self):
         return "GFN"

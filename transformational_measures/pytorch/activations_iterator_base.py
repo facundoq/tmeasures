@@ -54,8 +54,7 @@ class PytorchActivationsIterator(ActivationsIterator):
         return self.transformations
     def transformations_first(self):
         for t_i, transformation in enumerate(self.transformations):
-            dataloader = DataLoader(self.dataset, batch_size=self.batch_size, shuffle=False,
-                                    num_workers=self.num_workers, drop_last=True, pin_memory=True)
+            dataloader = DataLoader(self.dataset, batch_size=self.batch_size, shuffle=False,num_workers=self.num_workers, drop_last=True, pin_memory=True)
             yield transformation, self.samples_activation(t_i, transformation, dataloader)
 
     '''
@@ -72,13 +71,16 @@ class PytorchActivationsIterator(ActivationsIterator):
                 batch_cpu = batch
                 if self.use_cuda:
                     batch = batch.cuda()
+                # print(batch.shape)
                 for i in range(batch.shape[0]):
                     x = batch[i, :]
+                    # print(x.shape)
                     yield batch_cpu[i, :], self.transformations_activations(x)
 
     def transform_sample(self, x: torch.Tensor):
-
+        # print(x.shape)
         x = x.unsqueeze(0)
+        # print(x.shape)
         results = []
         for i, transformation in enumerate(self.transformations):
             transformed = self.transform_batch(transformation, x)

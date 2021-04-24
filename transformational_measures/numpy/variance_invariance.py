@@ -69,7 +69,6 @@ class SampleVarianceInvariance(NumpyMeasure):
         return MeasureResult(mean_variances, layer_names, self)
 
 
-
 class NormalizedVarianceInvariance(NumpyMeasure):
     def __init__(self, pre_normalization_transformation: MeasureTransformation=tm.IdentityTransformation()):
         self.sv = SampleVarianceInvariance()

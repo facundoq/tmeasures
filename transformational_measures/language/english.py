@@ -8,7 +8,7 @@ class English(Language):
         self.layers="Layers"
         self.transformation="Transformation"
 
-        self.meandeviation="Return Mean and deviation"
+        self.meandeviation="μ/σ"
 
         self.measure = "Measure"
 

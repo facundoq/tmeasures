@@ -1,0 +1,6 @@
+poutyne
+colorama
+pytorch
+torchvision
+matplotlib
+tqdm

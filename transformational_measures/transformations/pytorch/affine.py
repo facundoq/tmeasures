@@ -13,14 +13,14 @@ class AffineTransformation(affine.AffineTransformation):
         self.transformation_matrix= self.get_transformation_matrix()
         self.transformation_matrix= self.transformation_matrix.unsqueeze(0)
 
-    def get_transformation_matrix(self,)->torch.Tensor:
+    def get_transformation_matrix(self)->torch.Tensor:
         # center_matrix=torch.eye(3)
         # # center_matrix[:2,2]=-.5
         # decenter_matrix=torch.eye(3)
         # # decenter_matrix[:2,2]=.5
 
         r,s,t=self.ap
-
+        r= r*360
         sx,sy=s
         #tx,ty=t
         matrix = torch.eye(3)
@@ -52,10 +52,10 @@ class RotationTransformation(AffineTransformation):
     def __init__(self,p:affine.RotationParameter):
         self.p=p
         p=affine.AffineParameters(r=p)
-        super.__init__(p)
+        super().__init__(p)
 
     def parameters(self):
-        return self.p
+        return torch.tensor([self.p])
     def inverse(self):
         return RotationTransformation(-self.p)
 
@@ -63,10 +63,11 @@ class ScaleTransformation(AffineTransformation):
     def __init__(self,p:affine.ScaleParameter):
         self.p=p
         p=affine.AffineParameters(s=p)
-        super.__init__(p)
+        super().__init__(p)
 
     def parameters(self):
-        return self.p
+        sx,sy=self.p
+        return torch.tensor([sx,sy])
     def inverse(self):
         sx,sy=self.p
         return ScaleTransformation((1/sx,1/sy))
@@ -75,9 +76,11 @@ class TranslationTransformation(AffineTransformation):
     def __init__(self,p:affine.TranslationParameter):
         self.p=p
         p=affine.AffineParameters(t=p)
-        super.__init__(p)
+        super().__init__(p)
     def parameters(self):
-        return self.p
+        tx, ty = self.p
+        return torch.tensor([tx, ty])
+
     def inverse(self):
         tx,ty=self.p
         return TranslationTransformation((-tx,-ty))
@@ -119,7 +122,7 @@ class TranslationGenerator(affine.AffineGenerator):
         super().__init__(None,None,t)
 
     def make_transformation(self, ap:affine.AffineParameters):
-        return ScaleTransformation(ap.t)
+        return TranslationTransformation(ap.t)
 
     def copy(self):
         return TranslationGenerator(self.t)

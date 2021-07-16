@@ -10,7 +10,7 @@ RotationParameter = float
 
 
 class AffineParameters:
-    def __init__(self,r:RotationParameter,s=ScaleParameter,t=TranslationParameter):
+    def __init__(self,r:RotationParameter=0,s:ScaleParameter=(1,1),t:TranslationParameter=(0,0)):
         self.r=r
         self.s=s
         self.t=t
@@ -25,6 +25,7 @@ class AffineParameters:
         sx,sy=s
         s=(1/sx,1/sy)
         return AffineParameters(r,s,t)
+
     def as_tensor(self):
         r,(sx,sy),(tx,ty) = self.r,self.s,self.t
         return torch.tensor([r,sx,sy,tx,ty])
@@ -45,7 +46,7 @@ class AffineTransformation(Transformation):
 
     def __repr__(self):
         r, s, t = self.ap
-        return f"AffineTransformation(r={r},t={t},s={s})"
+        return f"AffineTransformation(r={r},s={s},t={t})"
 
     @abc.abstractmethod
     def inverse(self):

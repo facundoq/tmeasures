@@ -29,6 +29,10 @@ class TransformationSet(list,Sized, Iterable[Transformation]):
     def copy(self)->'TransformationSet':
         pass
 
+    def parameter_range(self):
+        parameters = np.array([p for t in self for p in t.parameters()])
+        return parameters.min(),parameters.max()
+
 class IdentityTransformation(Transformation):
 
     def __call__(self, x):

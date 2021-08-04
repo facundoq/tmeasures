@@ -1,5 +1,5 @@
 from .model import ObservableLayersModule
-from .base import PyTorchMeasure,PyTorchMeasureOptions,ActivationsByLayer
+from .base import PyTorchMeasure,PyTorchMeasureOptions,ActivationsByLayer,PyTorchMeasureResult
 
 from .activations_iterator_base import PytorchActivationsIterator,InvertedPytorchActivationsIterator,BothPytorchActivationsIterator,NormalPytorchActivationsIterator
 
@@ -7,5 +7,6 @@ from .util import SequentialWithIntermediates
 from . import dataset2d
 
 from .layer_measures import Variance
+
 from .variance_invariance import SampleVarianceInvariance,TransformationVarianceInvariance,NormalizedVarianceInvariance
 from .variance_sameequivariance import  SampleVarianceSameEquivariance,TransformationVarianceSameEquivariance,NormalizedVarianceSameEquivariance

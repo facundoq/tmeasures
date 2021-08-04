@@ -27,7 +27,11 @@ class PyTorchLayerMeasure:
         pass
 
 class PyTorchMeasureResult(tm.MeasureResult):
-    pass
+
+    def numpy(self):
+        for l in self.layers:
+            l[:]=l.numpy()
+        return self
 
 class PyTorchMeasure(tm.Measure):
     def __repr__(self):

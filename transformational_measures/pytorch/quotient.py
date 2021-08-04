@@ -1,6 +1,3 @@
-class PyTorchMeasureResult(object):
-    pass
-
 from . import PyTorchMeasure,ActivationsByLayer,PyTorchMeasureOptions,ObservableLayersModule,PyTorchMeasureResult
 from .. import MeasureResult,Measure
 from torch.utils.data import Dataset

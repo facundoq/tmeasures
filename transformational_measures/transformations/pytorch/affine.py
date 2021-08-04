@@ -4,9 +4,11 @@ from typing import List, Iterator
 from ..affine import RotationParameter,ScaleParameter,TranslationParameter
 from .. import affine
 import numpy as np
+import math
 
+from . import PyTorchTransformationSet,PyTorchTransformation
 
-class AffineTransformation(affine.AffineTransformation):
+class AffineTransformation(affine.AffineTransformation,PyTorchTransformation):
 
     def __init__(self,ap:affine.AffineParameters):
         super().__init__(ap)
@@ -45,6 +47,7 @@ class AffineTransformation(affine.AffineTransformation):
     def inverse(self):
         return AffineTransformation(self.ap.inverse())
 
+
 class RotationTransformation(AffineTransformation):
     def __init__(self,p:affine.RotationParameter):
         self.p=p
@@ -52,7 +55,10 @@ class RotationTransformation(AffineTransformation):
         super().__init__(p)
 
     def parameters(self):
-        return torch.tensor([self.p])
+        # encode with cos and sin
+        # https://arxiv.org/pdf/1702.01499.pdf0
+        return torch.tensor([math.cos(self.p*360),math.sin(self.p*360)])
+
     def inverse(self):
         return RotationTransformation(-self.p)
 
@@ -82,10 +88,13 @@ class TranslationTransformation(AffineTransformation):
         tx,ty=self.p
         return TranslationTransformation((-tx,-ty))
 
-class AffineGenerator(affine.AffineGenerator):
+class BaseAffineTransformationGenerator(affine.AffineGenerator,PyTorchTransformationSet):
     def __init__(self, r:Iterator[RotationParameter]=None, s:Iterator[ScaleParameter]=None, t:Iterator[TranslationParameter]=None):
         super().__init__(r,s,t)
 
+class AffineGenerator(BaseAffineTransformationGenerator):
+    def __init__(self, r:Iterator[RotationParameter]=None, s:Iterator[ScaleParameter]=None, t:Iterator[TranslationParameter]=None):
+        super().__init__(r,s,t)
 
     def make_transformation(self, ap:affine.AffineParameters):
         return AffineTransformation(ap)
@@ -94,7 +103,7 @@ class AffineGenerator(affine.AffineGenerator):
         return AffineGenerator(self.r,self.s,self.t)
 
 
-class RotationGenerator(affine.AffineGenerator):
+class RotationGenerator(BaseAffineTransformationGenerator):
     def __init__(self, r:Iterator[RotationParameter]):
         super().__init__(r,None,None)
 
@@ -104,7 +113,7 @@ class RotationGenerator(affine.AffineGenerator):
     def copy(self):
         return RotationGenerator(self.r)
 
-class ScaleGenerator(affine.AffineGenerator):
+class ScaleGenerator(BaseAffineTransformationGenerator):
     def __init__(self, s:Iterator[ScaleParameter]):
         super().__init__(None,s,None)
 
@@ -114,7 +123,7 @@ class ScaleGenerator(affine.AffineGenerator):
     def copy(self):
         return ScaleGenerator(self.s)
 
-class TranslationGenerator(affine.AffineGenerator):
+class TranslationGenerator(BaseAffineTransformationGenerator):
     def __init__(self, t:Iterator[TranslationParameter]):
         super().__init__(None,None,t)
 

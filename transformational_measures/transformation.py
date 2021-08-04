@@ -36,9 +36,9 @@ class TransformationSet(list,Sized, Iterable[Transformation]):
     def copy(self)->'TransformationSet':
         pass
 
+    @abc.abstractmethod
     def parameter_range(self):
-        parameters = np.array([p for t in self for p in t.parameters()])
-        return parameters.min(),parameters.max()
+        pass
 
 
 class IdentityTransformation(InvertibleTransformation):

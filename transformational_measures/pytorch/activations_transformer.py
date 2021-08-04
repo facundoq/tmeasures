@@ -7,6 +7,7 @@ import transformational_measures as tm
 def list_get_all(list:[],indices:[int])->[]:
     return [list[i] for i in indices]
 
+
 class ActivationsTransformer:
     def __init__(self,activation_shapes: [Tuple[int,]], layer_names: [str],
                          transformation_set: tm.TransformationSet,inverse:bool):
@@ -61,7 +62,7 @@ class ActivationsTransformer:
             # => a different transformation
             # t_start and t_end indicate the corresponding column indices
             for i, transformation in enumerate(layer_transformations[t_start:t_end]):
-                transformed_activations = transformation(layer_activations[i:i+1,:])
+                transformed_activations = transformation(layer_activations[i,:])
                 # print(fm.shape, inverse_fm.shape)
                 layer_activations[i,:] = transformed_activations
 
@@ -71,5 +72,6 @@ class ActivationsTransformer:
             # => a different sample
             # t_i indicate the corresponding column index, that is, the transformation index
             transformation = layer_transformations[t_i]
-            layer_activations[:] = transformation(layer_activations)
+            for i in range(layer_activations.shape[0]):
+                layer_activations[i,:] = transformation(layer_activations[i,:])
 

@@ -11,7 +11,7 @@ class AffineTransformationNumpy(AffineTransformation):
         self.transformation_matrix=self.generate_transformation_matrix(p)
 
     def generate_transformation_matrix(self, p:AffineParameters):
-        transformation = skimage_transform.AffineTransform(scale=p.s, rotation=p.r, shear=None,translation=p.t)
+        transformation = skimage_transform.AffineTransform(scale=p.s, rotation=p.r*180, shear=None,translation=p.t)
         return transformation.params
 
     def center_transformation(self,transformation:skimage_transform.AffineTransform,image_size):

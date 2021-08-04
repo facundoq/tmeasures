@@ -1,13 +1,14 @@
 import transformational_measures as tm
 
-from transformational_measures import MeasureTransformation, MeasureResult
-from transformational_measures import MeasureFunction
+
+from transformational_measures import MeasureResult
 from transformational_measures.activations_iterator import ActivationsIterator
-from transformational_measures.numpy.stats_running import RunningMeanAndVarianceWelford, RunningMeanWelford
+from transformational_measures.numpy.stats_running import RunningMeanAndVarianceWelford, RunningMeanWelford,RunningMeanVarianceSets
 from .base import NumpyMeasure
 from .quotient import divide_activations
 from tqdm import tqdm
 from .layer_transformation import MeasureTransformation,IdentityTransformation
+import numpy as np
 
 class TransformationVarianceInvariance(NumpyMeasure):
     def __init__(self):
@@ -24,15 +25,18 @@ class TransformationVarianceInvariance(NumpyMeasure):
         for x,transformation_activations  in tqdm(activations_iterator.samples_first(),disable=not verbose):
 
             #calculate the running mean/variance/std over all transformations of x
-            transformation_variances_running = [RunningMeanAndVarianceWelford() for i in range(n_layers)]
+            transformation_variances_running = [RunningMeanVarianceSets() for i in range(n_layers)]
+            # print(transformation_variances_running[0])
             for x_transformed, activations in transformation_activations:
                 for i, layer_activations in enumerate(activations):
-                    # apply function to conv layers
                     # update the mean over all transformations for this sample
-                    transformation_variances_running[i].update_all(layer_activations)
+                    transformation_variances_running[i].update_batch(layer_activations.astype(np.double))
+
             # update the mean with the numpy sample of all transformations of x
             for i in range(n_layers):
                 layer_measure = transformation_variances_running[i].std()
+
+                # print(layer_measure)
                 mean_running[i].update(layer_measure)
 
         # calculate the final mean over all samples (for each layer)
@@ -54,6 +58,7 @@ class SampleVarianceInvariance(NumpyMeasure):
 
         for transformation, samples_activations_iterator in tqdm(activations_iterator.transformations_first(),disable=not verbose):
             samples_variances_running = [RunningMeanAndVarianceWelford() for i in range(n_layers)]
+
             # calculate the variance of all samples for this transformation
             for x, batch_activations in samples_activations_iterator:
                 for j, layer_activations in enumerate(batch_activations):
@@ -70,7 +75,7 @@ class SampleVarianceInvariance(NumpyMeasure):
 
 
 class NormalizedVarianceInvariance(NumpyMeasure):
-    def __init__(self, pre_normalization_transformation: MeasureTransformation=tm.IdentityTransformation()):
+    def __init__(self, pre_normalization_transformation: MeasureTransformation=IdentityTransformation()):
         self.sv = SampleVarianceInvariance()
         self.tv = TransformationVarianceInvariance()
         self.pre_normalization_transformation = pre_normalization_transformation
@@ -82,7 +87,7 @@ class NormalizedVarianceInvariance(NumpyMeasure):
         tv_result = self.pre_normalization_transformation.apply(tv_result)
         sv_result = self.pre_normalization_transformation.apply(sv_result)
 
-        result=divide_activations(tv_result.layers,sv_result.layers)
+        result=divide_activations(tv_result.layers, sv_result.layers)
         return MeasureResult(result, activations_iterator.layer_names(), self)
 
     def __repr__(self):

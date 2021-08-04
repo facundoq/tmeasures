@@ -1,17 +1,4 @@
 
-def indices_of(list:[],value)->[int]:
-    indices =[]
-    for i,l in enumerate(list):
-        if value == l:
-            indices.append(i)
-    return indices
-
-def get_all(list:[],indices:[int])->[]:
-    return [list[i] for i in indices]
-
-
-
-
 from queue import Queue
 from typing import Sized,Iterable
 
@@ -34,7 +21,8 @@ class IterableQueue(Queue,Sized,Iterable):
         return self
 
     def __next__(self):
+        # print(f"next {self.i}/{self.n} (maxsize {self.maxsize})")
         self.i+=1
-        if self.i == self.n:
+        if self.i == self.n+1:
             raise StopIteration()
         return self.get()

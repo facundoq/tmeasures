@@ -1,6 +1,6 @@
 import transformational_measures as tm
-
-from transformational_measures import MeasureTransformation, MeasureResult
+from . import NumpyMeasure,MeasureTransformation,IdentityTransformation
+from transformational_measures import  MeasureResult
 from transformational_measures.activations_iterator import ActivationsIterator
 from transformational_measures.numpy.stats_running import RunningMeanAndVarianceWelford, RunningMeanWelford
 from .base import NumpyMeasure
@@ -79,7 +79,7 @@ class SampleVarianceSameEquivariance(NumpyMeasure):
 
 
 class NormalizedVarianceSameEquivariance(NumpyMeasure):
-    def __init__(self, pre_normalization_transformation: MeasureTransformation=tm.IdentityTransformation()):
+    def __init__(self, pre_normalization_transformation: MeasureTransformation=IdentityTransformation()):
         self.sv = SampleVarianceSameEquivariance()
         self.tv = TransformationVarianceSameEquivariance()
         self.pre_normalization_transformation = pre_normalization_transformation
@@ -100,7 +100,7 @@ class NormalizedVarianceSameEquivariance(NumpyMeasure):
                        self.sample_key:sample_result,
                        }
 
-        result=divide_activations(transformation_result.layers,sample_result.layers)
+        result=divide_activations(transformation_result.layers, sample_result.layers)
         return MeasureResult(result, transformation_result.layer_names, self,extra_values)
 
     def __repr__(self):

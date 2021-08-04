@@ -1,5 +1,6 @@
 from transformational_measures.activations_iterator import ActivationsIterator
-from transformational_measures import MeasureResult,NumpyMeasure
+from transformational_measures import MeasureResult
+from . import NumpyMeasure,MeasureTransformation
 from transformational_measures.numpy.stats_running import RunningMeanWelford
 from .quotient import divide_activations
 

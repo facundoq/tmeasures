@@ -1,9 +1,11 @@
-from transformational_measures import NumpyMeasure,ActivationsIterator,MeasureResult
+from transformational_measures import ActivationsIterator,MeasureResult
+from . import NumpyMeasure
 import transformational_measures as tm
 from multiprocessing import Queue
+from .quotient import divide_activations
 from transformational_measures.numpy.multithread.multithreaded_layer_measure import LayerMeasure,PerLayerMeasure,ActivationsOrder
 import numpy as np
-from transformational_measures.numpy.stats_running import RunningMeanSimple
+from transformational_measures.numpy.stats_running import RunningMeanWelford
 
 class GoodfellowGlobalInvariance(LayerMeasure):
 
@@ -53,7 +55,7 @@ class GoodfellowLocalInvariance(LayerMeasure):
         self.sign=sign
 
     def eval(self,q:Queue,inner_q:Queue):
-        running_mean = RunningMeanSimple()
+        running_mean = RunningMeanWelford()
         # activation_sum=0
         n=0
         for transformation in self.queue_as_generator(q):
@@ -122,7 +124,7 @@ class GoodfellowInvariance(NumpyMeasure):
         self.l = LocalFiringRateMeasure(self.thresholds,self.sign)
         l_result = self.l.eval(activations_iterator)
 
-        ratio = tm.divide_activations(l_result.layers,g_result.layers)
+        ratio = divide_activations(l_result.layers,g_result.layers)
         return MeasureResult(ratio, activations_iterator.layer_names(), self)
 
     def __repr__(self):

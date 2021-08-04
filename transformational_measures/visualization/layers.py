@@ -44,7 +44,7 @@ from transformational_measures.numpy.stats_running import  RunningMeanAndVarianc
 import transformational_measures as tm
 from matplotlib.lines import Line2D
 
-from ..language import l
+
 
 default_y_lim=1.4
 
@@ -89,8 +89,8 @@ def plot_collapsing_layers_different_models(results:List[tm.MeasureResult], file
             y_mark = y[mark_layers]
             ax.plot(x_mark, y_mark, linestyle="", color=color, marker="s")
 
-    ax.set_ylabel(l.measure)
-    ax.set_xlabel(f"{l.layer} (%)")
+    ax.set_ylabel("Measure")
+    ax.set_xlabel(f"Layer (%)")
     ax.set_ylim(0, max(max_value * 1.1, ylim))
 
     ticks = list(range(0, 110, 10,))
@@ -238,14 +238,14 @@ def plot_collapsing_layers_same_model(results:List[tm.MeasureResult], filepath:P
     if plot_mean:
         x = np.arange(max_n)+1
         y,error=mean_and_variance.mean(),mean_and_variance.std()
-        label=l.meandeviation
+        label="μ/σ"
         linestyle="--"
         ax.errorbar(x, y,yerr=error, label=label, linewidth=1.5, linestyle=linestyle, color=(0,0,0))
     else:
         handles, _ = ax.get_legend_handles_labels()
 
-    ax.set_ylabel(l.measure)
-    ax.set_xlabel(l.layer)
+    ax.set_ylabel("Measure")
+    ax.set_xlabel("Layer")
     ax.set_ylim(0,max(max_value*1.1,ylim))
 
     if max_n < 60:
@@ -264,7 +264,4 @@ def plot_collapsing_layers_same_model(results:List[tm.MeasureResult], filepath:P
     add_legends(ax,labels,plot_mean,legend_location)
     plt.savefig(filepath, bbox_inches="tight")
     plt.close()
-
-
-
 

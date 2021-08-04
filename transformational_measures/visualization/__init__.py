@@ -2,7 +2,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 from transformational_measures.numpy.base import NumpyMeasure
 from .. import MeasureResult
-from ..language import l
+
 
 def discrete_colormap(n:int=16,base_colormap="rainbow",):
     colors = plt.cm.get_cmap(base_colormap, n)(range(n))

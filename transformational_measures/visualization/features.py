@@ -2,7 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import transformational_measures as tm
 from pathlib import Path
-
+from ..numpy import AggregateTransformation,AggregateFunction,MeasureTransformation
+from .. import MeasureResult
 import torch
 
 
@@ -140,8 +141,12 @@ def select_feature_maps(measure_result: tm.MeasureResult, most_invariant_k:int, 
     Creates a plot for each sample image/transformation pair
     '''
 
-def plot_invariant_feature_maps(plot_folderpath:Path, activations_iterator:tm.ActivationsIterator, result:tm.MeasureResult, most_invariant_k:int, least_invariant_k:int, conv_aggregation:tm.MeasureTransformation):
-    result=conv_aggregation.apply(result)
+from transformational_measures.numpy import MeasureTransformation
+
+def plot_invariant_feature_maps(plot_folderpath:Path, activations_iterator:tm.ActivationsIterator, result:tm.MeasureResult, most_invariant_k:int, least_invariant_k:int
+                                #, conv_aggregation:MeasureTransformation
+                                ):
+    #result=conv_aggregation.apply(result)
 
     feature_indices_per_layer,invariance_scores_per_layer=select_feature_maps(result, most_invariant_k,least_invariant_k)
     transformations=activations_iterator.get_transformations()

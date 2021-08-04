@@ -3,17 +3,19 @@ from abc import ABC,abstractmethod
 from enum import Enum
 from .. import MeasureResult
 from typing import Tuple
+
 class MeasureTransformation(ABC):
 
     @abstractmethod
     def apply(self,r:MeasureResult):
         pass
+    def __repr__(self):
+        return self.__class__.__name__
 
 class IdentityTransformation(MeasureTransformation):
     def apply(self,r:MeasureResult):
         return r
-    def __repr__(self):
-        return self.__class__.__name__
+
 
 class AggregateFunction(Enum):
     mean = "mean"

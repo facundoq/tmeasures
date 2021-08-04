@@ -20,7 +20,7 @@ class AffineTransformation(affine.AffineTransformation):
         # # decenter_matrix[:2,2]=.5
 
         r,s,t=self.ap
-        r= r*360
+        r= r*180
         sx,sy=s
         #tx,ty=t
         matrix = torch.eye(3)
@@ -33,17 +33,14 @@ class AffineTransformation(affine.AffineTransformation):
 
     def __call__(self, x: torch.FloatTensor):
         with torch.no_grad(): # TODO is this necessary?
-            n, c, h, w = x.shape
-            # print(x.shape)
-            # print(self.transformation_matrix.shape)
+
+            c, h, w = x.shape
+            x = torch.unsqueeze(x,0)
             shape=[1,c,h,w]
             grid = F.affine_grid(self.transformation_matrix,shape ,align_corners=False)
-
-            #if self.use_cuda:
             grid=grid.to(x.device)
-            grid = grid.expand(n,*grid.shape[1:])
             x = F.grid_sample(x, grid,align_corners=False,padding_mode="border")
-        return x
+            return x[0,]
 
     def inverse(self):
         return AffineTransformation(self.ap.inverse())

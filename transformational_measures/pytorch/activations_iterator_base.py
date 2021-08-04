@@ -1,30 +1,21 @@
 from transformational_measures.activations_iterator import ActivationsIterator
-
+from .model import ObservableLayersModule
 import torch
 from torch.utils.data import DataLoader,Dataset
 
 from transformational_measures import TransformationSet, Transformation
 from transformational_measures.adapters import TransformationAdapter
 
-from abc import abstractmethod
-from torch import nn
+
 import transformational_measures as tm
 import abc
 from .activations_transformer import ActivationsTransformer
 
 
-class ObservableLayersModule(nn.Module):
 
-    @abstractmethod
-    def activation_names(self) -> [str]:
-        raise NotImplementedError()
-
-    @abstractmethod
-    def forward_intermediates(self, args) -> (object, []):
-        raise NotImplementedError()
-
-    def n_intermediates(self):
-        return len(self.activation_names())
+import matplotlib
+matplotlib.use('TkAgg')
+import matplotlib.pyplot as plt
 
 
 class PytorchActivationsIterator(ActivationsIterator):
@@ -54,7 +45,7 @@ class PytorchActivationsIterator(ActivationsIterator):
         return self.transformations
     def transformations_first(self):
         for t_i, transformation in enumerate(self.transformations):
-            dataloader = DataLoader(self.dataset, batch_size=self.batch_size, shuffle=False,num_workers=self.num_workers, drop_last=True, pin_memory=True)
+            dataloader = DataLoader(self.dataset, batch_size=self.batch_size, shuffle=False,num_workers=self.num_workers, drop_last=False, pin_memory=True)
             yield transformation, self.samples_activation(t_i, transformation, dataloader)
 
     '''
@@ -64,33 +55,34 @@ class PytorchActivationsIterator(ActivationsIterator):
 
     def samples_first(self):
         dataloader = DataLoader(self.dataset, batch_size=self.batch_size, shuffle=False,
-                                num_workers=self.num_workers, drop_last=True)
+                                num_workers=self.num_workers, drop_last=False)
 
         with torch.no_grad():
             for batch in dataloader:
                 batch_cpu = batch
                 if self.use_cuda:
                     batch = batch.cuda()
-                # print(batch.shape)
                 for i in range(batch.shape[0]):
                     x = batch[i, :]
-                    # print(x.shape)
                     yield batch_cpu[i, :], self.transformations_activations(x)
 
     def transform_sample(self, x: torch.Tensor):
-        # print(x.shape)
         x = x.unsqueeze(0)
-        # print(x.shape)
         results = []
         for i, transformation in enumerate(self.transformations):
             transformed = self.transform_batch(transformation, x)
             results.append(transformed)
-        return torch.cat(results)
+        result = torch.cat(results)
+        return result
 
     def transform_batch(self, transformation, x: torch.Tensor):
         if not self.adapter is None:
             x = self.adapter.pre_adapt(x)
-        x = transformation(x)
+        results = []
+        for i in range(x.shape[0]):
+            results.append(transformation(x[i,:]))
+        x = torch.stack(tuple(results),dim=0)
+
         if not self.adapter is None:
             x = self.adapter.post_adapt(x)
         return x

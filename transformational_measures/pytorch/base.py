@@ -1,0 +1,41 @@
+import torch
+import transformational_measures as tm
+from torch.utils.data import Dataset
+from . import ObservableLayersModule
+from .. import MeasureResult
+import abc
+import typing
+ActivationsByLayer = [torch.Tensor]
+
+class PyTorchMeasureOptions:
+    def __init__(self, batch_size=32, num_workers=0, verbose=True):
+        self.batch_size = batch_size
+        self.num_workers = num_workers
+        self.verbose = verbose
+
+STRowIterator = typing.Union[typing.Iterable[torch.Tensor],typing.Sized]
+STMatrixIterator = typing.Union[typing.Iterable[STRowIterator],typing.Sized]
+
+class PyTorchLayerMeasure:
+
+    @abc.abstractmethod
+    def eval(self,iterator:STMatrixIterator)->torch.Tensor:
+        pass
+
+    @abc.abstractmethod
+    def generate_result(self,layer_results:ActivationsByLayer,layer_names:[str]):
+        pass
+
+class PyTorchMeasureResult(tm.MeasureResult):
+    pass
+
+class PyTorchMeasure(tm.Measure):
+    def __repr__(self):
+        return f"{self.abbreviation()}"
+
+    @abc.abstractmethod
+    def eval(self,dataset:Dataset,transformations:tm.TransformationSet,model:ObservableLayersModule,o:PyTorchMeasureOptions)-> MeasureResult:
+        '''
+
+        '''
+        pass

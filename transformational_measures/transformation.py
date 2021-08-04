@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import List,Tuple,Sized,Iterable,Iterator
 import numpy as np
 import torch
@@ -11,6 +12,12 @@ class Transformation:
 
     def parameters(self):
         return np.array([])
+
+class InvertibleTransformation:
+
+    @abc.abstractmethod
+    def inverse(self) -> InvertibleTransformation:
+        pass
 
 class TransformationSet(list,Sized, Iterable[Transformation]):
 
@@ -33,9 +40,12 @@ class TransformationSet(list,Sized, Iterable[Transformation]):
         parameters = np.array([p for t in self for p in t.parameters()])
         return parameters.min(),parameters.max()
 
-class IdentityTransformation(Transformation):
 
+class IdentityTransformation(InvertibleTransformation):
     def __call__(self, x):
         return x
+
+    def inverse(self) -> InvertibleTransformation:
+        return self
 
 

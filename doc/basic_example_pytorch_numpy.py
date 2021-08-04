@@ -10,11 +10,13 @@ from torch import nn
 import pickle
 from pathlib import Path
 # Class for PyTorch models that return intermediate results
+from transformational_measures.numpy import AggregateTransformation
+from transformational_measures.numpy.aggregation import DistanceAggregation
 from transformational_measures.pytorch import ObservableLayersModule
+from transformational_measures.pytorch.model import FilteredActivationsModel
 
 # Utility class, same as PyTorch Sequential but returns intermediate layer values
 from transformational_measures.pytorch import SequentialWithIntermediates
-
 
 
 class Flatten(nn.Module):
@@ -72,7 +74,7 @@ from poutyne import Model
 
 torch.manual_seed(0)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-results_path = Path("~/tm_test_pt/").expanduser()
+results_path = Path("~/tm_test/").expanduser()
 results_path.mkdir(parents=True, exist_ok=True)
 
 # DATASET
@@ -109,7 +111,7 @@ else:
                           loss_function='cross_entropy',
                           batch_metrics=['accuracy'],
                           device=device)
-    poutyne_model.fit_dataset(train_dataset, test_dataset, epochs=1, batch_size=64)
+    poutyne_model.fit_dataset(train_dataset, test_dataset, epochs=5, batch_size=64)
     torch.save(model, model_path)
 
 
@@ -122,12 +124,12 @@ class MNIST(datasets.MNIST):
         x, y = super().__getitem__(index)
         return x
 
-dataset_nolabels = MNIST(path, train=False, download=True,
-                         transform=measure_transform)
+
+from torch.utils.data import Subset
+
 
 import numpy as np
 from sklearn.model_selection import train_test_split
-from torch.utils.data import Subset
 dataset_nolabels = MNIST(path, train=False, download=True,
                          transform=measure_transform,)
 indices, _ = train_test_split(np.arange(len(dataset_nolabels)), train_size=1000, stratify=dataset_nolabels.targets)
@@ -141,46 +143,46 @@ from transformational_measures.transformations.pytorch.affine import AffineGener
 rotation_parameters = UniformRotation(n=128, angles=1.0)
 transformations = AffineGenerator(r=rotation_parameters)
 
+# Define an iterator over activations for pytorch
+# model = FilteredActivationsModel(model,lambda name: model.activation_names().index(name) <1)
+iterator = tm.pytorch.NormalPytorchActivationsIterator(model, dataset_nolabels, transformations,
+                                               batch_size=128, num_workers=0, use_cuda=use_cuda)
 
 # evaluate measure, with the iterator
 
-# FilteredActivationsModel to filter out some activations from the analysis
-from transformational_measures.pytorch.model import FilteredActivationsModel
 
-# filter activations that cant be inverted for SameEquivariance
-filtered_model = FilteredActivationsModel(model,lambda name: model.activation_names().index(name) <6)
-
-
+da = DistanceAggregation(normalize=True, keep_shape=True)
+# mean_pnt = tm.AggregateTransformation(tm.AggregateFunction.mean)
+mean_pnt = AggregateTransformation(axis=(0,))
 measures = [
-    (tm.pytorch.TransformationVarianceInvariance(),model),
-    (tm.pytorch.SampleVarianceInvariance(),model),
-    (tm.pytorch.NormalizedVarianceInvariance(),model),
-    (tm.pytorch.TransformationVarianceSameEquivariance(),filtered_model),
-    (tm.pytorch.SampleVarianceSameEquivariance(),filtered_model),
-    (tm.pytorch.NormalizedVarianceSameEquivariance(),filtered_model),
+    tm.numpy.TransformationVarianceInvariance(),
+    tm.numpy.SampleVarianceInvariance(),
+    tm.numpy.NormalizedVarianceInvariance(),
+    tm.numpy.NormalizedVarianceInvariance(pre_normalization_transformation=mean_pnt),
+    tm.numpy.ANOVAInvariance(),
+    tm.numpy.GoodfellowNormalInvariance(),
+    tm.numpy.NormalizedDistanceInvariance(da),
+    # tm.numpy.NormalizedDistanceInvariance(da, pre_normalization_transformation=mean_pnt),
+    tm.numpy.NormalizedVarianceSameEquivariance(),
+    tm.numpy.NormalizedDistanceSameEquivariance(da),
 ]
 
-for measure,model in measures:
+for measure in measures:
+
     exp_id = f"rot{degree_range}_{measure}"
     result_filepath = results_path / f'{exp_id}_result.pickle'
-    if os.path.exists(result_filepath) and False:
-        print(f"Measure {measure} already evaluated, loading...")
+    if os.path.exists(result_filepath):
+        print(f"Measure {measure} already evaluated, loading.. ")
         # Load result (optional, in case you don't want to run the above or your session died)
         with open(result_filepath, 'rb') as f:
             measure_result = pickle.load(f)
     else:
         print(f"Evaluating measure {measure}...")
         # evaluate measure
-
-        options = tm.pytorch.PyTorchMeasureOptions(batch_size=128, num_workers=2)
-        measure_result = measure.eval(dataset_nolabels,transformations,model,options)
-        measure_result.layers = [l.cpu().numpy() for l in measure_result.layers]
+        measure_result = measure.eval(iterator, verbose=True)
         # Save result
-
         with open(result_filepath, 'wb') as f:
             pickle.dump(measure_result, f)
-
-
 
     from transformational_measures import visualization
 
@@ -189,4 +191,3 @@ for measure,model in measures:
     visualization.plot_collapsing_layers_same_model(results, plot_filepath)
     heatmap_filepath = results_path / f"{exp_id}_heatmap.png"
     visualization.plot_heatmap(measure_result, heatmap_filepath)
-

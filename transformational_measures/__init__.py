@@ -1,38 +1,10 @@
 # ORDER MATTERS IN THIS FILE
 # IMPORT BASIC STUFF FIRST
-from .transformation import TransformationSet,Transformation,IdentityTransformation
+from .transformation import TransformationSet,Transformation,IdentityTransformation,InvertibleTransformation
+from .measure import MeasureResult, StratifiedMeasureResult,Measure
+from .activations_iterator import ActivationsIterator
 
-from .measure import MeasureResult, StratifiedMeasureResult
+# from transformational_measures.numpy.multithread.functions import MeasureFunction
 
-from .numpy.base import NumpyMeasure
+# from .adapters import TransformationAdapter,PytorchNumpyImageTransformationAdapter,NumpyPytorchImageTransformationAdapter
 
-from transformational_measures.numpy.multithread.functions import MeasureFunction
-from .numpy.layer_transformation import MeasureTransformation,AggregateConvolutions,AggregateTransformation,AggregateFunction,IdentityTransformation
-from .numpy.quotient import QuotientMeasure,divide_activations
-
-
-from transformational_measures.activations_iterator import ActivationsIterator
-from transformational_measures.pytorch import *
-
-from transformational_measures.numpy.multithread.multithreaded_layer_measure import PerLayerMeasure,LayerMeasure,SamplesFirstPerLayerMeasure,TransformationsFirstPerLayerMeasure
-
-from .numpy.variance_invariance import NormalizedVarianceInvariance,SampleVarianceInvariance,TransformationVarianceInvariance
-from .numpy.anova import ANOVAInvariance,ANOVAFInvariance
-from .numpy.distance_invariance import NormalizedDistanceInvariance,SampleDistanceInvariance,TransformationDistanceInvariance,DistanceAggregation
-
-from .numpy.distance_same_equivariance import NormalizedDistanceSameEquivariance,TransformationDistanceSameEquivariance,SampleDistanceSameEquivariance
-
-from .numpy.variance_same_equivariance import NormalizedVarianceSameEquivariance,TransformationVarianceSameEquivariance,SampleVarianceSameEquivariance
-
-from .numpy.same_equivariance_simple import DistanceSameEquivarianceSimple,DistanceFunction
-
-
-from .numpy.goodfellow import GoodfellowInvariance
-from .numpy.goodfellow_prob import GoodfellowNormalInvariance,GoodfellowNormalLocalInvariance,GoodfellowNormalGlobalInvariance
-
-from .adapters import TransformationAdapter,PytorchNumpyImageTransformationAdapter,NumpyPytorchImageTransformationAdapter
-
-from transformational_measures import language
-
-def set_language(l:language.Language):
-    language.l=l

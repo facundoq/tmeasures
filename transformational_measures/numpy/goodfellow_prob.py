@@ -1,9 +1,11 @@
-from transformational_measures import NumpyMeasure,ActivationsIterator,MeasureResult
-import transformational_measures as tm
+from transformational_measures import ActivationsIterator,MeasureResult
+from . import NumpyMeasure
+from .quotient import divide_activations
+
 from multiprocessing import Queue
 from transformational_measures.numpy.multithread.multithreaded_layer_measure import LayerMeasure,PerLayerMeasure,ActivationsOrder
 import numpy as np
-from transformational_measures.numpy.stats_running import RunningMeanAndVarianceWelford,RunningMeanWelford,RunningMeanSimple
+from transformational_measures.numpy.stats_running import RunningMeanAndVarianceWelford,RunningMeanWelford
 from scipy.stats import norm
 from tqdm import tqdm
 
@@ -110,7 +112,7 @@ class GoodfellowNormalInvariance(NumpyMeasure):
         self.l = GoodfellowNormalLocalInvariance(thresholds, self.sign)
         l_result = self.l.eval(activations_iterator,verbose)
 
-        ratio = tm.divide_activations(l_result.layers,g_result.layers)
+        ratio = divide_activations(l_result.layers,g_result.layers)
         extra = {self.g_key:g_result,self.l_key:l_result}
 
         return MeasureResult(ratio, activations_iterator.layer_names(), self,extra_values=extra)

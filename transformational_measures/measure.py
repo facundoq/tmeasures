@@ -3,19 +3,12 @@ from typing import List
 import numpy as np
 import abc
 import re
-
-from transformational_measures.numpy.stats_running import RunningMeanWelford
 from .utils import get_all
 
 ActivationsByLayer = [np.ndarray]
 
 class MeasureResult:
     def __init__(self,layers:ActivationsByLayer,layer_names:List[str],measure:'Measure',extra_values=dict()):
-        # if len(layers) != len(layer_names):
-            # print(len(layers),len(layer_names))
-            # print(layer_names)
-            # for l in layers:
-                # print(l.shape)
         assert (len(layers) == len(layer_names))
         self.layers=layers
         self.layer_names=layer_names
@@ -59,12 +52,8 @@ class MeasureResult:
         return self.per_layer_average().mean()
 
     def global_average(self)-> float:
-        rm = RunningMeanWelford()
-        for layer in self.layers:
-                for act in layer[:]:
-                    if np.isfinite(act):
-                        rm.update(act)
-        return rm.mean()
+        return self.per_layer_average().mean()
+
 
 
 class StratifiedMeasureResult(MeasureResult):

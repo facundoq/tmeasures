@@ -3,7 +3,7 @@ import torch
 import abc
 import typing
 
-class ObservableLayersModule:
+class ObservableLayersModule(nn.Module):
 
     @abc.abstractmethod
     def activation_names(self) -> typing.List[str]:
@@ -39,12 +39,14 @@ class ObservableLayersModule:
 
 class FilteredActivationsModel(ObservableLayersModule):
     def __init__(self, inner_model:ObservableLayersModule, activations_filter:typing.Callable[[str],bool]):
+        super().__init__()
         self.inner_model = inner_model
         original_names = inner_model.activation_names()
         self.names = list(filter(activations_filter,original_names))
         assert len(self.names)>0
         self.indices = [original_names.index(n) for n in self.names]
-
+    def forward(self):
+        return self.inner_model.forward()
     def activation_names(self) -> typing.List[str]:
         return self.names
     def eval(self):

@@ -23,9 +23,9 @@ class Flatten(nn.Module):
 
 
 # Model definition
-class CNN(nn.Module,ObservableLayersModule):
+class CNN(ObservableLayersModule):
     def __init__(self, shape):
-        super(CNN, self).__init__()
+        super().__init__()
         self.shape = shape
         c, h, w = shape
         h_flat, w_flat = h // 4, w // 4
@@ -172,7 +172,7 @@ for measure,model in measures:
         print(f"Evaluating measure {measure}...")
         # evaluate measure
 
-        options = tm.pytorch.PyTorchMeasureOptions(batch_size=128, num_workers=2)
+        options = tm.pytorch.PyTorchMeasureOptions(batch_size=128, num_workers=2,device=device)
         measure_result = measure.eval(dataset_nolabels,transformations,model,options)
         measure_result.layers = [l.cpu().numpy() for l in measure_result.layers]
         # Save result

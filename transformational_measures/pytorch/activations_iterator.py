@@ -20,6 +20,7 @@ class ActivationsTransformer(abc.ABC):
     def transform(self, activations: torch.Tensor, x: torch.Tensor, transformations: [Transformation]) -> torch.Tensor:
         pass
 
+
 class IdentityActivationsTransformer(ActivationsTransformer):
     def transform(self, activations: torch.Tensor, x: torch.Tensor, transformations: [Transformation]) -> torch.Tensor:
         return activations
@@ -37,12 +38,15 @@ class PytorchActivationsIterator:
     def evaluate(self, m: PyTorchLayerMeasure):
         layers = self.model.activation_names()
         rows, cols = self.dataset.len0, self.dataset.len1
+
         with concurrent.futures.ThreadPoolExecutor() as executor:
 
             qs = {l: IterableQueue(rows, maxsize=1) for l in layers}
 
             threads = [executor.submit(m.eval, q) for q in qs.values()]
+
             self.model.eval()
+
             with torch.no_grad():
 
                 for row in tqdm.trange(rows, disable=not self.o.verbose, leave=False):
@@ -56,6 +60,7 @@ class PytorchActivationsIterator:
                         q.put(row_qs[k])
                     col = 0
                     for x_transformed in row_dataloader:
+                        x_transformed = x_transformed.to(self.o.device)
                         y, activations = self.model.forward_intermediates(x_transformed)
                         col_to = col + x_transformed.shape[0]
                         for i, layer_activations in enumerate(activations):

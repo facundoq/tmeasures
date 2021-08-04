@@ -8,10 +8,11 @@ import typing
 ActivationsByLayer = [torch.Tensor]
 
 class PyTorchMeasureOptions:
-    def __init__(self, batch_size=32, num_workers=0, verbose=True):
+    def __init__(self, batch_size=32, num_workers=0, verbose=True,device="cpu"):
         self.batch_size = batch_size
         self.num_workers = num_workers
         self.verbose = verbose
+        self.device = device
 
 STRowIterator = typing.Union[typing.Iterable[torch.Tensor],typing.Sized]
 STMatrixIterator = typing.Union[typing.Iterable[STRowIterator],typing.Sized]

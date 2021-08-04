@@ -47,7 +47,7 @@ class Dataset2D(Dataset):
 
 class STDataset(Dataset2D):
 
-    def __init__(self, dataset: Dataset, transformations: TransformationSet):
+    def __init__(self, dataset: Dataset, transformations: TransformationSet,device="cpu"):
         """
         @param dataset: Non iterable dataset from which to draw samples
         @param transformations: set of transformations to apply to samples
@@ -58,6 +58,7 @@ class STDataset(Dataset2D):
                 f"{IterableDataset} not supported; must specify a map-style dataset (https://pytorch.org/docs/stable/data.html#dataset-types)")
         self.dataset = dataset
         self.transformations = transformations
+        self.device=device
 
     def len_dataset(self):
         return len(self.dataset)
@@ -72,7 +73,7 @@ class SampleTransformationDataset(STDataset):
         return TransformationSampleDataset(self.dataset, self.transformations)
 
     def getitem2d(self, i, j):
-        s = self.dataset[i]
+        s = self.dataset[i].to(self.device)
         t = self.transformations[j]
         return t(s)
 
@@ -91,7 +92,7 @@ class TransformationSampleDataset(STDataset):
 
     def getitem2d(self, i, j):
         t = self.transformations[i]
-        s = self.dataset[j]
+        s = self.dataset[j].to(self.device)
         return t(s)
 
     def T(self):

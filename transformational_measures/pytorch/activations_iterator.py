@@ -38,8 +38,6 @@ class PytorchActivationsIterator:
     def evaluate(self, m: PyTorchLayerMeasure):
         layers = self.model.activation_names()
         rows, cols = self.dataset.len0, self.dataset.len1
-        if self.o.data_device=="cuda" and self.o.num_workers>0:
-            torch.multiprocessing.set_start_method('spawn')
 
         with concurrent.futures.ThreadPoolExecutor() as executor:
 

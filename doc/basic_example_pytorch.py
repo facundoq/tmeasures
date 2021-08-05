@@ -5,6 +5,7 @@
 import os
 import transformational_measures as tm
 import torch
+torch.multiprocessing.set_start_method('spawn')
 
 from torch import nn
 import pickle
@@ -69,7 +70,7 @@ class CNN(ObservableLayersModule):
 
 from torchvision import datasets, transforms
 from poutyne import Model
-torch.multiprocessing.set_start_method('spawn')  # good solution !!!!
+
 if __name__ == '__main__':
 
 

@@ -10,7 +10,7 @@ from .quotient import QuotientMeasure
 class TransformationVarianceInvariance(PyTorchMeasure):
 
     def eval(self,dataset:Dataset,transformations:tm.TransformationSet,model:ObservableLayersModule,o:PyTorchMeasureOptions):
-        dataset2d = tm.pytorch.dataset2d.SampleTransformationDataset(dataset, transformations)
+        dataset2d = tm.pytorch.dataset2d.SampleTransformationDataset(dataset, transformations,device=o.data_device)
         iterator = PytorchActivationsIterator(model, dataset2d,o)
         results = iterator.evaluate(Variance())
         return PyTorchMeasureResult(results,model.activation_names(),self)
@@ -19,7 +19,7 @@ class TransformationVarianceInvariance(PyTorchMeasure):
 class SampleVarianceInvariance(PyTorchMeasure):
 
     def eval(self,dataset:Dataset,transformations:tm.TransformationSet,model:ObservableLayersModule,o:PyTorchMeasureOptions):
-        dataset2d = tm.pytorch.dataset2d.TransformationSampleDataset(dataset, transformations)
+        dataset2d = tm.pytorch.dataset2d.TransformationSampleDataset(dataset, transformations,device=o.data_device)
         iterator = PytorchActivationsIterator(model, dataset2d, o)
         results = iterator.evaluate(Variance())
         return PyTorchMeasureResult(results, model.activation_names(), self)

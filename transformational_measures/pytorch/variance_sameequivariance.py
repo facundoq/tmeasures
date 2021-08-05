@@ -24,7 +24,7 @@ class InverseTransformationTransformer(ActivationsTransformer):
 class TransformationVarianceSameEquivariance(PyTorchMeasure):
 
     def eval(self,dataset:Dataset,transformations:tm.TransformationSet,model:ObservableLayersModule,o:PyTorchMeasureOptions):
-        dataset2d = tm.pytorch.dataset2d.SampleTransformationDataset(dataset, transformations)
+        dataset2d = tm.pytorch.dataset2d.SampleTransformationDataset(dataset, transformations,device=o.data_device)
         iterator = PytorchActivationsIterator(model, dataset2d,o,activations_transformer=InverseTransformationTransformer())
         results = iterator.evaluate(Variance())
         return PyTorchMeasureResult(results,model.activation_names(),self)
@@ -33,7 +33,7 @@ class TransformationVarianceSameEquivariance(PyTorchMeasure):
 class SampleVarianceSameEquivariance(PyTorchMeasure):
 
     def eval(self,dataset:Dataset,transformations:tm.TransformationSet,model:ObservableLayersModule,o:PyTorchMeasureOptions):
-        dataset2d = tm.pytorch.dataset2d.TransformationSampleDataset(dataset, transformations)
+        dataset2d = tm.pytorch.dataset2d.TransformationSampleDataset(dataset, transformations,device=o.data_device)
         iterator = PytorchActivationsIterator(model, dataset2d, o,activations_transformer=InverseTransformationTransformer())
         results = iterator.evaluate(Variance())
         return PyTorchMeasureResult(results, model.activation_names(), self)

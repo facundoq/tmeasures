@@ -172,7 +172,7 @@ for measure,model in measures:
         print(f"Evaluating measure {measure}...")
         # evaluate measure
 
-        options = tm.pytorch.PyTorchMeasureOptions(batch_size=128, num_workers=4,device="cpu")
+        options = tm.pytorch.PyTorchMeasureOptions(batch_size=128, num_workers=4,model_device="gpu",measure_device="cpu")
         measure_result = measure.eval(dataset_nolabels,transformations,model,options)
         measure_result.layers = [l.cpu().numpy() for l in measure_result.layers]
         # Save result

@@ -10,6 +10,7 @@ class Variance(PyTorchLayerMeasure):
             for batch_n,batch_activations in enumerate(row_iterator):
                 row_variance.update_all(batch_activations.double())
             row_std = row_variance.std()
+            print(row_std.device)
             mean.update(row_std)
         return mean.mean()
 

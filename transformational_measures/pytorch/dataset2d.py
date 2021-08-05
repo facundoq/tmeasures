@@ -1,7 +1,7 @@
 from torch.utils.data import Dataset, IterableDataset, DataLoader
 import abc
 from ..transformation import TransformationSet
-
+import torch
 
 class Dataset2D(Dataset):
 

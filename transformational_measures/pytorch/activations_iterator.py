@@ -52,7 +52,7 @@ class PytorchActivationsIterator:
                 for row in tqdm.trange(rows, disable=not self.o.verbose, leave=False):
                     row_dataset = self.dataset.row_dataset(row)
                     row_dataloader = DataLoader(row_dataset, batch_size=self.o.batch_size, shuffle=False,
-                                                num_workers=self.o.num_workers,multiprocessing_context='spawn')
+                                                num_workers=self.o.num_workers)
                     n_batch = len(row_dataloader)
 
                     row_qs = {l: IterableQueue(n_batch) for l in layers}

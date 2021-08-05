@@ -69,9 +69,9 @@ class CNN(ObservableLayersModule):
 
 from torchvision import datasets, transforms
 from poutyne import Model
-
+torch.multiprocessing.set_start_method('spawn')  # good solution !!!!
 if __name__ == '__main__':
-    # torch.multiprocessing.set_start_method('spawn')  # good solution !!!!
+
 
     torch.manual_seed(0)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

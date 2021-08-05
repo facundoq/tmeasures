@@ -175,7 +175,7 @@ if __name__ == '__main__':
             print(f"Evaluating measure {measure}...")
             # evaluate measure
 
-            options = tm.pytorch.PyTorchMeasureOptions(batch_size=128, num_workers=0,model_device=device,measure_device=device,data_device="cpu")
+            options = tm.pytorch.PyTorchMeasureOptions(batch_size=128, num_workers=2,model_device=device,measure_device=device,data_device="cpu")
             measure_result = measure.eval(dataset_nolabels,transformations,model,options)
             measure_result.layers = [l.cpu().numpy() for l in measure_result.layers]
             # Save result

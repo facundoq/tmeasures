@@ -41,7 +41,7 @@ class PyTorchMeasure(tm.Measure):
         return f"{self.abbreviation()}"
 
     @abc.abstractmethod
-    def eval(self,dataset:Dataset,transformations:tm.TransformationSet,model:ObservableLayersModule,o:PyTorchMeasureOptions)-> MeasureResult:
+    def eval(self,dataset:Dataset,transformations:tm.TransformationSet,model:ObservableLayersModule,o:PyTorchMeasureOptions)-> PyTorchMeasureResult:
         '''
 
         '''

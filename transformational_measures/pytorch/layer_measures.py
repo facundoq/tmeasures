@@ -11,8 +11,6 @@ class Variance(PyTorchLayerMeasure):
                 row_variance.update_all(batch_activations.double())
             row_std = row_variance.std()
             mean.update(row_std)
-            print(mean.mu.device)
-
         return mean.mean()
 
 

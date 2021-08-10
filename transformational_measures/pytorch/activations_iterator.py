@@ -48,7 +48,7 @@ class PytorchActivationsIterator:
             self.model.eval()
 
             with torch.no_grad():
-
+                print(f"act it starting,num workers {self.o.num_workers}:")
                 for row in tqdm.trange(rows, disable=not self.o.verbose, leave=False):
                     row_dataset = self.dataset.row_dataset(row)
                     row_dataloader = DataLoader(row_dataset, batch_size=self.o.batch_size, shuffle=False,

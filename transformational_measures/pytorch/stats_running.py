@@ -58,7 +58,7 @@ class RunningMeanWelford(RunningMean):
         k = x.shape[0]
         self.n += k
         diff = x - self.mu
-        self.mu = self.mu + diff.sum(dim=0) / self.n
+        self.mu += diff.sum(dim=0) / self.n
 
     def mean(self):
         return self.mu if self.n > 0 else torch.zeros(1)
@@ -90,9 +90,9 @@ class RunningMeanAndVarianceWelford(RunningMean, RunningVariance):
         k = x.shape[0]
         self.n += k
         diff = x - self.m
-        self.m = self.m + diff.sum(dim=0) / self.n
+        self.m += diff.sum(dim=0) / self.n
         diff2 = (diff * (x - self.m)).sum(dim=0)
-        self.s = self.s + diff2
+        self.s += diff2
 
     def mean(self):
         # assert(self.n>0)

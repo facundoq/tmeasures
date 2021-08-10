@@ -1,6 +1,6 @@
 from torch.utils.data import Dataset, IterableDataset, DataLoader
 import abc
-from ..transformation import TransformationSet
+from .transformations import PyTorchTransformationSet
 import torch
 
 class Dataset2D(Dataset):
@@ -47,7 +47,7 @@ class Dataset2D(Dataset):
 
 class STDataset(Dataset2D):
 
-    def __init__(self, dataset: Dataset, transformations: TransformationSet,device="cpu"):
+    def __init__(self, dataset: Dataset, transformations: PyTorchTransformationSet,device="cpu"):
         """
         @param dataset: Non iterable dataset from which to draw samples
         @param transformations: set of transformations to apply to samples

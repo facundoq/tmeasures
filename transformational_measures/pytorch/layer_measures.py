@@ -8,9 +8,11 @@ class Variance(PyTorchLayerMeasure):
         for row,row_iterator in enumerate(st_iterator):
             row_variance = RunningMeanAndVarianceWelford()
             for batch_n,batch_activations in enumerate(row_iterator):
-                row_variance.update_all(batch_activations.double())
+                row_variance.update_batch(batch_activations.double())
+            #print(row_variance.m.device(),row_variance.s.device(),mean.mu.device())
             row_std = row_variance.std()
             mean.update(row_std)
+            # print(row_variance.m.device, row_variance.s.device, mean.mu.device)
         return mean.mean()
 
 

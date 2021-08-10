@@ -199,7 +199,7 @@ dataset_nolabels = NoLabelsMNIST(path, train=False, download=True,
 
 # Create a set of rotation transformations
 from transformational_measures.transformations.parameters import UniformRotation
-from transformational_measures.transformations.pytorch.affine import AffineGenerator
+from transformational_measures.pytorch.transformations.affine import AffineGenerator
 rotation_parameters=UniformRotation(n=4,angles=360)
 transformations=AffineGenerator(r=rotation_parameters)
 

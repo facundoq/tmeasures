@@ -112,7 +112,7 @@ if __name__ == '__main__':
                               loss_function='cross_entropy',
                               batch_metrics=['accuracy'],
                               device=device)
-        poutyne_model.fit_dataset(train_dataset, test_dataset, epochs=1, batch_size=64)
+        poutyne_model.fit_dataset(train_dataset, test_dataset, epochs=10, batch_size=128,num_workers=2  ,dataloader_kwargs={"pin_memory":True})
         torch.save(model, model_path)
 
 
@@ -133,13 +133,13 @@ if __name__ == '__main__':
     from torch.utils.data import Subset
     dataset_nolabels = MNIST(path, train=False, download=True,
                              transform=measure_transform,)
-    indices, _ = train_test_split(np.arange(len(dataset_nolabels)), train_size=1000, stratify=dataset_nolabels.targets)
+    indices, _ = train_test_split(np.arange(len(dataset_nolabels)), train_size=100, stratify=dataset_nolabels.targets,random_state=0)
     dataset_nolabels = Subset(dataset_nolabels, indices)
 
     use_cuda = torch.cuda.is_available()
     # Create a set of rotation transformations
     from transformational_measures.transformations.parameters import UniformRotation
-    from transformational_measures.transformations.pytorch.affine import AffineGenerator
+    from transformational_measures.pytorch.transformations.affine import AffineGenerator
 
     rotation_parameters = UniformRotation(n=128, angles=1.0)
     transformations = AffineGenerator(r=rotation_parameters)
@@ -153,14 +153,16 @@ if __name__ == '__main__':
     # filter activations that cant be inverted for SameEquivariance
     filtered_model = FilteredActivationsModel(model,lambda name: model.activation_names().index(name) <6)
 
-
+    average_fm=tm.pytorch.AverageFeatureMaps()
     measures = [
-        (tm.pytorch.TransformationVarianceInvariance(),model),
-        (tm.pytorch.SampleVarianceInvariance(),model),
-        (tm.pytorch.NormalizedVarianceInvariance(),model),
-        (tm.pytorch.TransformationVarianceSameEquivariance(),filtered_model),
-        (tm.pytorch.SampleVarianceSameEquivariance(),filtered_model),
-        (tm.pytorch.NormalizedVarianceSameEquivariance(),filtered_model),
+        # (tm.pytorch.TransformationVarianceInvariance(),filtered_model),
+        # (tm.pytorch.SampleVarianceInvariance(),model),
+        # (tm.pytorch.NormalizedVarianceInvariance(),model),
+        # (tm.pytorch.NormalizedVarianceInvariance(average_fm), model),
+        # (tm.pytorch.TransformationVarianceSameEquivariance(),filtered_model),
+        # (tm.pytorch.SampleVarianceSameEquivariance(),filtered_model),
+        # (tm.pytorch.NormalizedVarianceSameEquivariance(),filtered_model),
+        (tm.pytorch.NormalizedVarianceSameEquivariance(average_fm),filtered_model),
     ]
 
     for measure,model in measures:
@@ -182,8 +184,6 @@ if __name__ == '__main__':
 
             with open(result_filepath, 'wb') as f:
                 pickle.dump(measure_result, f)
-
-
 
         from transformational_measures import visualization
 

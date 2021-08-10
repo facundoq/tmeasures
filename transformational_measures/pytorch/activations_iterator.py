@@ -60,11 +60,12 @@ class PytorchActivationsIterator:
                         q.put(row_qs[k])
                     col = 0
                     for x_transformed in row_dataloader:
-                        x_transformed = x_transformed.to(self.o.model_device)
+                        x_transformed = x_transformed.to(self.o.model_device,non_blocking=True)
                         y, activations = self.model.forward_intermediates(x_transformed)
                         col_to = col + x_transformed.shape[0]
                         for i, layer_activations in enumerate(activations):
-                            layer_activations=layer_activations.to(self.o.measure_device)
+                            if self.o.model_device != self.o.measure_device:
+                                layer_activations=layer_activations.to(self.o.measure_device,non_blocking=True)
                             transformations = self.dataset.get_transformations(row, col, col_to)
                             layer_activations = self.activations_transformer.transform(layer_activations, x_transformed,
                                                                                        transformations)

@@ -13,7 +13,6 @@ from pathlib import Path
 from transformational_measures.numpy import AggregateTransformation
 from transformational_measures.numpy.aggregation import DistanceAggregation
 from transformational_measures.pytorch import ObservableLayersModule
-from transformational_measures.pytorch.model import FilteredActivationsModel
 
 # Utility class, same as PyTorch Sequential but returns intermediate layer values
 from transformational_measures.pytorch import SequentialWithIntermediates
@@ -138,7 +137,7 @@ dataset_nolabels = Subset(dataset_nolabels, indices)
 use_cuda = torch.cuda.is_available()
 # Create a set of rotation transformations
 from transformational_measures.transformations.parameters import UniformRotation
-from transformational_measures.transformations.pytorch.affine import AffineGenerator
+from transformational_measures.pytorch.transformations.affine import AffineGenerator
 
 rotation_parameters = UniformRotation(n=128, angles=1.0)
 transformations = AffineGenerator(r=rotation_parameters)

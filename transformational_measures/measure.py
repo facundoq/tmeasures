@@ -1,4 +1,4 @@
-#from __future__ import annotations
+from __future__ import annotations
 from typing import List
 import numpy as np
 import abc
@@ -8,7 +8,7 @@ from .utils import get_all
 ActivationsByLayer = [np.ndarray]
 
 class MeasureResult:
-    def __init__(self,layers:ActivationsByLayer,layer_names:List[str],measure:'Measure',extra_values=dict()):
+    def __init__(self,layers:ActivationsByLayer,layer_names:List[str],measure:Measure,extra_values=dict()):
         assert (len(layers) == len(layer_names))
         self.layers=layers
         self.layer_names=layer_names
@@ -40,7 +40,7 @@ class MeasureResult:
             stds.append(layer_std)
         return np.array(means),np.array(stds)
 
-    def remove_layers(self,remove_indices:[int])->'MeasureResult':
+    def remove_layers(self,remove_indices:[int])->MeasureResult:
         n = len(self.layer_names)
         all_indices=set(list(range(n)))
         keep_indices = list(all_indices.difference(set(remove_indices)))
@@ -57,10 +57,11 @@ class MeasureResult:
 
 
 class StratifiedMeasureResult(MeasureResult):
-    def __init__(self, layers:ActivationsByLayer, layer_names:List[str], measure:'Measure', class_measures:List[MeasureResult], class_labels:List[str]):
+    def __init__(self, layers:ActivationsByLayer, layer_names:List[str], measure:Measure,
+                 results:List[MeasureResult], labels:List[str]):
         super().__init__(layers,layer_names,measure)
-        self.class_measures=class_measures
-        self.class_labels=class_labels
+        self.results=results
+        self.labels=labels
 
     def __repr__(self):
         return f"StratifiedMeasureResult {self.measure}"

@@ -1,12 +1,13 @@
 import torch
 from torch.nn import functional as F
 from typing import List, Iterator
-from ..affine import RotationParameter,ScaleParameter,TranslationParameter
-from .. import affine
+from transformational_measures.transformations.affine import RotationParameter,ScaleParameter,TranslationParameter
+from transformational_measures.transformations import affine
 import numpy as np
 import math
 
-from . import PyTorchTransformationSet,PyTorchTransformation
+from transformational_measures.pytorch.transformations import PyTorchTransformation, PyTorchTransformationSet
+
 
 class AffineTransformation(affine.AffineTransformation,PyTorchTransformation):
 

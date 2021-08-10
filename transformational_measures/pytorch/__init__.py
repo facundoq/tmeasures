@@ -1,8 +1,9 @@
 from .model import ObservableLayersModule
 from .base import PyTorchMeasure,PyTorchMeasureOptions,ActivationsByLayer,PyTorchMeasureResult
+from .transformations import PyTorchTransformationSet,PyTorchTransformation
 
 from .activations_iterator_base import PytorchActivationsIterator,InvertedPytorchActivationsIterator,BothPytorchActivationsIterator,NormalPytorchActivationsIterator
-
+from .measure_transformer import MeasureTransformation,NoTransformation,AverageFeatureMaps
 from .util import SequentialWithIntermediates
 from . import dataset2d
 

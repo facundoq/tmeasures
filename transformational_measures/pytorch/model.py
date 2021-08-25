@@ -37,12 +37,13 @@ class ObservableLayersModule(nn.Module):
 #         filter = lambda x: x in layers
 #         super().__init__(filter)
 
+ActivationFilter = typing.Callable[[ObservableLayersModule,str],bool]
 class FilteredActivationsModel(ObservableLayersModule):
-    def __init__(self, inner_model:ObservableLayersModule, activations_filter:typing.Callable[[str],bool]):
+    def __init__(self, inner_model:ObservableLayersModule, activations_filter:ActivationFilter):
         super().__init__()
         self.inner_model = inner_model
         original_names = inner_model.activation_names()
-        self.names = list(filter(activations_filter,original_names))
+        self.names = [name for name in original_names if activations_filter(inner_model,name)]
         assert len(self.names)>0
         self.indices = [original_names.index(n) for n in self.names]
     def forward(self):

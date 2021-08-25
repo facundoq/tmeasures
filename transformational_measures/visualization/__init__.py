@@ -33,7 +33,6 @@ def get_sequential_colors(values):
 from .layers import plot_collapsing_layers_same_model,plot_collapsing_layers_different_models
 from .heatmaps import plot_heatmap
 from .features import plot_invariant_feature_maps
-
-
+from .sample_size import plot_relative_error_heatmap
 
 

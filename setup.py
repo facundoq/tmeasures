@@ -66,6 +66,8 @@ setup(
         "scipy",
         "torch",
         "matplotlib",
+        "data-science-types"
+
     ],
 
     package_data={

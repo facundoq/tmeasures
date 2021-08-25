@@ -133,7 +133,7 @@ if __name__ == '__main__':
     from torch.utils.data import Subset
     dataset_nolabels = MNIST(path, train=False, download=True,
                              transform=measure_transform,)
-    indices, _ = train_test_split(np.arange(len(dataset_nolabels)), train_size=100, stratify=dataset_nolabels.targets,random_state=0)
+    indices, _ = train_test_split(np.arange(len(dataset_nolabels)), train_size=1000, stratify=dataset_nolabels.targets,random_state=0)
     dataset_nolabels = Subset(dataset_nolabels, indices)
 
     use_cuda = torch.cuda.is_available()
@@ -151,18 +151,18 @@ if __name__ == '__main__':
     from transformational_measures.pytorch.model import FilteredActivationsModel
 
     # filter activations that cant be inverted for SameEquivariance
-    filtered_model = FilteredActivationsModel(model,lambda name: model.activation_names().index(name) <6)
+    filtered_model = FilteredActivationsModel(model,lambda m,name: m.activation_names().index(name) <6)
 
     average_fm=tm.pytorch.AverageFeatureMaps()
     measures = [
-        # (tm.pytorch.TransformationVarianceInvariance(),filtered_model),
+        (tm.pytorch.TransformationVarianceInvariance(),model),
         # (tm.pytorch.SampleVarianceInvariance(),model),
         # (tm.pytorch.NormalizedVarianceInvariance(),model),
         # (tm.pytorch.NormalizedVarianceInvariance(average_fm), model),
         # (tm.pytorch.TransformationVarianceSameEquivariance(),filtered_model),
         # (tm.pytorch.SampleVarianceSameEquivariance(),filtered_model),
         # (tm.pytorch.NormalizedVarianceSameEquivariance(),filtered_model),
-        (tm.pytorch.NormalizedVarianceSameEquivariance(average_fm),filtered_model),
+        # (tm.pytorch.NormalizedVarianceSameEquivariance(average_fm),filtered_model),
     ]
 
     for measure,model in measures:
@@ -177,7 +177,7 @@ if __name__ == '__main__':
             print(f"Evaluating measure {measure}...")
             # evaluate measure
 
-            options = tm.pytorch.PyTorchMeasureOptions(batch_size=256, num_workers=0,model_device=device,measure_device=device,data_device="cpu")
+            options = tm.pytorch.PyTorchMeasureOptions(batch_size=128, num_workers=0,model_device=device,measure_device=device,data_device="cpu")
             measure_result:tm.pytorch.PyTorchMeasureResult = measure.eval(dataset_nolabels,transformations,model,options)
             measure_result = measure_result.numpy()
             # Save result

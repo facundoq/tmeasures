@@ -47,7 +47,7 @@ class Dataset2D(Dataset):
 
 class STDataset(Dataset2D):
 
-    def __init__(self, dataset: Dataset, transformations: PyTorchTransformationSet,device="cpu"):
+    def __init__(self, dataset: Dataset, transformations: PyTorchTransformationSet,device=torch.device("cpu")):
         """
         @param dataset: Non iterable dataset from which to draw samples
         @param transformations: set of transformations to apply to samples

@@ -18,7 +18,7 @@ default_sign=1
 
 
 class PercentActivationThreshold(PyTorchLayerMeasure):
-    def __init__(self,sign:float=1,percent:torch.DoubleTensor=0.01) -> None:
+    def __init__(self,sign:float=1,percent:torch.DoubleTensor=0.99) -> None:
         super().__init__()
         self.percent=percent
         self.sign=sign
@@ -58,7 +58,7 @@ class PercentActivationThreshold(PyTorchLayerMeasure):
         return thresholds
 
 class NormalPValueThreshold(PyTorchLayerMeasure):
-    def __init__(self,sign:float=1,alpha:torch.DoubleTensor=0.01) -> None:
+    def __init__(self,sign:float=1,alpha:torch.DoubleTensor=0.99) -> None:
         super().__init__()
         self.alpha=alpha
         self.sign=sign
@@ -122,7 +122,7 @@ class GoodfellowInvariance(PyTorchMeasure):
     l_key="local"
     t_key= "thresholds"
 
-    def __init__(self, sign=1, global_transformations = IdentityTransformationSet(),threshold_algorithm=NormalPValueThreshold(sign=1,alpha=0.01)):
+    def __init__(self, sign=1, global_transformations = IdentityTransformationSet(),threshold_algorithm=NormalPValueThreshold(sign=1,alpha=0.99)):
         assert sign in [1,-1]
         super().__init__()
         self.sign=sign

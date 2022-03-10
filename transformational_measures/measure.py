@@ -54,6 +54,9 @@ class MeasureResult:
     def global_average(self)-> float:
         return self.per_layer_average().mean()
 
+    def layers_dict(self):
+        return dict(zip(self.layer_names,self.layers))
+
 
 
 class StratifiedMeasureResult(MeasureResult):

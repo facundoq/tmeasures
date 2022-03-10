@@ -1,5 +1,5 @@
 import abc
-from typing import Iterable
+from typing import Iterable, List
 
 import torch
 
@@ -15,8 +15,23 @@ class PyTorchTransformation(Transformation,torch.nn.Module):
 
 class PyTorchTransformationSet(TransformationSet,Iterable[PyTorchTransformation]):
 
-    def parameter_range(self)->[torch.Tensor]:
+    def parameter_range(self)->List[torch.Tensor]:
         parameters = torch.stack([t.parameters() for t in self],dim=0)
         mi,_ = parameters.min(dim=0)
         ma,_ = parameters.max(dim=0)
         return mi, ma
+
+
+class IdentityTransformation(PyTorchTransformation):
+    
+    def parameters(self) -> torch.Tensor:
+        return 0
+     
+    def __call__(self, x):
+        return x
+
+
+class IdentityTransformationSet(PyTorchTransformationSet):
+    
+    def __init__(self):
+        super().__init__([IdentityTransformation()])

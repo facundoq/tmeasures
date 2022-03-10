@@ -103,8 +103,7 @@ class PytorchActivationsIterator:
                             if self.o.model_device != self.o.measure_device:
                                 layer_activations=layer_activations.to(self.o.measure_device,non_blocking=True)
                             transformations = self.dataset.get_transformations(row, col, col_to)
-                            layer_activations = self.activations_transformer.transform(layer_activations, x_transformed,
-                                                                                       transformations)
+                            layer_activations = self.activations_transformer.transform(layer_activations, x_transformed,transformations)
                             # print(f"AI: act it, shape {layer_activations.shape}")
                             # print(f"AI: putting col {col} batch for layer {i} ({layers[i]})")
                             row_qs[layers[i]].put(layer_activations)

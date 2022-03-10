@@ -1,10 +1,12 @@
 import torch
 import transformational_measures as tm
 from torch.utils.data import Dataset
+
 from . import ObservableLayersModule
 from .. import MeasureResult, StratifiedMeasureResult
 import abc
 import typing
+from typing import List
 
 ActivationsByLayer = [torch.Tensor]
 
@@ -18,6 +20,8 @@ class PyTorchMeasureOptions:
         self.model_device = model_device
         self.measure_device = measure_device
         self.data_device = data_device
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(b={self.batch_size},workers={self.num_workers},devices[model,measure,data]=[{self.model_device,self.measure_device,self.data_device}])"
 
 
 STRowIterator = typing.Union[typing.Iterable[torch.Tensor], typing.Sized]
@@ -31,7 +35,7 @@ class PyTorchLayerMeasure:
         pass
 
     @abc.abstractmethod
-    def generate_result(self, layer_results: ActivationsByLayer, layer_names: [str]):
+    def generate_result(self, layer_results: ActivationsByLayer, layer_names: List[str]):
         pass
 
 
@@ -56,7 +60,7 @@ class PyTorchMeasure(tm.Measure):
 
     def eval_stratified(self, datasets: typing.List[Dataset], transformations: tm.TransformationSet,
                         model: ObservableLayersModule, o: PyTorchMeasureOptions,
-                        labels: [str]) -> StratifiedMeasureResult:
+                        labels: typing.List[str]) -> StratifiedMeasureResult:
         '''
         Calculate the `variance_measure` for each class separately
         Also calculate the average stratified `variance_measure` over all classes
@@ -78,3 +82,20 @@ class PyTorchMeasure(tm.Measure):
         # compute average result of each layer over datasets
         layer_vars = [sum(layer_values) / len(layer_values) for layer_values in layer_class_vars]
         return layer_vars
+
+
+
+from transformational_measures.pytorch.activations_iterator import PytorchActivationsIterator
+
+class PyTorchMeasureByLayer(PyTorchMeasure):
+    
+    def __init__(self,layer_measure:PyTorchLayerMeasure) -> None:
+        super().__init__()
+        self.layer_measure=layer_measure
+
+    def eval(self, dataset: Dataset, transformations: tm.TransformationSet, model: ObservableLayersModule,
+             o: PyTorchMeasureOptions) -> PyTorchMeasureResult:
+        dataset2d = tm.pytorch.dataset2d.TransformationSampleDataset(dataset, transformations, device=o.data_device)
+        iterator = PytorchActivationsIterator(model, dataset2d, o)
+        results = iterator.evaluate(self.layer_measure)
+        return PyTorchMeasureResult(results, model.activation_names(), self)

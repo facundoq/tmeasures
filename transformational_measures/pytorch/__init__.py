@@ -10,4 +10,5 @@ from . import dataset2d
 from .layer_measures import Variance
 
 from .variance_invariance import SampleVarianceInvariance,TransformationVarianceInvariance,NormalizedVarianceInvariance
-from .variance_sameequivariance import  SampleVarianceSameEquivariance,TransformationVarianceSameEquivariance,NormalizedVarianceSameEquivariance
+from .variance_sameequivariance import  SampleVarianceSameEquivariance,TransformationVarianceSameEquivariance, NormalizedVarianceSameEquivariance
+from .goodfellow import GoodfellowInvariance,NormalPValueThreshold,PercentActivationThreshold

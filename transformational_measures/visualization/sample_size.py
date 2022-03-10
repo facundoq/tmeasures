@@ -21,7 +21,7 @@ def relative_error(reference: MeasureResult, x: MeasureResult):
     return error / n
 
 
-def get_heatmap_values(results: 'np.ndarray[MeasureResult]', reference: MeasureResult):
+def get_relative_errors(results: 'np.ndarray[MeasureResult]', reference: MeasureResult):
     # Calcuate the relative error between the reference and each value of the result array
     def compare(r: MeasureResult): return relative_error(reference, r)
     compare_v = np.vectorize(compare)
@@ -29,23 +29,26 @@ def get_heatmap_values(results: 'np.ndarray[MeasureResult]', reference: MeasureR
 
 
 
-def plot_relative_error_heatmap(results: 'np.ndarray[MeasureResult]', reference: MeasureResult, plot_filepath: Path,
+def plot_relative_error_heatmap(heatmap, plot_filepath: Path,
                                 labels_samples: List[str], labels_transformations: List[str]):
     # plot a heatmap of relative errors between the MeasureResults in `results` and `reference`
-    heatmap = get_heatmap_values(results, reference)
-    f, ax = plt.subplots()
-    im = ax.imshow(heatmap, cmap="hot",vmin=0,vmax=1)
-    ax.set_xticklabels(labels_samples)
-    ax.set_yticklabels(labels_transformations)
-    ax.set_xlabel("Transformations")
-    ax.set_ylabel("Samples")
+    
+    
+    f, ax = plt.subplots(dpi=300)
+    im = ax.imshow(heatmap, cmap="magma",vmin=0,vmax=1)
+    # ax.set_xticklabels(labels_samples)
+    # ax.set_yticklabels(labels_transformations)
+    plt.xticks(range(len(labels_samples)),labels_samples)
+    plt.yticks(range(len(labels_transformations)),labels_transformations)
+    ax.set_xlabel("Samples")
+    ax.set_ylabel("Transformations")
     cbar = ax.figure.colorbar(im, ax=ax)
 
     for i in range(heatmap.shape[0]):
         for j in range(heatmap.shape[1]):
             value_str = f"{heatmap[i, j]:.3f}"
             text = ax.text(j, i, value_str,
-                           ha="center", va="center", color="g")
+                           ha="center", va="center", color="#8aff66")
 
     plt.savefig(plot_filepath, bbox_inches="tight")
     plt.close()

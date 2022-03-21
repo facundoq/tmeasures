@@ -191,7 +191,7 @@ def get_colors(colors:np.ndarray,n:int)->np.ndarray:
     return colors
 
 def get_dpi(n:int):
-    return min(350, max(150, n * 15))
+    return min(400, max(300, n * 15))
 
 
 def plot_collapsing_layers_same_model(results:List[tm.MeasureResult], filepath:Path, labels:[str]=None, title="", linestyles=None, plot_mean=False, colors=None, legend_location=None, mark_layers:[int]=None, ylim=None):

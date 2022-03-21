@@ -1,3 +1,4 @@
+from math import floor
 from typing import Dict, List
 import transformational_measures as tm
 from torch.utils.data import Dataset
@@ -32,26 +33,24 @@ class PercentActivationThreshold(PyTorchLayerMeasure):
         for row, row_iterator in enumerate(st_iterator):
             if row == 0:
                 m = len(row_iterator)
-            for batch_n, batch_activations in enumerate(row_iterator):
-                if row == 0 and batch_n == 0:
+            for batch_i, batch_activations in enumerate(row_iterator):
+                if row == 0 and batch_i == 0:
                     # initialize matrix to store activation values 
                     # One row for each activation
-                    # activation_shape = torch.tensor(batch_activations.shape[1:])
-                    # print(activation_shape)
-                    # batch_size = batch_activations.shape[0]
-                    # n_values  = torch.prod(activation_shape)
-                    values = torch.zeros((m*n,*batch_activations.shape))
+                    values = torch.zeros((n,m,*batch_activations.shape))
                     
-                index = row*m+batch_n
-                values[index,:] = batch_activations*self.sign
+                values[row,batch_i,:] = batch_activations*self.sign
         # change shape of values to Activations x Samples
         # where each row has all the samples of a particular activation
-        original_shape = values.shape[2:]
-        values = values.reshape((values.shape[0]*values.shape[1],-1)).transpose(1,0)
+        original_shape = values.shape[3:]
+        print("before",values.shape)
+        samples_n = values.shape[0]*values.shape[1]*values.shape[2]
+        values = values.reshape((samples_n,-1)).transpose(1,0)
         # sort rows, one for each activation
+        # print(values.shape)
         values, _ = torch.sort(values)
         # determine index of threshold
-        i = round(values.shape[1]*self.percent)
+        i = floor(values.shape[1]*self.percent)
         thresholds= values[:,i]
         # reshape thresholds to original shape
         thresholds = thresholds.reshape(original_shape)

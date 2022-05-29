@@ -17,8 +17,8 @@ def get_limit(m:MeasureResult, op_code:str):
 
 
 def plot_heatmap(m:MeasureResult,filepath:Path, vmin=None, vmax=None):
-    for l in m.layers:
-        print(l.shape, "inf: ", np.sum(np.isinf(l)),", nan: ",np.sum(np.isnan(l)),"min/mean/max:",l.min(),l.mean(),l.max())
+    # for l in m.layers:
+    #     print(l.shape, "inf: ", np.sum(np.isinf(l)),", nan: ",np.sum(np.isnan(l)),"min/mean/max:",l.min(),l.mean(),l.max())
     #
     # print("Stats for: ",m.measure.id())
     # for l,n in zip(m.layers,m.layer_names):
@@ -31,9 +31,9 @@ def plot_heatmap(m:MeasureResult,filepath:Path, vmin=None, vmax=None):
 
     # m=tm.numpy.AggregateTransformation(tm.numpy.AggregateFunction.mean,[0]).apply(m)
 
-    print("Post normalization:")
-    for l, n in zip(m.layers, m.layer_names):
-        print(f"{n}: ",l.shape, np.sum(np.isinf(l)),"min/mean/max:",l.min(),l.mean(),l.max())
+    # print("Post normalization:")
+    # for l, n in zip(m.layers, m.layer_names):
+    #     print(f"{n}: ",l.shape, np.sum(np.isinf(l)),"min/mean/max:",l.min(),l.mean(),l.max())
 
 
 

@@ -1,4 +1,4 @@
-from transformational_measures.pytorch.stats_running import RunningMeanAndVarianceWelford, RunningMeanWelford,RunningMean,RunningVariance,RunningMeanSets,RunningMeanVarianceSets
+from tmeasures.pytorch.stats_running import RunningMeanAndVarianceWelford, RunningMeanWelford,RunningMean,RunningVariance,RunningMeanSets,RunningMeanVarianceSets
 import itertools
 import torch
 import pytest

@@ -1,4 +1,4 @@
-from transformational_measures.numpy.stats_running import RunningMeanAndVarianceWelford, RunningMeanWelford
+from tmeasures.numpy.stats_running import RunningMeanAndVarianceWelford, RunningMeanWelford
 
 import numpy as np
 

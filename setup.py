@@ -66,7 +66,8 @@ setup(
         "scipy",
         "torch",
         "matplotlib",
-        "data-science-types"
+        "data-science-types",
+        "tqdm",
 
     ],
 

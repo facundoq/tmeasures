@@ -1,6 +1,6 @@
 poutyne
 colorama
-pytorch
+torch
 torchvision
 matplotlib
-tqdm
+scikit-learn

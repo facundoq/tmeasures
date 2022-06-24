@@ -1,21 +1,15 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+## requires
+## pip install tqdm poutyne sklearn
+
 # # Define a CNN model that implements ObservableLayersModule
 import os
-import transformational_measures as tm
+import tmeasures as tm
 import torch
-
+import matplotlib.pyplot as plt
 from torch import nn
-import pickle
-from pathlib import Path
-# Class for PyTorch models that return intermediate results
-from transformational_measures.pytorch import ObservableLayersModule
-
-# Utility class, same as PyTorch Sequential but returns intermediate layer values
-from transformational_measures.pytorch import SequentialWithIntermediates
-
-
 
 class Flatten(nn.Module):
     def forward(self, input: torch.Tensor):
@@ -23,7 +17,7 @@ class Flatten(nn.Module):
 
 
 # Model definition
-class CNN(ObservableLayersModule):
+class CNN(nn.Module):
     def __init__(self, shape):
         super().__init__()
         self.shape = shape
@@ -32,7 +26,7 @@ class CNN(ObservableLayersModule):
         filters = 32
         filters2 = filters * 2
         flat = h_flat * w_flat * filters2
-        self.model = SequentialWithIntermediates(
+        self.model = nn.Sequential(
             nn.Conv2d(c, filters, 3, padding=1),
             nn.ReLU(),
             nn.MaxPool2d(2),
@@ -44,38 +38,25 @@ class CNN(ObservableLayersModule):
             nn.ReLU(),
             nn.Linear(128, 10),
             nn.LogSoftmax(dim=-1),
-        )
+        ) 
 
     # forward works as normal
     def forward(self, x):
         return self.model.forward(x)
 
-    # required by ObservableLayersModule
-    def forward_intermediates(self, x):
-        return self.model.forward_intermediates(x)
 
-    # required by ObservableLayersModule
-    # Taken care by SequentialWithIntermediates
-    def activation_names(self):
-        return self.model.activation_names()
-
-
-#
-# # Train model for MNIST
-# 
-
-# In[ ]:
-
-
+from pathlib import Path
 from torchvision import datasets, transforms
 from poutyne import Model
+
+import pickle
 
 if __name__ == '__main__':
 
 
     torch.manual_seed(0)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    results_path = Path("~/tm_test_pt/").expanduser()
+    results_path = Path("~/tm_example_pytorch/").expanduser()
     results_path.mkdir(parents=True, exist_ok=True)
 
     # DATASET
@@ -96,8 +77,6 @@ if __name__ == '__main__':
                                    transform=train_transform)
     test_dataset = datasets.MNIST(path, train=False,
                                   transform=train_transform)
-    # train_loader = torch.utils.data.DataLoader(dataset1,args.batch_size)
-    # test_loader = torch.utils.data.DataLoader(dataset2,args.test_batch_size)
 
 
     # TRAIN
@@ -112,7 +91,7 @@ if __name__ == '__main__':
                               loss_function='cross_entropy',
                               batch_metrics=['accuracy'],
                               device=device)
-        poutyne_model.fit_dataset(train_dataset, test_dataset, epochs=10, batch_size=128,num_workers=2  ,dataloader_kwargs={"pin_memory":True})
+        poutyne_model.fit_dataset(train_dataset, test_dataset, epochs=5, batch_size=128,num_workers=2  ,dataloader_kwargs={"pin_memory":True})
         torch.save(model, model_path)
 
 
@@ -124,41 +103,39 @@ if __name__ == '__main__':
         def __getitem__(self, index):
             x, y = super().__getitem__(index)
             return x
-
     dataset_nolabels = MNIST(path, train=False, download=True,
-                             transform=measure_transform)
+                             transform=measure_transform,)
 
     import numpy as np
     from sklearn.model_selection import train_test_split
     from torch.utils.data import Subset
-    dataset_nolabels = MNIST(path, train=False, download=True,
-                             transform=measure_transform,)
     indices, _ = train_test_split(np.arange(len(dataset_nolabels)), train_size=1000, stratify=dataset_nolabels.targets,random_state=0)
     dataset_nolabels = Subset(dataset_nolabels, indices)
 
-    use_cuda = torch.cuda.is_available()
+
     # Create a set of rotation transformations
-    from transformational_measures.transformations.parameters import UniformRotation
-    from transformational_measures.pytorch.transformations.affine import AffineGenerator
+    from tmeasures.transformations.parameters import UniformRotation
+    from tmeasures.pytorch.transformations.affine import AffineGenerator
 
     rotation_parameters = UniformRotation(n=128, angles=1.0)
     transformations = AffineGenerator(r=rotation_parameters)
 
 
-    # evaluate measure, with the iterator
+
+    model.eval()
+    activations_module = tm.pytorch.AutoActivationsModule(model)
 
     # FilteredActivationsModel to filter out some activations from the analysis
-    from transformational_measures.pytorch.model import FilteredActivationsModel
-
+    from tmeasures.pytorch.model import FilteredActivationsModule
     # filter activations that cant be inverted for SameEquivariance
-    filtered_model = FilteredActivationsModel(model,lambda m,name: m.activation_names().index(name) <6)
+    filtered_model = FilteredActivationsModule(activations_module,lambda m,name: m.activation_names().index(name) <6)
 
     average_fm=tm.pytorch.AverageFeatureMaps()
     measures = [
-        (tm.pytorch.TransformationVarianceInvariance(),model),
-        # (tm.pytorch.SampleVarianceInvariance(),model),
-        # (tm.pytorch.NormalizedVarianceInvariance(),model),
-        # (tm.pytorch.NormalizedVarianceInvariance(average_fm), model),
+        (tm.pytorch.TransformationVarianceInvariance(),activations_module),
+        (tm.pytorch.SampleVarianceInvariance(),activations_module),
+        (tm.pytorch.NormalizedVarianceInvariance(),activations_module),
+        (tm.pytorch.NormalizedVarianceInvariance(average_fm), activations_module),
         # (tm.pytorch.TransformationVarianceSameEquivariance(),filtered_model),
         # (tm.pytorch.SampleVarianceSameEquivariance(),filtered_model),
         # (tm.pytorch.NormalizedVarianceSameEquivariance(),filtered_model),
@@ -185,11 +162,11 @@ if __name__ == '__main__':
             with open(result_filepath, 'wb') as f:
                 pickle.dump(measure_result, f)
 
-        from transformational_measures import visualization
+        tm.visualization.plot_collapsing_layers_same_model([measure_result])
+        plt.savefig(results_path / f"{exp_id}_by_layers.png")
+        plt.close()
 
-        results = [measure_result]
-        plot_filepath = results_path / f"{exp_id}_by_layers.png"
-        visualization.plot_collapsing_layers_same_model(results, plot_filepath)
-        heatmap_filepath = results_path / f"{exp_id}_heatmap.png"
-        visualization.plot_heatmap(measure_result, heatmap_filepath)
+        tm.visualization.plot_heatmap(measure_result)
+        plt.savefig(results_path / f"{exp_id}_heatmap.png")
+        plt.close()
 

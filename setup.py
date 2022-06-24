@@ -12,8 +12,8 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 
-url="https://github.com/facundoq/transformational_measures"
-VERSION="0.1alpha"
+url="https://github.com/facundoq/tmeasures"
+VERSION="1.0"
 
 class UploadCommand(Command):
     """Support setup.py upload."""

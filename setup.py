@@ -13,7 +13,7 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 
 url="https://github.com/facundoq/tmeasures"
-VERSION="1.0"
+VERSION="1.1"
 
 class UploadCommand(Command):
     """Support setup.py upload."""

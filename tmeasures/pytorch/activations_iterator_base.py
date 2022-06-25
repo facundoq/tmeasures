@@ -107,7 +107,7 @@ class NormalPytorchActivationsIterator(PytorchActivationsIterator):
                 batch = batch.cuda()
             batch = self.transform_batch(transformation, batch)
             with torch.no_grad():
-                y, batch_activations = self.model.forward_activations(batch)
+                batch_activations = self.model.forward_activations(batch)
                 batch_activations = [a.cpu().numpy() for a in batch_activations]
             yield batch, batch_activations
 
@@ -118,7 +118,7 @@ class NormalPytorchActivationsIterator(PytorchActivationsIterator):
                                 num_workers=0, drop_last=False)
         for batch in dataloader:
             with torch.no_grad():
-                y, batch_activations = self.model.forward_activations(batch)
+                batch_activations = self.model.forward_activations(batch)
             batch_activations = [a.cpu().numpy() for a in batch_activations]
             yield batch, batch_activations
 
@@ -132,7 +132,7 @@ class InvertedPytorchActivationsIterator(PytorchActivationsIterator):
                 batch = batch.cuda()
             batch = self.transform_batch(transformation, batch)
             with torch.no_grad():
-                y, batch_activations = self.model.forward_activations(batch)
+                batch_activations = self.model.forward_activations(batch)
                 if self.activations_transformer is None:
                     shapes = [a.shape for a in batch_activations]
                     self.activations_transformer = ActivationsTransformer(shapes, self.model.activation_names(),
@@ -158,7 +158,7 @@ class InvertedPytorchActivationsIterator(PytorchActivationsIterator):
         t_start = 0
         for batch in dataloader:
             with torch.no_grad():
-                y, batch_activations = self.model.forward_activations(batch)
+                batch_activations = self.model.forward_activations(batch)
             t_end = t_start + batch.shape[0]
             if self.activations_transformer is None:
                 shapes = [a.shape for a in batch_activations]
@@ -187,8 +187,8 @@ class BothPytorchActivationsIterator(PytorchActivationsIterator):
 
             transformed_batch = self.transform_batch(transformation, batch)
             with torch.no_grad():
-                y, pre_transformed_activations = self.model.forward_activations(transformed_batch)
-                y, post_transformed_activations = self.model.forward_activations(batch)
+                pre_transformed_activations = self.model.forward_activations(transformed_batch)
+                post_transformed_activations = self.model.forward_activations(batch)
             if self.activations_transformer is None:
                 shapes = [a.shape for a in pre_transformed_activations]
                 self.activations_transformer = ActivationsTransformer(shapes, self.model.activation_names(),
@@ -216,7 +216,7 @@ class BothPytorchActivationsIterator(PytorchActivationsIterator):
         t_start = 0
         # calculate activations of untransformed sample
         with torch.no_grad():
-            y,untransformed_activations = self.model.forward_activations(x.unsqueeze(0))
+            untransformed_activations = self.model.forward_activations(x.unsqueeze(0))
         # Generate activations transformers
         shapes = [a.shape for a in untransformed_activations]
         self.activations_transformer = ActivationsTransformer(shapes, self.model.activation_names(), self.transformations,False)
@@ -226,7 +226,7 @@ class BothPytorchActivationsIterator(PytorchActivationsIterator):
 
         for batch in dataloader:
             with torch.no_grad():
-                y, pre_transformed_activations = self.model.forward_activations(batch)
+                pre_transformed_activations = self.model.forward_activations(batch)
 
             b_n=batch.shape[0]
             t_end = t_start + b_n

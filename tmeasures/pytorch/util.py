@@ -1,11 +1,12 @@
+from typing import Any, List
 from . import ActivationsModule
 from torch import nn
-
+import torch
 class SequentialWithIntermediates(nn.Sequential, ActivationsModule):
     def __init__(self,*args):
         super(SequentialWithIntermediates, self).__init__(*args)
 
-    def forward_intermediates(self,input_tensor)->(object,[]):
+    def forward_intermediates(self,input_tensor)->(List[torch.Tensor]):
         submodules=self._modules.values()
         if len(submodules)==0:
             return  input_tensor,[input_tensor]
@@ -13,14 +14,14 @@ class SequentialWithIntermediates(nn.Sequential, ActivationsModule):
         outputs=[]
         for module in submodules:
             if isinstance(module, ActivationsModule):
-                input_tensor,intermediates=module.forward_activations(input_tensor)
+                intermediates=module.forward_activations(input_tensor)
                 outputs+=(intermediates)
             else:
                 input_tensor= module(input_tensor)
                 outputs.append(input_tensor)
-        return input_tensor,outputs
+        return outputs
 
-    def activation_names(self)->[str]:
+    def activation_names(self)->List[str]:
         submodules = self._modules.values()
         if len(submodules) == 0:
             return ["identity"]

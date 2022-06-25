@@ -1,6 +1,6 @@
 
 
-from torch import nn
+from torch import full, nn
 import torch
 import abc
 import typing
@@ -13,7 +13,7 @@ class ActivationsModule(nn.Module):
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def forward_activations(self, args) -> Tuple[torch.Tensor, List[torch.Tensor]]:
+    def forward_activations(self, args) -> List[torch.Tensor]:
         raise NotImplementedError()
 
     def n_activations(self):
@@ -37,7 +37,7 @@ class FilteredActivationsModule(ActivationsModule):
     def eval(self):
         self.inner_model.eval()
     @abc.abstractmethod
-    def forward_activations(self, args) -> Tuple[torch.Tensor, List[torch.Tensor]]:
+    def forward_activations(self, args) ->  List[torch.Tensor]:
         y,activations = self.inner_model.forward_activations(args)
         activations = [activations[i] for i in self.indices]
         return y,activations
@@ -52,10 +52,14 @@ class DuplicateKeyError(ValueError):
         super().__init__(*args)
 
 Input = Union[MutableMapping,Any]
-def flatten_dict(d_or_val:Input, prefix='', sep='_', allow_repeated=False)->Dict[str,Any]:
+def flatten_dict(d_or_val:Input, prefix='', sep='/', allow_repeated=False)->Dict[str,Any]:
+    print(d_or_val)
     if isinstance(d_or_val, MutableMapping):
         result = {}
-        prefix_sep = prefix+sep
+        if prefix =="":
+            prefix_sep = ""
+        else:
+            prefix_sep = prefix+sep
         for k, v in d_or_val.items():
             new_prefix = prefix_sep+str(k)
             flattened_child = flatten_dict(v,new_prefix,sep)
@@ -68,51 +72,76 @@ def flatten_dict(d_or_val:Input, prefix='', sep='_', allow_repeated=False)->Dict
     else :
         return { prefix : d_or_val }
 
+def flatten_dict_list(d_or_val:Input,key="",full_name=True)->List[Tuple[str,Any]]:
+    if isinstance(d_or_val, MutableMapping):
+        result = []
+        for k, v in d_or_val.items():
+            if full_name:
+                new_key = key + "/" + k
+            else:
+                new_key = k
+            flattened_child = flatten_dict_list(v,key=new_key)
+            result+=flattened_child
+        return result
+    else :
+        return [(key, d_or_val)]
 
 
-def named_children_deep(m: torch.nn.Module,prefix=""):
+def named_children_deep(m: torch.nn.Module):
     children = dict(m.named_children())
     if children == {}:
         return m
     else:
         output = {}
         for name, child in children.items():
-            if name in output:
+            if name.isnumeric():
+                key = child.__class__.__name__+"_"+name
+            else:
+                key=name
+            if key in output:
                 raise DuplicateKeyError
             try:
-                output[name] = named_children_deep(child)
+                output[key] = named_children_deep(child)
             except TypeError:
-                output[name] = named_children_deep(child)
+                output[key] = named_children_deep(child)
         return output
 
 class AutoActivationsModule(ActivationsModule):
-    def __init__(self,module:nn.Module) -> None:
+    def __init__(self,module:nn.Module,full_name=True) -> None:
         super().__init__()
+        self.reset_values()
         self.module = module
         self.children_tree = named_children_deep(module)
-        self.children = flatten_dict(self.children_tree)
-        self.register_hooks(self.children)
+        
+        self.names,self.activations = zip(*flatten_dict_list(self.children_tree,full_name=full_name))
+        
 
-    def register_hooks(self,children:Dict[str,nn.Module]):
-        def store_activation(name):
+        self.register_hooks(self.activations)
+        
+
+    def register_hooks(self,activations:List[nn.Module]):
+        def store_activation(index):
             def hook(model, input, output):
-                self.activations[name] = output.detach()
+                self.values[index] = output.detach()
             return hook
 
-        for k,v in children.items():
-            v.register_forward_hook(store_activation(k))
+        for i,v in enumerate(activations):
+            v.register_forward_hook(store_activation(i))
 
-    def forward_activations(self, args) -> Tuple[torch.Tensor, List[torch.Tensor]]:
+    def reset_values(self):
+        self.values = {} 
+
+    def forward_activations(self, args) -> List[torch.Tensor]:
         '''
         This function is not thread safe.
         '''
-        # reset activations
-        self.activations = {}    
+        # clear values
+        self.reset_values()
         # call model, hooks are executed
-        y = self.module.forward(args)
+        self.module.forward(args)
         # transform to list and ensure order of values is same as order of activation names
-        activations_list = [self.activations[k] for k in self.activation_names()]
-        return y, activations_list
+        activations_list = [self.values[i] for i in range(len(self.activations))]
+        return activations_list
 
     def activation_names(self) -> List[str]:
-        return list(self.children.keys())
+        return self.names

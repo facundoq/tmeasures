@@ -124,7 +124,9 @@ if __name__ == '__main__':
 
     model.eval()
     activations_module = tm.pytorch.AutoActivationsModule(model)
-
+    print("Activations in model:")
+    print(activations_module.activation_names())
+    
     # FilteredActivationsModel to filter out some activations from the analysis
     from tmeasures.pytorch.model import FilteredActivationsModule
     # filter activations that cant be inverted for SameEquivariance
@@ -133,9 +135,9 @@ if __name__ == '__main__':
     average_fm=tm.pytorch.AverageFeatureMaps()
     measures = [
         (tm.pytorch.TransformationVarianceInvariance(),activations_module),
-        (tm.pytorch.SampleVarianceInvariance(),activations_module),
-        (tm.pytorch.NormalizedVarianceInvariance(),activations_module),
-        (tm.pytorch.NormalizedVarianceInvariance(average_fm), activations_module),
+        # (tm.pytorch.SampleVarianceInvariance(),activations_module),
+        # (tm.pytorch.NormalizedVarianceInvariance(),activations_module),
+        # (tm.pytorch.NormalizedVarianceInvariance(average_fm), activations_module),
         # (tm.pytorch.TransformationVarianceSameEquivariance(),filtered_model),
         # (tm.pytorch.SampleVarianceSameEquivariance(),filtered_model),
         # (tm.pytorch.NormalizedVarianceSameEquivariance(),filtered_model),
@@ -162,11 +164,13 @@ if __name__ == '__main__':
             with open(result_filepath, 'wb') as f:
                 pickle.dump(measure_result, f)
 
-        tm.visualization.plot_collapsing_layers_same_model([measure_result])
+        f = tm.visualization.plot_average_activations(measure_result)
+        f.tight_layout()
         plt.savefig(results_path / f"{exp_id}_by_layers.png")
         plt.close()
 
-        tm.visualization.plot_heatmap(measure_result)
+        f = tm.visualization.plot_heatmap(measure_result)
+        f.tight_layout()
         plt.savefig(results_path / f"{exp_id}_heatmap.png")
         plt.close()
 

@@ -49,6 +49,7 @@ def plot_heatmap(m:MeasureResult, vmin=None, vmax=None):
     cbar=f.colorbar(mappable, cax=cbar_ax, extend='max')
     cbar.cmap.set_over('green')
     cbar.cmap.set_bad(color='gray')
+    return f
 
 
 

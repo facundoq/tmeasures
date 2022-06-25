@@ -12,7 +12,7 @@ from matplotlib.lines import Line2D
 
 default_y_lim=1.4
 
-def plot_collapsing_layers_different_models(results:List[tm.MeasureResult], labels:List[str]=None, title:str="", linestyles=None, colors=None, legend_location=None, markers:List[List[int]]=None, ylim=None):
+def plot_average_activations_different_models(results:List[tm.MeasureResult], labels:List[str]=None, title:str="", linestyles=None, colors=None, legend_location=None, markers:List[List[int]]=None, ylim=None):
     if ylim is None:
         ylim = default_y_lim
     f=plt.figure(dpi=300)
@@ -81,7 +81,7 @@ def plot_collapsing_layers_different_models(results:List[tm.MeasureResult], labe
             loc, pos = legend_location
             ax.legend(handles_new,labels,loc=loc, bbox_to_anchor=pos,
                       fancybox=True)
-
+    return f
 
 
 def get_default(l:List,i:int,default):
@@ -155,8 +155,21 @@ def get_colors(colors:np.ndarray,n:int)->np.ndarray:
 def get_dpi(n:int):
     return min(400, max(300, n * 15))
 
+def none_list(v):
+    if v == None:
+        return None
+    else:
+        return [v]
 
-def plot_collapsing_layers_same_model(results:List[tm.MeasureResult], labels:List[str]=None, title="", linestyles=None, plot_mean=False, colors=None, legend_location=None, mark_layers:List[int]=None, ylim=None):
+def plot_average_activations(result:tm.MeasureResult, label:str=None, title:str="", linestyle:str=None, color:str=None, mark_layers:List[int]=None, ylim=None):
+    results = [result]
+    colors = none_list(color)
+    linestyles = none_list(linestyle)
+    labels  = none_list(label)
+
+    return plot_average_activations_same_model(results,title=title,mark_layers=mark_layers,ylim=ylim,labels=labels,linestyles=linestyles,colors=colors)
+
+def plot_average_activations_same_model(results:List[tm.MeasureResult], labels:List[str]=None, title="", linestyles=None, plot_mean=False, colors=None, legend_location=None, mark_layers:List[int]=None, ylim=None):
     if ylim is None:
         ylim = default_y_lim
 
@@ -224,4 +237,5 @@ def plot_collapsing_layers_same_model(results:List[tm.MeasureResult], labels:Lis
                      box.width, box.height * 0.9])
 
     add_legends(ax,labels,plot_mean,legend_location)
+    return f
 

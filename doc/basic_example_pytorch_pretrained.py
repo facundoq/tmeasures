@@ -21,7 +21,7 @@ if __name__ == '__main__':
     
     model = models.resnet18(pretrained=True)
     # Measure model's invariance  to rotations
-    
+    model = model.to(device)
     
     # DATASET
     preprocessing_transforms = transforms.Compose([
@@ -58,24 +58,29 @@ if __name__ == '__main__':
     # evaluate measure
     model.eval()
     activations_module = tm.pytorch.AutoActivationsModule(model)
-
+    
+    print("Activations in model:")
+    print(activations_module.activation_names())
+    
+    # Define the measure
     average_fm=tm.pytorch.AverageFeatureMaps()
     measure = tm.pytorch.NormalizedVarianceInvariance(average_fm)
+    measure = tm.pytorch.TransformationVarianceInvariance()
   
     print(f"Evaluating measure {measure}...")
     # evaluate measure
 
-    options = tm.pytorch.PyTorchMeasureOptions(batch_size=16, num_workers=0,model_device=device,measure_device=device,data_device="cpu")
+    options = tm.pytorch.PyTorchMeasureOptions(batch_size=16, num_workers=0,model_device=device,measure_device="cpu",data_device="cpu")
     measure_result:tm.pytorch.PyTorchMeasureResult = measure.eval(dataset_nolabels,transformations,activations_module,options)
     measure_result = measure_result.numpy()
     
     from tmeasures import visualization
 
-    visualization.plot_collapsing_layers_same_model([measure_result])
+    f = tm.visualization.plot_average_activations(measure_result)
     plt.savefig(data_path / f"average_by_layer.png")
     plt.close()
 
-    visualization.plot_heatmap(measure_result)
+    f = tm.visualization.plot_heatmap(measure_result)
     plt.savefig(data_path / "heatmap.png")
     plt.close()
     

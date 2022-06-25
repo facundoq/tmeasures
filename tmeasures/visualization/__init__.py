@@ -18,7 +18,7 @@ def get_sequential_colors(values):
     colors = cmap(values)
     return colors
 
-from .layers import plot_collapsing_layers_same_model,plot_collapsing_layers_different_models
+from .layers import plot_average_activations_same_model,plot_average_activations_different_models,plot_average_activations
 from .heatmaps import plot_heatmap
 from .features import plot_invariant_feature_maps
 from .sample_size import plot_relative_error_heatmap,get_relative_errors

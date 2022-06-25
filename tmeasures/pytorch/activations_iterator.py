@@ -9,7 +9,8 @@ from ..utils.iterable_queue import IterableQueue
 from .. import Transformation, InvertibleTransformation
 import tqdm.auto as tqdm
 import concurrent.futures
-import typing
+
+from typing import List
 
 import abc
 
@@ -17,12 +18,12 @@ import abc
 class ActivationsTransformer(abc.ABC):
 
     @abc.abstractmethod
-    def transform(self, activations: torch.Tensor, x: torch.Tensor, transformations: [Transformation]) -> torch.Tensor:
+    def transform(self, activations: torch.Tensor, x: torch.Tensor, transformations: List[Transformation]) -> torch.Tensor:
         pass
 
 
 class IdentityActivationsTransformer(ActivationsTransformer):
-    def transform(self, activations: torch.Tensor, x: torch.Tensor, transformations: [Transformation]) -> torch.Tensor:
+    def transform(self, activations: torch.Tensor, x: torch.Tensor, transformations: List[Transformation]) -> torch.Tensor:
         return activations
 
 def worker_callbacks(f):
@@ -96,7 +97,7 @@ class PytorchActivationsIterator:
                         # print(f"AI: {batch_i}: moving to device {self.o.model_device}... ")
                         x_transformed = x_transformed.to(self.o.model_device,non_blocking=True)
                         # print("AI: getting activations..")
-                        y, activations = self.model.forward_activations(x_transformed)
+                        activations = self.model.forward_activations(x_transformed)
                         # print("AI: got activations")
                         col_to = col + x_transformed.shape[0]
                         for i, layer_activations in enumerate(activations):

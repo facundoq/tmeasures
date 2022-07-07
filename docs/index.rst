@@ -36,7 +36,8 @@ Welcome to tmeasures's documentation!
    dev_guide/dev_guide
    todo
 
-
+.. automodule:: tmeasures.pytorch
+   :members
 
 
 Indices and tables

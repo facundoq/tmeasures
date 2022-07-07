@@ -70,7 +70,7 @@ if __name__ == '__main__':
     print(f"Evaluating measure {measure}...")
     # evaluate measure
 
-    options = tm.pytorch.PyTorchMeasureOptions(batch_size=16, num_workers=0,model_device=device,measure_device="cpu",data_device="cpu")
+    options = tm.pytorch.PyTorchMeasureOptions(batch_size=16, num_workers=0,model_device=device,measure_device=device,data_device="cpu")
     measure_result:tm.pytorch.PyTorchMeasureResult = measure.eval(dataset_nolabels,transformations,activations_module,options)
     measure_result = measure_result.numpy()
     

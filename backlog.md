@@ -10,3 +10,4 @@
 10. Re-add Distance implementations
 11. Add Numpy-Pytorch adapter. 
 12. Check Numpy and Pytorch implementations coincide in their results
+13. Add graph or tree visualization (or at least a hierarchical visualization) using colors to indicate invariance

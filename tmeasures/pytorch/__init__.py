@@ -1,3 +1,7 @@
+"""
+This module contains implementations of the measures for the PyTorch framework
+"""
+
 from .model import ActivationsModule,AutoActivationsModule
 from .base import PyTorchMeasure,PyTorchMeasureOptions,ActivationsByLayer,PyTorchMeasureResult
 from .transformations import PyTorchTransformationSet,PyTorchTransformation

@@ -10,25 +10,25 @@ The Transformational Measures (`tmeasures`) library allows neural network design
 
 Each column shows the invariance to rotation of a layer of a Neural Network. Each row/block inside each column indicates the invariance of a feature map or single neuron, depending on the layer. 
 
-![](res/heatmap.png)
+![](docs/res/heatmap.png)
 
 ### 📉 Average Invariance vs layer, same model
 
 Plot the transformational and sample invariance to rotations of a simple neural network trained on MNIST, with and without data augmentation. The X axis indicates the layer, while the Y axis shows the average invariance of the layer.
 
-![](res/invariance.jpg)
+![](docs/res/invariance.jpg)
 
 ### 📈 Average invariance by layer, different models: 
 
 Plot of the invariance to rotations of several well-known models trained on CIFAR10. The number of layers of each model is streched on a percentage scale, so that different models can be compared.
 
-![](res/invariance_models_cifar10.jpg)
+![](docs/res/invariance_models_cifar10.jpg)
 
 ## 💻 PyTorch API
 
 The following notebook contains a step-by-step to measure invariance to rotations in a PyTorch neural network that was trained with the MNIST dataset. You can execute it directly from google colab.
 
-[Measuring invariance to rotations for a simple CNN on MNIST (google colab)](https://colab.research.google.com/github/facundoq/transformational_measures/blob/master/doc/Variance%20to%20rotations%20of%20a%20CNN%20trained%20on%20MNIST%20with%20PyTorch.ipynb)
+[Measuring invariance to rotations for a simple CNN on MNIST (google colab)](https://colab.research.google.com/github/facundoq/transformational_measures/blob/master/docs/examples/Variance%20to%20rotations%20of%20a%20CNN%20trained%20on%20MNIST%20with%20PyTorch.ipynb)
 
 Other examples with multiple measures and pretrained models can be found in the [doc](/doc) folder of this repository.
 

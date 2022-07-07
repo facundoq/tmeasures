@@ -1,11 +1,11 @@
 from __future__ import annotations
-from typing import List
+from typing import List, Tuple
 import numpy as np
 import abc
 import re
 from .utils import get_all
 
-ActivationsByLayer = [np.ndarray]
+ActivationsByLayer = List[np.ndarray]
 
 class MeasureResult:
     def __init__(self,layers:ActivationsByLayer,layer_names:List[str],measure:Measure,extra_values=dict()):
@@ -29,7 +29,7 @@ class MeasureResult:
             result.append(layer_average)
         return np.array(result)
 
-    def per_layer_mean_std(self) -> (np.ndarray,np.ndarray):
+    def per_layer_mean_std(self) -> Tuple[np.ndarray,np.ndarray]:
         means = []
         stds = []
         for layer in self.layers:
@@ -40,7 +40,7 @@ class MeasureResult:
             stds.append(layer_std)
         return np.array(means),np.array(stds)
 
-    def remove_layers(self,remove_indices:[int])->MeasureResult:
+    def remove_layers(self,remove_indices:List[int])->MeasureResult:
         n = len(self.layer_names)
         all_indices=set(list(range(n)))
         keep_indices = list(all_indices.difference(set(remove_indices)))

@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from typing import List
 from pathlib import Path
-from tmeasures.numpy.stats_running import  RunningMeanAndVarianceWelford
+from tmeasures.np.stats_running import  RunningMeanAndVarianceWelford
 import tmeasures as tm
 from matplotlib.lines import Line2D
 

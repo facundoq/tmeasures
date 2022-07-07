@@ -68,6 +68,9 @@ setup(
         "matplotlib",
         "data-science-types",
         "tqdm",
+        "opencv-python",
+        "scikit-image",
+
 
     ],
 

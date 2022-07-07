@@ -1,6 +1,5 @@
 import matplotlib
 import matplotlib.pyplot as plt
-from tmeasures.numpy.base import NumpyMeasure
 from .. import MeasureResult
 
 

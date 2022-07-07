@@ -1,4 +1,4 @@
-from tmeasures.activations_iterator import ActivationsIterator
+from tmeasures.np.activations_iterator import ActivationsIterator
 from .model import ActivationsModule
 import torch
 from torch.utils.data import DataLoader,Dataset

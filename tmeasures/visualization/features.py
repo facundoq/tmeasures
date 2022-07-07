@@ -2,11 +2,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import tmeasures as tm
 from pathlib import Path
-from ..numpy import AggregateTransformation,AggregateFunction,MeasureTransformation
+from ..np import AggregateTransformation,AggregateFunction,MeasureTransformation
 from .. import MeasureResult
 import torch
 
-
+from tmeasures.np.activations_iterator import ActivationsIterator
 
 def plot_activations(features:np.ndarray, feature_indices:[int], variance_scores:[float], x_transformed:np.ndarray, transformations:tm.TransformationSet, filepath:Path):
 
@@ -141,9 +141,9 @@ def select_feature_maps(measure_result: tm.MeasureResult, most_invariant_k:int, 
     Creates a plot for each sample image/transformation pair
     '''
 
-from tmeasures.numpy import MeasureTransformation
+from tmeasures.np import MeasureTransformation
 
-def plot_invariant_feature_maps(plot_folderpath:Path, activations_iterator:tm.ActivationsIterator, result:tm.MeasureResult, most_invariant_k:int, least_invariant_k:int
+def plot_invariant_feature_maps(plot_folderpath:Path, activations_iterator:ActivationsIterator, result:tm.MeasureResult, most_invariant_k:int, least_invariant_k:int
                                 #, conv_aggregation:MeasureTransformation
                                 ):
     #result=conv_aggregation.apply(result)

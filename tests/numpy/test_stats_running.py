@@ -1,4 +1,4 @@
-from tmeasures.numpy.stats_running import RunningMeanAndVarianceWelford, RunningMeanWelford,RunningMean,RunningVariance,RunningMeanVarianceSets,RunningMeanSets
+from tmeasures.np.stats_running import RunningMeanAndVarianceWelford, RunningMeanWelford,RunningMean,RunningVariance,RunningMeanVarianceSets,RunningMeanSets
 import pytest
 
 import numpy as np

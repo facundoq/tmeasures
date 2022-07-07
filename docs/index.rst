@@ -30,13 +30,7 @@ Welcome to tmeasures's documentation!
    :caption: Contents:
    :hidden:
 
-   user_guide/user_guide
-   examples/examples
-   api/api
-   dev_guide/dev_guide
-   todo
-
-.. automodule:: tmeasures.pytorch
+.. automodule:: tmeasures
    :members
 
 

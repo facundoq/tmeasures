@@ -27,7 +27,7 @@
     :target: https://codecov.io/gh/facundoq/tmeasures
 
 .. |Colab Badge| image:: https://github.com/facundoq/tmeasures/docs/res/colab-badge.svg
-    :target: https://codecov.io/gh/facundoq/tmeasures
+    :target: https://colab.research.google.com/github/facundoq/transformational_measures/blob/master/docs/examples/Variance%20to%20rotations%20of%20a%20CNN%20trained%20on%20MNIST%20with%20PyTorch.ipynb
 
 🔎 Visualizations
 ---------------------_

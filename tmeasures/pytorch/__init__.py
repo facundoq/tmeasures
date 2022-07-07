@@ -1,5 +1,24 @@
+
 """
-This module contains implementations of the measures for the PyTorch framework
+The :mod:`.pytorch` module contains implementations of the measures for the PyTorch framework, as well as some utility functions.
+
+A :class:`.PyTorchMeasure` can be evaluated with a PyTorch :class:`.ActivationsModule`, dataset and :class:`.PyTorchTransformationSet`. The evaluation of the measure returns a :class:`.PyTorchMeasureResult`
+
+Variance-Based Invariance Measures
+------------------------
+* :class:`.SampleVarianceInvariance`
+* :class:`.TransformationVarianceInvariance`
+* :class:`.NormalizedVarianceInvariance`
+
+Other Invariance Measures
+------------------------
+* :class:`.GoodfellowInvariance`
+
+Variance-Based Same-Equivariance Measures
+------------------------
+* :class:`.SampleVarianceSameEquivariance`
+* :class:`.TransformationVarianceSameEquivariance`
+* :class:`.NormalizedVarianceSameEquivariance`
 """
 
 from .model import ActivationsModule,AutoActivationsModule

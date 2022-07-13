@@ -12,9 +12,10 @@
 #
 import os
 import sys
-project_paths = [os.path.abspath('../tmeasures')]
+project_paths = [os.path.abspath('../')]
 for path in project_paths:
     sys.path.insert(0, path)
+
 
 
 # -- Project information -----------------------------------------------------

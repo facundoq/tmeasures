@@ -1,12 +1,12 @@
 
 """
-The :mod:`.pytorch` module contains implementations of the measures for the PyTorch framework, as well as some utility functions.
+The :mod:`.np` module contains implementations of the measures for the NumPy framework, as well as some utility functions.
 
-A :class:`.PyTorchMeasure` can be evaluated with a PyTorch :class:`.ActivationsModule`, dataset and :class:`.PyTorchTransformationSet`. The evaluation of the measure returns a :class:`.PyTorchMeasureResult`
+A :class:`.NumpyMeasure` can be evaluated with different adapters from PyTorch and Tensorflow, with corresponding models, datasets and transformations defined in those frameworks. The evaluation of the measure returns a :class:`.NumpyMeasureResult`
 
 Variance-Based Invariance Measures
 ------------------------
-* :class:`.SampleVarianceInvariance`
+* :class:`.np.SampleVarianceInvariance`
 * :class:`.TransformationVarianceInvariance`
 * :class:`.NormalizedVarianceInvariance`
 

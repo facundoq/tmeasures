@@ -64,7 +64,6 @@ setup(
     install_requires=[
         "numpy",
         "scipy",
-        "torch",
         "matplotlib",
         "data-science-types",
         "tqdm",

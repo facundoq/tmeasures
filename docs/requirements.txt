@@ -5,4 +5,4 @@ torchvision
 matplotlib
 scikit-learn
 scikit-image
-python-opencv
+opencv-python 

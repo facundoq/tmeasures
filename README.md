@@ -26,9 +26,12 @@ Plot of the invariance to rotations of several well-known models trained on CIFA
 
 ## 💻 PyTorch API
 
-The following notebook contains a step-by-step to measure invariance to rotations in a PyTorch neural network that was trained with the MNIST dataset. You can execute it directly from google colab.
 
-[Measuring invariance to rotations for a simple CNN on MNIST (google colab)](https://colab.research.google.com/github/facundoq/transformational_measures/blob/master/docs/examples/Variance%20to%20rotations%20of%20a%20CNN%20trained%20on%20MNIST%20with%20PyTorch.ipynb)
+These notebooks contain step-by-step code and explanations to measure invariance in both custom and pretrained model, both using predefined and custom transformations. They can be executed in google colab directly. Alternatively, you can download them for local execution, but be aware you will have to provide your own virtualenv with `torch` and `torchvision`  [installed](https://pytorch.org/get-started/locally/).
+
+
+* [Measuring invariance to brightness changes on a pretrained ResNet18 on TinyImageNet](https://colab.research.google.com/github/facundoq/transformational_measures/blob/master/docs/examples/ResNet%20Invariance%20with%20TinyImageNet.ipynb)
+* [Measuring invariance to rotations on a custom CNN on MNIST](https://colab.research.google.com/github/facundoq/transformational_measures/blob/master/docs/examples/Variance%20to%20rotations%20of%20a%20CNN%20trained%20on%20MNIST%20with%20PyTorch.ipynb)
 
 Other examples with multiple measures and pretrained models can be found in the [doc](/doc) folder of this repository.
 

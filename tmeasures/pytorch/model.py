@@ -3,17 +3,17 @@
 from torch import  nn
 import torch
 import abc
-import typing
-from typing import List,Tuple,Dict,Callable, Union,MutableMapping,Any
+from typing import Callable,MutableMapping,Any,Union
+
 
 class ActivationsModule(nn.Module):
 
     @abc.abstractmethod
-    def activation_names(self) -> List[str]:
+    def activation_names(self) -> list[str]:
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def forward_activations(self, args) -> List[torch.Tensor]:
+    def forward_activations(self, args) -> list[torch.Tensor]:
         raise NotImplementedError()
 
     def n_activations(self):
@@ -32,19 +32,19 @@ class FilteredActivationsModule(ActivationsModule):
         self.indices = [original_names.index(n) for n in self.names]
     def forward(self):
         return self.inner_model.forward()
-    def activation_names(self) -> List[str]:
+    def activation_names(self) -> list[str]:
         return self.names
     def eval(self):
         self.inner_model.eval()
     @abc.abstractmethod
-    def forward_activations(self, args) ->  List[torch.Tensor]:
+    def forward_activations(self, args) ->  list[torch.Tensor]:
         y,activations = self.inner_model.forward_activations(args)
         activations = [activations[i] for i in self.indices]
         return y,activations
 
 
 
-def intersect_lists(a:List,b:List):
+def intersect_lists(a:list,b:list):
     return list(set(a) & set(b))
 
 class DuplicateKeyError(ValueError):
@@ -52,7 +52,7 @@ class DuplicateKeyError(ValueError):
         super().__init__(*args)
 
 Input = Union[MutableMapping,Any]
-def flatten_dict(d_or_val:Input, prefix='', sep='/', allow_repeated=False)->Dict[str,Any]:
+def flatten_dict(d_or_val:Input, prefix='', sep='/', allow_repeated=False)->dict[str,Any]:
     print(d_or_val)
     if isinstance(d_or_val, MutableMapping):
         result = {}
@@ -72,7 +72,7 @@ def flatten_dict(d_or_val:Input, prefix='', sep='/', allow_repeated=False)->Dict
     else :
         return { prefix : d_or_val }
 
-def flatten_dict_list(d_or_val:Input,key="",full_name=True)->List[Tuple[str,Any]]:
+def flatten_dict_list(d_or_val:Input,key="",full_name=True)->list[tuple[str,Any]]:
     if isinstance(d_or_val, MutableMapping):
         result = []
         for k, v in d_or_val.items():
@@ -119,7 +119,7 @@ class AutoActivationsModule(ActivationsModule):
         self.register_hooks(self.activations)
         
 
-    def register_hooks(self,activations:List[nn.Module]):
+    def register_hooks(self,activations:list[nn.Module]):
         def store_activation(index):
             def hook(model, input, output):
                 self.values[index] = output.detach()
@@ -131,7 +131,7 @@ class AutoActivationsModule(ActivationsModule):
     def reset_values(self):
         self.values = {} 
 
-    def forward_activations(self, args) -> List[torch.Tensor]:
+    def forward_activations(self, args) -> list[torch.Tensor]:
         '''
         This function is not thread safe.
         '''
@@ -143,5 +143,5 @@ class AutoActivationsModule(ActivationsModule):
         activations_list = [self.values[i] for i in range(len(self.activations))]
         return activations_list
 
-    def activation_names(self) -> List[str]:
+    def activation_names(self) -> list[str]:
         return self.names

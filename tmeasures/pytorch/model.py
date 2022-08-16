@@ -38,9 +38,9 @@ class FilteredActivationsModule(ActivationsModule):
         self.inner_model.eval()
     @abc.abstractmethod
     def forward_activations(self, args) ->  list[torch.Tensor]:
-        y,activations = self.inner_model.forward_activations(args)
+        activations = self.inner_model.forward_activations(args)
         activations = [activations[i] for i in self.indices]
-        return y,activations
+        return activations
 
 
 

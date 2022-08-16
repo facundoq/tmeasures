@@ -75,8 +75,7 @@ class PytorchActivationsIterator:
                 # print(f"act it starting,num workers {self.o.num_workers}:")
                 for row in tqdm.trange(rows, disable=not self.o.verbose, leave=False):
                     row_dataset = self.dataset.row_dataset(row)
-                    row_dataloader = DataLoader(row_dataset, batch_size=self.o.batch_size, shuffle=False,
-                                                num_workers=0,pin_memory=True)
+                    row_dataloader = DataLoader(row_dataset, batch_size=self.o.batch_size, shuffle=False, num_workers=0,pin_memory=True)
                     n_batch = len(row_dataloader)
 
                     row_qs = {l: IterableQueue(n_batch,maxsize=1,name=f"q({l}_{row})") for l in layers}

@@ -9,5 +9,5 @@
 11. Add labels to TQDM bars to indicate the measure being computed (use abbreviation)
 12. Re-add Distance implementations
 13. Add Numpy-Pytorch adapter. 
-14. Check Numpy and Pytorch implementations coincide in their results
+14. Check Numpy and Pytorch implementations match in their results
 15. Add graph or tree visualization (or at least a hierarchical visualization) using colors to indicate invariance

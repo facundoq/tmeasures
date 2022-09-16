@@ -7,6 +7,8 @@ from .utils import get_all
 
 ActivationsByLayer = List[np.ndarray]
 
+# TODO change `layer` for `activation` in variable/methods to unify vocabulary
+
 class MeasureResult:
     def __init__(self,layers:ActivationsByLayer,layer_names:List[str],measure:Measure,extra_values=dict()):
         assert (len(layers) == len(layer_names))

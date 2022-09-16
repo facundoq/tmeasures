@@ -29,7 +29,7 @@ def get_relative_errors(results: 'np.ndarray[MeasureResult]', reference: Measure
 
 
 
-def plot_relative_error_heatmap(heatmap, plot_filepath: Path,
+def plot_relative_error_heatmap(heatmap, 
                                 labels_samples: List[str], labels_transformations: List[str]):
     # plot a heatmap of relative errors between the MeasureResults in `results` and `reference`
     
@@ -50,5 +50,3 @@ def plot_relative_error_heatmap(heatmap, plot_filepath: Path,
             text = ax.text(j, i, value_str,
                            ha="center", va="center", color="#8aff66")
 
-    plt.savefig(plot_filepath, bbox_inches="tight")
-    plt.close()

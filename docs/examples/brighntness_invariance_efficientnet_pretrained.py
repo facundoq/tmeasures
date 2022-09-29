@@ -14,16 +14,14 @@ import torch
 
 from pathlib import Path
 
-
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 results_path = Path("~/tm_example_pytorch/").expanduser()
 results_path.mkdir(parents=True, exist_ok=True)
 
 from torchvision import models
 
 
-# model = models.efficientnet_b0(weights = models.EfficientNet_B0_Weights.IMAGENET1K_V1)
-model = models.efficientnet_v2_s()
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+model = models.efficientnet_b0(weights = models.EfficientNet_B0_Weights.IMAGENET1K_V1)
 model = model.to(device)
 
 """# Measure model's invariance 
@@ -89,10 +87,7 @@ def filter_stochastic(a):
     return not str(a).startswith("StochasticDepth")
 
 activations_module = tm.pytorch.AutoActivationsModule(model,filter=filter_stochastic)
-print(len(activations_module.names),len(activations_module.activations))
-model.eval()
-for a in activations_module.activations:
-    print(a,a.training)
+
     # a.training=False
 """# Computing the measure
 Last step before computing the measure: we need to define a PyTorchMeasureOptions object to configure where and the measure will be computed. The batch_size and num_workers keywords are analogous to the ones used in PyTorch's DataLoader.

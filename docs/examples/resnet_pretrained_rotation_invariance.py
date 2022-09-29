@@ -19,7 +19,7 @@ if __name__ == '__main__':
 
     # MODEL
     
-    model = models.resnet18(pretrained=True)
+    model = models.resnet18(weights=models.ResNet18_Weights.IMAGENET1K_V1)
     # Measure model's invariance  to rotations
     model = model.to(device)
     

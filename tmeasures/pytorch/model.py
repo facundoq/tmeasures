@@ -5,6 +5,8 @@ import torch
 import abc
 from typing import Callable,MutableMapping,Any,Union
 
+from tmeasures.utils import get_all
+
 
 class ActivationsModule(nn.Module):
 
@@ -107,14 +109,16 @@ def named_children_deep(m: torch.nn.Module):
         return output
 
 class AutoActivationsModule(ActivationsModule):
-    def __init__(self,module:nn.Module,full_name=True) -> None:
+    def __init__(self,module:nn.Module,full_name=True,filter:Callable=lambda x: True) -> None:
         super().__init__()
         self.reset_values()
         self.module = module
         self.children_tree = named_children_deep(module)
         
         self.names,self.activations = zip(*flatten_dict_list(self.children_tree,full_name=full_name))
-        
+        filter_indices = [i for i,a in enumerate(self.activations) if filter(a)]
+        self.names=get_all(self.names,filter_indices)
+        self.activations=get_all(self.activations,filter_indices)
 
         self.register_hooks(self.activations)
         
@@ -139,6 +143,15 @@ class AutoActivationsModule(ActivationsModule):
         self.reset_values()
         # call model, hooks are executed
         self.module.forward(args)
+        
+        # Check that all original activations are present in the values
+        nv,na = len(self.values),len(self.activations)
+        if nv!=na:
+            indices_a = set(list(range(len(self.activations))))
+            indices_v = set(list(self.values.keys()))
+            diff = indices_a-indices_v
+            missing_names = [self.activations[i] for i in diff]
+            assert nv==na, f"Values output by network ({nv}) dont match original number of activations ({na}). Values: \n {missing_names}"
         # transform to list and ensure order of values is same as order of activation names
         activations_list = [self.values[i] for i in range(len(self.activations))]
         return activations_list

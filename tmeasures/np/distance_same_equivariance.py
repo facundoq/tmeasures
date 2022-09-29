@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import List
 from .activations_iterator import ActivationsIterator
 from tmeasures import MeasureResult

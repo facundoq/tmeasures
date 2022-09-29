@@ -3,7 +3,7 @@ from __future__ import annotations
 from torch import  nn
 import torch
 import abc
-from typing import Callable,MutableMapping,Any,Union
+from typing import Callable, List,MutableMapping,Any, Tuple,Union
 
 from tmeasures.utils import get_all
 
@@ -11,11 +11,11 @@ from tmeasures.utils import get_all
 class ActivationsModule(nn.Module):
 
     @abc.abstractmethod
-    def activation_names(self) -> list[str]:
+    def activation_names(self) -> List[str]:
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def forward_activations(self, args) -> list[torch.Tensor]:
+    def forward_activations(self, args) -> List[torch.Tensor]:
         raise NotImplementedError()
 
     def n_activations(self):
@@ -34,19 +34,19 @@ class FilteredActivationsModule(ActivationsModule):
         self.indices = [original_names.index(n) for n in self.names]
     def forward(self):
         return self.inner_model.forward()
-    def activation_names(self) -> list[str]:
+    def activation_names(self) -> List[str]:
         return self.names
     def eval(self):
         self.inner_model.eval()
     @abc.abstractmethod
-    def forward_activations(self, args) ->  list[torch.Tensor]:
+    def forward_activations(self, args) ->  List[torch.Tensor]:
         activations = self.inner_model.forward_activations(args)
         activations = [activations[i] for i in self.indices]
         return activations
 
 
 
-def intersect_lists(a:list,b:list):
+def intersect_lists(a:List,b:List):
     return list(set(a) & set(b))
 
 class DuplicateKeyError(ValueError):
@@ -74,7 +74,7 @@ def flatten_dict(d_or_val:Input, prefix='', sep='/', allow_repeated=False)->dict
     else :
         return { prefix : d_or_val }
 
-def flatten_dict_list(d_or_val:Input,key="",full_name=True)->list[tuple[str,Any]]:
+def flatten_dict_list(d_or_val:Input,key="",full_name=True)->List[Tuple[str,Any]]:
     if isinstance(d_or_val, MutableMapping):
         result = []
         for k, v in d_or_val.items():
@@ -123,7 +123,7 @@ class AutoActivationsModule(ActivationsModule):
         self.register_hooks(self.activations)
         
 
-    def register_hooks(self,activations:list[nn.Module]):
+    def register_hooks(self,activations:List[nn.Module]):
         def store_activation(index):
             def hook(model, input, output):
                 self.values[index] = output.detach()
@@ -135,7 +135,7 @@ class AutoActivationsModule(ActivationsModule):
     def reset_values(self):
         self.values = {} 
 
-    def forward_activations(self, args) -> list[torch.Tensor]:
+    def forward_activations(self, args) -> List[torch.Tensor]:
         '''
         This function is not thread safe.
         '''
@@ -156,5 +156,5 @@ class AutoActivationsModule(ActivationsModule):
         activations_list = [self.values[i] for i in range(len(self.activations))]
         return activations_list
 
-    def activation_names(self) -> list[str]:
+    def activation_names(self) -> List[str]:
         return self.names

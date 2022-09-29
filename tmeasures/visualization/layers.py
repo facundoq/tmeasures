@@ -14,7 +14,7 @@ from scipy.stats import f_oneway, anderson_ksamp
 
 from statsmodels.stats.multicomp import pairwise_tukeyhsd
 
-def tukey_same_mean_test(results:list[tm.MeasureResult],alpha:float,max_samples_per_group=2000):
+def tukey_same_mean_test(results:List[tm.MeasureResult],alpha:float,max_samples_per_group=2000):
     n_layers = [len(r.layers) for r in results]
     n = n_layers[0]
     assert all([x==n for x in n_layers]),"Results should have the same number of activations"
@@ -31,7 +31,7 @@ def tukey_same_mean_test(results:list[tm.MeasureResult],alpha:float,max_samples_
 
     return rejections
 
-def anderson_ksamples_test(measures:list[tm.MeasureResult]):
+def anderson_ksamples_test(measures:List[tm.MeasureResult]):
     n_layers = [len(r.layers) for r in measures]
     n = n_layers[0]
     assert all(map(lambda x: x==n,n_layers)),"Results should have the same number of activations"
@@ -44,7 +44,7 @@ def anderson_ksamples_test(measures:list[tm.MeasureResult]):
 
     return results
 
-def anova_same_mean_test(measures:list[tm.MeasureResult]):
+def anova_same_mean_test(measures:List[tm.MeasureResult]):
     n_layers = [len(r.layers) for r in measures]
     n = n_layers[0]
     assert all(map(lambda x: x==n,n_layers)),"Results should have the same number of activations"

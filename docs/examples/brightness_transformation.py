@@ -89,20 +89,23 @@ def plot_transformed_images():
 layer_count = 0
 
 def filter_stochastic(a):
+    if  str(a).startswith("StochasticDepth"):
+        return False
     global layer_count
-    if layer_count<2:
+    if layer_count<5:
         layer_count+=1
         return True
     else:
         return False
-    return str(a) in selected_layers
-    return str(a).startswith("GELU")#(not str(a).startswith("StochasticDepth")) and (not str(a).startswith("NonDynamicallyQuantizableLinear"))
+def filter_vit(a):
+    return str(a).startswith("GELU")
+    #and (not str(a).startswith("NonDynamicallyQuantizableLinear"))
 
 activations_module = tm.pytorch.AutoActivationsModule(model,filter=filter_stochastic)
 
 #%%
 # Define options for computing the measure
-options = tm.pytorch.PyTorchMeasureOptions(batch_size=32, num_workers=0,model_device=device,measure_device=device,data_device="cpu")
+options = tm.pytorch.PyTorchMeasureOptions(batch_size=4, num_workers=0,model_device=device,measure_device=device,data_device="cpu")
 #%%
 # Define the measure and evaluate it
 #measure = tm.pytorch.NormalizedVarianceInvariance()

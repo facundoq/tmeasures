@@ -3,11 +3,8 @@ from tmeasures.pytorch.stats_running import RunningMeanWelford, RunningMeanAndVa
 
 class Variance(PyTorchLayerMeasure):
     def eval(self, st_iterator: STMatrixIterator, layer_name: str):
-        print(layer_name)
-        if layer_name == "/features/Conv2dNormActivation_0/Conv2d_0":
-            raise ValueError("FAKE ERROR")
-
         mean = RunningMeanWelford()
+        
         for row, row_iterator in enumerate(st_iterator):
             # print(f"frow {layer_name}",flush=True)
             row_variance = RunningMeanAndVarianceWelford()

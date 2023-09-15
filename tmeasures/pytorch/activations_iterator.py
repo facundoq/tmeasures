@@ -184,9 +184,9 @@ class PytorchActivationsIterator:
             server_thread = executor.submit(self.feed_threads,tm)
             logger.info("starting worker threads")
             worker_threads = {l:executor.submit(m.eval,q,l) for l,q in tm.qs.items()}
-            assert False
+            
             r = self.check_finished(worker_threads,server_thread,tm)
-            assert False
+            
             if r is None:
                 return [t.result() for t in worker_threads.values()]
             else:

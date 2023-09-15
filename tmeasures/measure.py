@@ -11,7 +11,7 @@ ActivationsByLayer = List[np.ndarray]
 
 class MeasureResult:
     def __init__(self,layers:ActivationsByLayer,layer_names:List[str],measure:Measure,extra_values=dict()):
-        assert (len(layers) == len(layer_names))
+        assert (len(layers) == len(layer_names)), f"The number of layers {len(layers)} should match the length of the layer_names list {layer_names} "
         self.layers=layers
         self.layer_names=layer_names
         self.measure=measure

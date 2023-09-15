@@ -4,3 +4,4 @@ wheel
 sphinx
 codecov
 pytest-cov
+namedthreads

@@ -74,3 +74,28 @@ class SequentialWithIntermediates(nn.Sequential, ActivationsModule):
         elif name == "Block":
             name = "b"
         return name
+    
+import ctypes, os, threading
+def set_thread_name_np(the_name):
+    the_lib_path = "/lib/libpthread-2.42.so"
+    if not os.path.isfile(the_lib_path):
+        return None
+    try:
+        libpthread = ctypes.CDLL(the_lib_path)
+    except:
+        return None
+    if hasattr(libpthread, "pthread_setname_np"):
+        pthread_setname_np = libpthread.pthread_setname_np
+        pthread_setname_np.argtypes = [ctypes.c_void_p,
+                                       ctypes.c_char_p]
+        pthread_setname_np.restype = ctypes.c_int
+        if isinstance(the_name, str):
+            the_name = the_name.encode('ascii', 'replace')
+        if type(the_name) is not bytes:
+            return None
+        the_thread = threading.current_thread()
+        ident = getattr(the_thread, "ident", None)
+        if ident is not None:
+            pthread_setname_np(ident, the_name[:15])
+            return True
+    return None    

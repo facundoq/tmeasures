@@ -15,21 +15,24 @@ class IterableQueue(Sized, Iterable):
         self.name=name
         self.n = n
         self.i = 0
+        self.stop=False
 
     def __len__(self):
         return self.n
 
-    def put(self, x):
-        self.queue.put(x)
+    def put(self, x,block=True,timeout=None):
+        self.queue.put(x,block=block,timeout=timeout)
 
     def __iter__(self):
         self.i = 0
         return self
-
+    def get(self,block=True,timeout=None):
+        return self.queue.get(block=block,timeout=timeout)
+    
     def __next__(self):
         # print(f"next {self.i}/{self.n} (maxsize {self.maxsize})")
         self.i += 1
-        if self.i == self.n + 1:
+        if self.i == self.n + 1 or self.stop:
             raise StopIteration()
         # print(f"ITQUEUE {self.name}: Getting item...")
         # item = None

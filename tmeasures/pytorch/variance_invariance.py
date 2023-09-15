@@ -16,7 +16,7 @@ class TransformationVarianceInvariance(PyTorchMeasure):
         iterator = PytorchActivationsIterator(model, dataset2d, o)
         results = iterator.evaluate(Variance())
         return PyTorchMeasureResult(results, model.activation_names(), self)
-
+    
 
 class SampleVarianceInvariance(PyTorchMeasure):
 

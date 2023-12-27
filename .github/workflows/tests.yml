@@ -14,7 +14,7 @@ jobs:
     strategy:
       matrix:
         python-version: ['3.10']
-        backend: [tensorflow, pytorch]
+        backend: [pytorch]
         os: [ubuntu-latest]
 
     steps:
@@ -29,19 +29,19 @@ jobs:
     - name: Update version in setup.py
       run: >-
         sed -i "s/{{VERSION_PLACEHOLDER}}/${{ steps.tag.outputs.TAG_NAME }}/g" setup.py
-    - name: Install dependencies, ${{ matrix.backend }}, and probflow
+    - name: Install dependencies, ${{ matrix.backend }}, and this library
       run: |
         python -m pip install --upgrade pip
-        python -m pip install -e .[dev,${{ matrix.backend }}]
+        
     - name: Lint with flake8
       run: |
-        flake8 src/probflow tests
+        flake8 tmeasures tests
     - name: Style checks with black
       run: |
-        black --check src/probflow tests
+        black --check tmeasures tests
     - name: Run tests
       run: |
-        pytest tests/unit/${{ matrix.backend }} --cov=probflow --cov-report xml:coverage.xml
+        pytest tests --cov=tmeasures --cov-report xml:coverage.xml
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1
       with:

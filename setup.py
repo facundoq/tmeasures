@@ -69,8 +69,6 @@ setup(
         "tqdm",
         "opencv-python",
         "scikit-image",
-
-
     ],
 
     package_data={

@@ -35,7 +35,7 @@ def compare_variance_batched(m:RunningVariance,x:torch.Tensor):
     expected = x.var(dim=(0,1))
     actual = m.var()
     assert torch.sum(actual < 0) == 0, f"Variance can't be negative {actual}"
-    torch.testing.assert_allclose(actual,expected,rtol=eps,atol=abs)
+    torch.testing.assert_close(actual,expected,rtol=eps,atol=abs)
 
 
 def compare_variance(m:RunningVariance,x:torch.Tensor):
@@ -44,7 +44,7 @@ def compare_variance(m:RunningVariance,x:torch.Tensor):
     expected = x.var(dim=0)
     actual = m.var()
     assert torch.sum(actual < 0) == 0, f"Variance can't be negative {actual}"
-    torch.testing.assert_allclose(actual, expected, rtol=eps, atol=abs)
+    torch.testing.assert_close(actual, expected, rtol=eps, atol=abs)
 
 
 def compare_means(m:RunningMean,x:torch.Tensor):
@@ -52,7 +52,7 @@ def compare_means(m:RunningMean,x:torch.Tensor):
         m.update(x[i, :])
     expected = x.mean(dim=0)
     actual = m.mean()
-    torch.testing.assert_allclose(actual, expected, rtol=eps, atol=abs)
+    torch.testing.assert_close(actual, expected, rtol=eps, atol=abs)
 
 
 def compare_means_batched(m:RunningMean,x:torch.Tensor):
@@ -60,7 +60,7 @@ def compare_means_batched(m:RunningMean,x:torch.Tensor):
         m.update_batch(x[i,:, :])
     expected = x.mean(dim=(0,1))
     actual = m.mean()
-    torch.testing.assert_allclose(actual, expected, rtol=eps, atol=abs)
+    torch.testing.assert_close(actual, expected, rtol=eps, atol=abs)
 
 
 @pytest.mark.parametrize("x", values)

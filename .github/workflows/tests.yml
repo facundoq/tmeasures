@@ -32,7 +32,7 @@ jobs:
     - name: Install dependencies, ${{ matrix.backend }}, and this library
       run: |
         python -m pip install --upgrade pip
-        
+        # python -m pip install -e .[dev,${{ matrix.backend }}]
     - name: Lint with flake8
       run: |
         flake8 tmeasures tests

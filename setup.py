@@ -13,7 +13,7 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 
 url="https://github.com/facundoq/tmeasures"
-VERSION="1.2.5"
+VERSION="{{VERSION_PLACEHOLDER}}"
 
 class UploadCommand(Command):
     """Support setup.py upload."""
@@ -105,7 +105,7 @@ setup(
     # could also include long_description, download_url, etc.
     long_description=long_description,
     long_description_content_type='text/markdown',
-    cmdclass={
-        'upload': UploadCommand,
-    },
+    # cmdclass={
+    #     'upload': UploadCommand,
+    # },
 )

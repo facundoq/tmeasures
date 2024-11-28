@@ -69,6 +69,7 @@ setup(
         "tqdm",
         "opencv-python",
         "scikit-image",
+        "statsmodels",
     ],
 
     package_data={

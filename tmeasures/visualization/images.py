@@ -1,6 +1,24 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+def plot_images_rgb(images,invariance,cols=None):
+    N,C,H,W = images.shape
+    if cols is None:
+        cols = np.floor(np.sqrt(N)).astype(int)
+    rows = (N // cols) + (1 if N % cols >0 else 0)
+    invariance_fontsize = np.sqrt(cols)*2
+    print(rows,cols)
+    f, subplots = plt.subplots(rows,cols,dpi=150,figsize=(cols,rows))
+    for i in range(rows):
+        for j in range(cols):
+            ax = subplots[i,j]
+            ax.set_axis_off()
+            index = i*cols+j
+            if index <N:
+                filter_weights = images[index,]
+                im = ax.imshow(filter_weights,cmap="PuOr",interpolation='nearest')
+                label = f"{invariance[index]:.02}"
+                ax.text(0.5, 0.5,label, horizontalalignment='center',verticalalignment='center', transform=ax.transAxes,fontsize=invariance_fontsize,c="yellow")
     
 def plot_images_multichannel(images,invariance,vmin,vmax,colorbar_space=1):
     N,C,H,W = images.shape

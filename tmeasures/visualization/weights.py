@@ -2,7 +2,7 @@ from sklearn.decomposition import NMF
 import torch
 import numpy as np
 
-from tmeasures.visualization.images import plot_images_multichannel,plot_images_rgb
+from tmeasures.visualization.images import plot_images_multichannel, plot_images_rgb
 
 def reorder_conv2d_weights(activation:torch.nn.Module,invariance:np.array):
     with torch.no_grad():
@@ -61,8 +61,4 @@ def plot_conv2d_filters_rgb(conv2d:torch.nn.Module,invariance:np.array):
     weights = dict(conv2d.named_parameters())["weight"].detach().numpy()
     weights, invariance = sort_weights_invariance(weights,invariance)
     weights = weights_reduce_nmf(weights,3)
-
-    mi,ma=weights.min(),weights.max()
-    largest = max(abs(mi),abs(ma))
-    vmin,vmax = -largest,largest
-    plot_images_rgb(weights,invariance,vmin,vmax)
+    plot_images_rgb(weights,invariance)

@@ -55,10 +55,12 @@ def plot_conv2d_filters(conv2d:torch.nn.Module,invariance:np.array,sort=True, to
     largest = max(abs(mi),abs(ma))
     vmin,vmax = -largest,largest
     # print(weights.shape)
-    plot_images_multichannel(weights,invariance,vmin,vmax)
+    labels = [f"{i:.02}" for i in invariance]
+    plot_images_multichannel(weights,vmin,vmax,labels=labels)
 
 def plot_conv2d_filters_rgb(conv2d:torch.nn.Module,invariance:np.array):
     weights = dict(conv2d.named_parameters())["weight"].detach().numpy()
     weights, invariance = sort_weights_invariance(weights,invariance)
     weights = weights_reduce_nmf(weights,3)
-    plot_images_rgb(weights,invariance)
+    labels = [f"{i:.02}" for i in invariance]
+    plot_images_rgb(weights,labels=labels)

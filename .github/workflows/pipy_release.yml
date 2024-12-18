@@ -1,4 +1,4 @@
-name: Publish Python 🐍 distributions 📦 to PyPI
+name: 📦 Build and publish to PyPI 🐍
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
      - '*'
 jobs:
   build:
-    name: Build 📦 publish Python 🐍 distributions 📦 to PyPI
+    name: 📦 Build and publish to PyPI 🐍
     runs-on: ubuntu-latest
     environment:
       name: pypi

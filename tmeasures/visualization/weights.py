@@ -14,7 +14,7 @@ def reorder_conv2d_weights(activation:torch.nn.Module,invariance:np.array):
 
 def sort_weights_invariance(weights:np.array,invariance:np.array,top_k:int=None):
     indices = invariance.argsort()
-    if not top_k is None:
+    if top_k is not None:
         indices = np.concatenate( [indices[:top_k],indices[-top_k:]])
     weights = weights[indices,:,:,:]
     invariance = invariance[indices]
@@ -38,7 +38,7 @@ def weight_inputs_filter_importance(weights:np.array,max_inputs:int):
     for i in range(Fo):
         indices = np.argsort(input_importance[i,:])[::-1]
         weights[i,:,:,:] = weights[i,indices,:,:]
-    if not max_inputs is None:
+    if max_inputs is not None:
         weights[:,:max_inputs,]
     return weights
 
@@ -46,11 +46,11 @@ def plot_conv2d_filters(conv2d:torch.nn.Module,invariance:np.array,sort=True, to
     weights = dict(conv2d.named_parameters())["weight"].detach().numpy()
     mi,ma=weights.min(),weights.max()
 
-    if sort or not top_k is None :
+    if sort or top_k is not None :
         weights, invariance = sort_weights_invariance(weights,invariance,top_k)
-    if not nmf_components is None:
+    if nmf_components is not None:
         weights = weights_reduce_nmf(weights,nmf_components)
-    if not max_inputs is None:   
+    if max_inputs is not None:   
         weights = weight_inputs_filter_importance(weights,max_inputs)
     largest = max(abs(mi),abs(ma))
     vmin,vmax = -largest,largest
@@ -61,6 +61,9 @@ def plot_conv2d_filters(conv2d:torch.nn.Module,invariance:np.array,sort=True, to
 def plot_conv2d_filters_rgb(conv2d:torch.nn.Module,invariance:np.array):
     weights = dict(conv2d.named_parameters())["weight"].detach().numpy()
     weights, invariance = sort_weights_invariance(weights,invariance)
+    
+    magnitudes = np.abs(weights).mean(axis=(1,2,3))
+    
     weights = weights_reduce_nmf(weights,3)
-    labels = [f"{i:.02}" for i in invariance]
+    labels = [f"{i:.02}" for i,m in zip(invariance,magnitudes)]
     plot_images_rgb(weights,labels=labels)

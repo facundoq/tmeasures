@@ -1,0 +1,31 @@
+[project]
+name = "tmeasures"
+version = "1.3.0"
+description = "Invariance, Same-Equivariance and other measures for Neural Networks. Support for PyTorch (now) and TensorFlow (coming)."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "numpy>=2.2.0",
+    "matplotlib>=3.10.0",
+    "scipy",
+    "scikit-image>=0.25.0",
+    "scikit-learn",
+    "data-science-types",
+    "statsmodels>=0.14.4",
+    "tqdm>=4.67.1",
+
+]
+
+[project.optional-dependencies]
+torch=[  
+    "torch>=2",
+    "torchvision", 
+]
+dev = [
+  "ipython",
+]
+
+[[tool.uv.index]]
+name = "pypi"
+url = "https://pypi.org/simple/"
+publish-url = "https://pypi.org/legacy/"

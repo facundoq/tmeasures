@@ -16,13 +16,16 @@ def get_limit(m:MeasureResult, op_code:str):
     return op(vals)
 
 
-def plot_heatmap(m:MeasureResult, vmin=None, vmax=None):
-
-    for i,l in enumerate(m.layers):
-        d=len(l.shape)
+def plot_heatmap(m:MeasureResult, vmin=None, vmax=None,sort=True):
+    layers = []
+    for i,layer in enumerate(m.layers):
+        d=len(layer.shape)
         if d>1:
             dims = tuple(range(1,d))
-            m.layers[i]=np.nanmean(l,axis=dims)
+            layer=np.nanmean(layer,axis=dims)
+        if sort:
+            layer.sort()
+        layers.append(layer)
 
     if vmax is None: vmax = get_limit(m, "max")
     if vmin is None:
@@ -34,7 +37,7 @@ def plot_heatmap(m:MeasureResult, vmin=None, vmax=None):
 
     f, axes = plt.subplots(1, n, dpi=150, squeeze=False)
     mappable=None
-    for i, (activation, name) in enumerate(zip(m.layers, m.layer_names)):
+    for i, (activation, name) in enumerate(zip(layers, m.layer_names)):
         ax = axes[0,i]
         ax.axis("off")
         activation = activation[:, np.newaxis]

@@ -147,7 +147,7 @@ def add_legends(ax, original_labels:List[str], plot_mean:bool, legend_location):
         labels=[labels[-1]]
         put_legend=True
     else:
-        if not original_labels is None:
+        if original_labels is not None:
             # Put legend below current axis
             handles, labels = ax.get_legend_handles_labels()
             handles_new = [Line2D([0], [0]) for h in handles]
@@ -168,28 +168,28 @@ def add_legends(ax, original_labels:List[str], plot_mean:bool, legend_location):
 
 def shorten_layer_names(labels:List[str])->List[str]:
     result=[]
-    for l in labels:
+    for label in labels:
         i=0
         # get the index of the first letter after the last _
         chars=[str(n) for n in range(9)]+["_"]
-        while i<len(l) and l[i] in chars: i+=1
+        while i<len(label) and label[i] in chars: i+=1
         # remove all chars before the last _
-        l=l[i:]
+        label=label[i:]
 
         # if l[1]=="_":
         #     l=l[2:]
-        if l.startswith("fc"):
-            l="fc"+l[2:]
-        if l=="c":
-            l="conv"
-        if l.endswith("MaxPool2d"):
-            l=l[:-9]+"mp"
-            result.append(l)
-        elif l.endswith("Flatten"):
-            l=l[:-7]+"vect"
-            result.append(l)
+        if label.startswith("fc"):
+            label="fc"+label[2:]
+        if label=="c":
+            label="conv"
+        if label.endswith("MaxPool2d"):
+            label=label[:-9]+"mp"
+            result.append(label)
+        elif label.endswith("Flatten"):
+            label=label[:-7]+"vect"
+            result.append(label)
         else:
-            result.append(l)
+            result.append(label)
     return result
 
 def get_colors(colors:np.ndarray,n:int)->np.ndarray:
@@ -268,11 +268,13 @@ def plot_average_activations_same_model(results:List[tm.MeasureResult], labels:L
     colors=get_colors(colors,n)
 
     f, ax = plt.subplots(dpi=get_dpi(n))
+    for item in ax.get_xticklabels():
+        item.set_fontsize(7)
     f.suptitle(title)
 
     
 
-    if linestyles is None and n <= 4 and plot_mean == False:
+    if linestyles is None and n <= 4 and not plot_mean:
         linestyles = ["-", "--", ":", "-."]
     
     mean_and_variance = RunningMeanAndVarianceWelford()
@@ -292,7 +294,7 @@ def plot_average_activations_same_model(results:List[tm.MeasureResult], labels:L
 
         ax.plot(x, y, label=label, linestyle=linestyle, color=color,marker="o",markersize=3)
 
-        if not mark_layers is None:
+        if mark_layers is not None:
             x_mark = x[mark_layers]
             y_mark = y[mark_layers]
             ax.plot(x_mark,y_mark,linestyle="",color=color,marker="s")

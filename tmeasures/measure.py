@@ -58,6 +58,12 @@ class MeasureResult:
 
     def layers_dict(self):
         return dict(zip(self.layer_names,self.layers))
+    
+    def filter(self,f):
+        layer_names,layers=list(zip(*filter(f,zip(self.layer_names,self.layers))))
+        
+        return MeasureResult(list(layers),list(layer_names),self.measure,self.extra_values)
+    
 
 
 

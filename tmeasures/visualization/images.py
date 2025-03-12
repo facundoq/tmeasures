@@ -15,7 +15,7 @@ def plot_images_rgb(images,row_context=None,labels=None,cols=None,cmap=None,labe
     if cmap is None:
         cmap = "gray"
     for i in range(rows):
-        if not row_context is None:
+        if row_context is not None:
             subplots[i,0].imshow(row_context[i])
         for j in range(cols):
             ax = subplots[i,j+cols_extra]
@@ -24,8 +24,8 @@ def plot_images_rgb(images,row_context=None,labels=None,cols=None,cmap=None,labe
             if index <N:
                 filter_weights = images[index,]
                 ax.imshow(filter_weights,cmap=cmap,interpolation='nearest')
-                if not labels is None:
-                    ax.text(0.5, 0.5,labels[index], horizontalalignment='center',verticalalignment='center', transform=ax.transAxes,fontsize=label_fontsize,c=label_color)
+                if labels is not None:
+                    ax.text(0.5, 0.5,labels[index], horizontalalignment='center',verticalalignment='center', transform=ax.transAxes,fontsize=label_fontsize,c="k")
     
 def plot_images_multichannel(images,vmin,vmax,colorbar_space=1,labels=None):
     N,C,H,W = images.shape
@@ -37,8 +37,8 @@ def plot_images_multichannel(images,vmin,vmax,colorbar_space=1,labels=None):
             ax = subplots[i,j]
             ax.set_axis_off()
             im = ax.imshow(filter_weights,cmap="PuOr",vmin=vmin,vmax=vmax,interpolation='nearest')
-            if not labels is None:
-                ax.text(0.5, 0.5,labels[i], horizontalalignment='center',verticalalignment='center', transform=ax.transAxes,fontsize=invariance_fontsize)
+            if labels is not None:
+                ax.text(0.5, 0.5,labels[i], horizontalalignment='center',verticalalignment='center', transform=ax.transAxes,fontsize=invariance_fontsize,c="k")
     right=colorbar_space/(C+colorbar_space)
     
     f.subplots_adjust(right=1-right)

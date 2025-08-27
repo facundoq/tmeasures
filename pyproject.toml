@@ -1,9 +1,14 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 [project]
 name = "tmeasures"
 version = "1.3.0"
-description = "Invariance, Same-Equivariance and other measures for Neural Networks. Support for PyTorch (now) and TensorFlow (coming)."
+description = "Invariance, Same-Equivariance and other measures for Neural Networks. Support for PyTorch."
+keywords=["transformational", "measures", "equivariance", "same-equivariance", "invariance", "variance", "neural networks", "python", "pytorch", "numpy"]
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.11"
 dependencies = [
     "numpy>=2.2.0",
     "matplotlib>=3.10.0",
@@ -13,8 +18,38 @@ dependencies = [
     "data-science-types",
     "statsmodels>=0.14.4",
     "tqdm>=4.67.1",
-
 ]
+
+
+[dependency-groups]
+dev = [
+    "pandas-stubs>=2.2.3.250308",
+    "scipy-stubs>=1.15.2.1",
+    "microsoft-python-type-stubs",
+    "jupyter>=1.1.1",
+    "pytest>=8.4.1",
+    "tmeasures",
+    "types-tqdm>=4.67.0.20250401",
+    "pre-commit>=4.2.0",
+    "poethepoet>=0.35.0",
+]
+docs = [
+    "sphinx>=8.2.3",
+    "sphinx-design>=0.6.1",
+    "sphinx-prompt>=1.10.0",
+    "numpydoc>=1.9.0",
+    "sphinx-gallery>=0.19.0",
+    "pydata-sphinx-theme>=0.16.1",
+    "sphinx-autobuild>=2024.10.3",
+    "sphinx-autodoc-typehints>=3.2.0",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/facundoq/tmeasures"
+"Bug Reports" = "https://github.com/facundoq/tmeasures/issues"
+"Source" = "https://github.com/facundoq/tmeasures"
+"Documentation" = "https://tmeasures.readthedocs.io/"
+"Package" = "https://pypi.org/project/tmeasures/"
 
 [project.optional-dependencies]
 torch=[  
@@ -29,3 +64,73 @@ dev = [
 name = "pypi"
 url = "https://pypi.org/simple/"
 publish-url = "https://pypi.org/legacy/"
+
+[tool.uv]
+default-groups = ["dev", "docs"]
+
+[tool.uv.sources]
+microsoft-python-type-stubs = { git = "https://github.com/microsoft/python-type-stubs.git" }
+tmeasures = { workspace = true }
+
+
+[tool.ruff]
+line-length = 120
+
+target-version = "py311"
+exclude=[
+    ".git",
+    ".github",
+    "__pycache__",
+    "dist",
+    "doc/_build",
+    "doc/auto_examples",
+    "docs",
+    "build",
+    "tmeasures/_version.py",
+]
+[tool.ruff.lint]
+# all rules can be found here: https://beta.ruff.rs/docs/rules/
+select = ["E", "F", "W", "I"]
+ignore=[
+    # space before : (needed for how black formats slicing)
+    "E203",
+    # explicit reexport
+    "F401",
+    # fstrings with no variables
+    "F541",
+    # do not assign a lambda expression, use a def
+    "E731",
+    # do not use variables named 'l', 'O', or 'I'
+    "E741",
+    # line length
+    "E501"
+]
+
+[tool.ruff.lint.per-file-ignores]
+# It's fine not to put the import at the top of the file in the examples
+# folder.
+"*/__init__.py"=["I001","E402"]
+"examples/*"=["E402"]
+"doc/conf.py"=["E402"]
+"doc/_templates/numpydoc_docstring.py"=["F821", "W292"]
+"*.ipynb" = ["ALL"]
+
+
+[tool.pytest.ini_options]
+addopts = "--color=yes"
+doctest_optionflags = "NORMALIZE_WHITESPACE"
+
+
+
+
+[tool.poe]
+executor.type = "uv"
+
+[tool.poe.tasks]
+test = "uv run pytest tmeasures"
+lint = "uvx ruff check --fix tmeasures "
+format = "uvx ruff format tmeasures"
+build = "uv build"
+docs = "uv run sphinx-build docs docs/_build"
+serve-docs = " uv run sphinx-autobuild --open-browser docs docs/_build"
+precommit = "uv run pre-commit run --all-files"

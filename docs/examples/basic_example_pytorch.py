@@ -56,7 +56,7 @@ if __name__ == '__main__':
 
     torch.manual_seed(0)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    results_path = Path("~/tm_example_pytorch/").expanduser()
+    results_path = Path("~/.tm_example_pytorch/").expanduser()
     results_path.mkdir(parents=True, exist_ok=True)
 
     # DATASET
@@ -147,7 +147,7 @@ if __name__ == '__main__':
     for measure,model in measures:
         exp_id = f"rot{degree_range}_{measure}"
         result_filepath = results_path / f'{exp_id}_result.pickle'
-        if os.path.exists(result_filepath) and False:
+        if os.path.exists(result_filepath):
             print(f"Measure {measure} already evaluated, loading...")
             # Load result (optional, in case you don't want to run the above or your session died)
             with open(result_filepath, 'rb') as f:

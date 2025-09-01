@@ -5,6 +5,7 @@ import abc
 import re
 from .utils import get_all
 
+## todo change np.ndarray to something more general
 ActivationsByLayer = List[np.ndarray]
 
 # TODO change `layer` for `activation` in variable/methods to unify vocabulary

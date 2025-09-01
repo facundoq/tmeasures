@@ -1,18 +1,20 @@
 from torch.utils.data import Dataset, IterableDataset, DataLoader
 import abc
-from .transformations import PyTorchTransformationSet
+
+from tmeasures.transformation import Transformation
+from .transformations import PyTorchTransformation, PyTorchTransformationSet
 import torch
 
 class Dataset2D(Dataset):
 
     @property
     @abc.abstractmethod
-    def len0(self):
+    def len0(self)->int:
         pass
 
     @property
     @abc.abstractmethod
-    def len1(self):
+    def len1(self)->int:
         pass
 
     @property
@@ -23,15 +25,16 @@ class Dataset2D(Dataset):
     def len(self):
         return self.len0 * self.len1
 
+    def d1tod2(self,idx:int):
+        return idx // self.len1, idx % self.len1
+            
     def __getitem__(self, idx):
         if len(idx) == 1:
-            i, j = idx // self.len1, idx % self.len1
-            return self.getitem2d(i, j)
-        elif len(idx) == 2:
-            i, j = idx
-            return self.getitem2d(i, j)
-        else:
-            raise ValueError(f"Invalid index: {idx}.")
+            idx = self.d1tod2(idx)
+        if len(idx) != 2:
+            raise ValueError(f"Invalid index: {idx}")
+        i, j = idx
+        return self.getitem2d(i, j)
 
     @abc.abstractmethod
     def getitem2d(self, i, j):
@@ -41,8 +44,9 @@ class Dataset2D(Dataset):
         return RowDataset(self,row)
 
     @abc.abstractmethod
-    def get_transformations(self, row:int, col_from:int, col_to:int):
+    def get_transformations(self, rows:list[int],cols:list[int])->list[PyTorchTransformation]:
         pass
+    
 
 
 class STDataset(Dataset2D):
@@ -85,8 +89,9 @@ class SampleTransformationDataset(STDataset):
     def len1(self):
         return self.len_transformations()
 
-    def get_transformations(self, row: int, col_from: int, col_to: int):
-        return self.transformations[col_from:col_to]
+    def get_transformations(self, rows:list[int],cols:list[int])->list[PyTorchTransformation]:
+        return [self.transformations[c] for c in cols]
+    
 
 class TransformationSampleDataset(STDataset):
 
@@ -106,8 +111,9 @@ class TransformationSampleDataset(STDataset):
     def len0(self):
         return self.len_transformations()
 
-    def get_transformations(self, row: int, col_from: int, col_to: int):
-        return [self.transformations[row]]*(col_to-col_from)
+    def get_transformations(self, rows:list[int],cols:list[int])->list[PyTorchTransformation]:
+        return [self.transformations[r] for r in rows]
+    
 
 class RowDataset(Dataset):
 

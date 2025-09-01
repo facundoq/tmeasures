@@ -1,3 +1,7 @@
+from collections.abc import Generator
+import typing
+
+from tmeasures.pytorch.transformations import PyTorchTransformation
 from .dataset2d import STDataset, Dataset2D
 import torch
 from torch.utils.data import DataLoader
@@ -25,12 +29,12 @@ import abc
 class ActivationsTransformer(abc.ABC):
 
     @abc.abstractmethod
-    def transform(self, activations: torch.Tensor, x: torch.Tensor, transformations: List[Transformation]) -> torch.Tensor:
+    def transform(self, activations: torch.Tensor, x: torch.Tensor, transformations: List[PyTorchTransformation]) -> torch.Tensor:
         pass
 
 
 class IdentityActivationsTransformer(ActivationsTransformer):
-    def transform(self, activations: torch.Tensor, x: torch.Tensor, transformations: List[Transformation]) -> torch.Tensor:
+    def transform(self, activations: torch.Tensor, x: torch.Tensor, transformations: List[PyTorchTransformation]) -> torch.Tensor:
         return activations
 
 from tmeasures import logger
@@ -44,6 +48,7 @@ class ThreadsManager:
         self.layers = layers
         self.qs = {l: IterableQueue(rows,maxsize=1,name=f"q({l})") for l in layers}
         self.row_qs = {l: IterableQueue(n_batch,maxsize=1,name=f"q({l}_row)") for l in layers}
+        
     @property
     def queues(self):
         return list(self.qs.values())+list(self.row_qs.values())
@@ -115,55 +120,136 @@ class PytorchActivationsIterator:
                     if not e is None:
                         logger.info(f"Worker exception, about to re raise from main thread\n{e}\n thread id {threading.get_ident()}\n")
                         raise e
-                    
+    
+    def move_activations_to_measure_device(self,activations:list[torch.Tensor]):
+        for i, layer_activations in enumerate(activations):
+                if self.o.model_device != self.o.measure_device:
+                    layer_activations=layer_activations.to(self.o.measure_device,non_blocking=True)
+
+    def transform_activations(self,activations:list[torch.Tensor],x_transformed,transformations)->list[torch.Tensor]:
+        for i, layer_activations in enumerate(activations):
+            activations[i] = self.activations_transformer.transform(layer_activations, x_transformed,transformations)
+
+    @torch.no_grad
+    def feed_threads2(self,tm:ThreadsManager):
+        layers = self.model.activation_names()
+        rows, cols = self.dataset.len0, self.dataset.len1
+    
+        # print(f"act it starting,num workers {self.o.num_workers}:")
+        dataloader = DataLoader(self.dataset, batch_size=self.o.batch_size, shuffle=False, num_workers=self.o.num_workers,pin_memory=True)
+        i=0
+        
+        for row in range(rows):
+            
+            for k, q in tm.qs.items():
+                logger.info(f"AI: putting row {row} dataloader for  layer {k}")
+                q.put(tm.row_qs[k])
+
+            # print(f"AI: finished putting row {row} dataloaders for all layers")
+            # for k,q in qs.items():
+            #     print(f"AI: {k}→ {q.queue.qsize()} items")
+            if tm.stop:
+                    logger.info("Server thread stopping, exception detected")
+                    return
+            col = 0
+            # print("col",col)
+        for batch_i,x_transformed in tqdm.tqdm(enumerate(dataloader), disable=not self.o.verbose, leave=False):
+            sample_i_start = batch_i*self.o.batch_size
+            i_samples = [self.dataset.d1tod2(i) for i in range(sample_i_start,sample_i_start+self.o.batch_size)]
+            i_rows, i_cols = typing.cast(tuple[list[int],list[int]], zip(*i_samples))
+            # print(f"AI: {batch_i}: moving to device {self.o.model_device}... ")
+            x_transformed = x_transformed.to(self.o.model_device,non_blocking=True)
+            # print("AI: getting activations..")
+            activations = self.model.forward_activations(x_transformed)
+            # print("AI: got activations")
+            transformations = self.dataset.get_transformations(i_rows,i_cols)
+            col_to = col + x_transformed.shape[0]
+            # Move acti
+            self.move_activations_to_measure_device(activations)
+            activations = self.transform_activations(activations,x_transformed,transformations)
+            if tm.stop:
+                    logger.info("Server thread stopping, exception detected")
+                    return
+            
+                # print(f"AI: act it, shape {layer_activations.shape}")
+                # print(f"AI: putting col {col} batch for layer {i} ({layers[i]})")
+            for row, row_activations in self.split_row_activations(activations,i_rows):
+                for i,layer_activations in enumerate(row_activations):
+                    tm.row_qs[layers[i]].put(layer_activations)
+
+                # print("AI: finished row")
+            # print("AI: finished all rows")
+
+    def split_row_activations(self,activations:list[torch.Tensor],i_rows:list[int])->Generator[tuple[int,list[torch.Tensor]]]:
+        all_rows = list(range(min(i_rows),max(i_rows)+1))
+        start = 0
+        last = all_rows[-1]
+        for current_row in all_rows:
+            if current_row == last:
+                end = len(i_rows)+1
+            else:
+                end = i_rows.index(current_row+1)
+                                
+            activations_row = [a[start:end,] for a in activations]
+            start=end+1
+            yield current_row,activations_row
+
+
+    @torch.no_grad
     def feed_threads(self,tm:ThreadsManager):
-         layers = self.model.activation_names()
-         rows, cols = self.dataset.len0, self.dataset.len1
-         
-         with torch.no_grad():
-                # print(f"act it starting,num workers {self.o.num_workers}:")
-                for row in tqdm.trange(rows, disable=not self.o.verbose, leave=False):
-                    row_dataset = self.dataset.row_dataset(row)
-                    row_dataloader = DataLoader(row_dataset, batch_size=self.o.batch_size, shuffle=False, num_workers=0,pin_memory=True)
-                    
-                    for k, q in tm.qs.items():
-                        logger.info(f"AI: putting row {row} dataloader for  layer {k}")
-                        q.put(tm.row_qs[k])
+        layers = self.model.activation_names()
+        rows, cols = self.dataset.len0, self.dataset.len1
 
-                    # print(f"AI: finished putting row {row} dataloaders for all layers")
-                    # for k,q in qs.items():
-                    #     print(f"AI: {k}→ {q.queue.qsize()} items")
+        # print(f"act it starting,num workers {self.o.num_workers}:")
+        for row in tqdm.trange(rows, disable=not self.o.verbose, leave=False):
+            row_dataset = self.dataset.row_dataset(row)
+            row_dataloader = DataLoader(row_dataset, batch_size=self.o.batch_size, shuffle=False, num_workers=0,pin_memory=True)
+            
+            for k, q in tm.qs.items():
+                logger.info(f"AI: putting row {row} dataloader for  layer {k}")
+                q.put(tm.row_qs[k])
+
+            # print(f"AI: finished putting row {row} dataloaders for all layers")
+            # for k,q in qs.items():
+            #     print(f"AI: {k}→ {q.queue.qsize()} items")
+            if tm.stop:
+                    logger.info("Server thread stopping, exception detected")
+                    return
+            col = 0
+            # print("col",col)
+            
+            for batch_i,x_transformed in enumerate(row_dataloader):
+                # print(f"AI: {batch_i}: moving to device {self.o.model_device}... ")
+                x_transformed = x_transformed.to(self.o.model_device,non_blocking=True)
+                # print("AI: getting activations..")
+                activations = self.model.forward_activations(x_transformed)
+                # print("AI: got activations")
+                
+                n_batch = x_transformed.shape[0]
+                col_to = col + n_batch
+                i_rows = [row]*n_batch
+                i_cols = list(range(col,col_to))
+
+                transformations = self.dataset.get_transformations(i_rows,i_cols)
+
+                for i, layer_activations in enumerate(activations):
+                    if self.o.model_device != self.o.measure_device:
+                        layer_activations=layer_activations.to(self.o.measure_device,non_blocking=True)
+
+                    
+                    
+                    layer_activations = self.activations_transformer.transform(layer_activations, x_transformed,transformations)
+                    # print(f"AI: act it, shape {layer_activations.shape}")
+                    # print(f"AI: putting col {col} batch for layer {i} ({layers[i]})")
+                    tm.row_qs[layers[i]].put(layer_activations)
+                    # print(f"put {layer_activations.shape} into {layers[i]} {row_qs[layers[i]]}")
+                    # Check if there's been an exception 
                     if tm.stop:
-                            logger.info("Server thread stopping, exception detected")
-                            return
-                    col = 0
-                    # print("col",col)
-                    
-                    for batch_i,x_transformed in enumerate(row_dataloader):
-                        # print(f"AI: {batch_i}: moving to device {self.o.model_device}... ")
-                        x_transformed = x_transformed.to(self.o.model_device,non_blocking=True)
-                        # print("AI: getting activations..")
-                        activations = self.model.forward_activations(x_transformed)
-                        # print("AI: got activations")
-                        col_to = col + x_transformed.shape[0]
-                        for i, layer_activations in enumerate(activations):
-                            if self.o.model_device != self.o.measure_device:
-                                layer_activations=layer_activations.to(self.o.measure_device,non_blocking=True)
-
-                            
-                            transformations = self.dataset.get_transformations(row, col, col_to)
-                            layer_activations = self.activations_transformer.transform(layer_activations, x_transformed,transformations)
-                            # print(f"AI: act it, shape {layer_activations.shape}")
-                            # print(f"AI: putting col {col} batch for layer {i} ({layers[i]})")
-                            tm.row_qs[layers[i]].put(layer_activations)
-                            # print(f"put {layer_activations.shape} into {layers[i]} {row_qs[layers[i]]}")
-                            # Check if there's been an exception 
-                            if tm.stop:
-                                logger.info("Server thread stopping, exception detected")
-                                return
-                        col = col_to
-                        # print("AI: finished row")
-                    # print("AI: finished all rows")
+                        logger.info("Server thread stopping, exception detected")
+                        return
+                col = col_to
+                # print("AI: finished row")
+            # print("AI: finished all rows")
    
 
     def evaluate(self, m: PyTorchLayerMeasure):

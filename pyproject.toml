@@ -15,7 +15,6 @@ dependencies = [
     "scipy",
     "scikit-image>=0.25.0",
     "scikit-learn",
-    "data-science-types",
     "statsmodels>=0.14.4",
     "tqdm>=4.67.1",
 ]
@@ -23,6 +22,8 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "torch>=2",
+    "torchvision",
     "pandas-stubs>=2.2.3.250308",
     "scipy-stubs>=1.15.2.1",
     "microsoft-python-type-stubs",
@@ -32,6 +33,8 @@ dev = [
     "types-tqdm>=4.67.0.20250401",
     "pre-commit>=4.2.0",
     "poethepoet>=0.35.0",
+    "data-science-types",
+    "poutyne",
 ]
 docs = [
     "sphinx>=8.2.3",

@@ -10,7 +10,7 @@ from .measure_transformer import MeasureTransformation, NoTransformation
 
 class TransformationVarianceInvariance(PyTorchMeasure):
 
-    def eval(self, dataset: Dataset, transformations: tm.TransformationSet, model: ActivationsModule,
+    def eval(self, dataset: Dataset, transformations: tm.pytorch.PyTorchTransformationSet, model: ActivationsModule,
              o: PyTorchMeasureOptions):
         dataset2d = tm.pytorch.dataset2d.SampleTransformationDataset(dataset, transformations, device=o.data_device)
         iterator = PytorchActivationsIterator(model, dataset2d, o)
@@ -20,7 +20,7 @@ class TransformationVarianceInvariance(PyTorchMeasure):
 
 class SampleVarianceInvariance(PyTorchMeasure):
 
-    def eval(self, dataset: Dataset, transformations: tm.TransformationSet, model: ActivationsModule,
+    def eval(self, dataset: Dataset,  transformations:tm.pytorch.PyTorchTransformationSet, model: ActivationsModule,
              o: PyTorchMeasureOptions):
         dataset2d = tm.pytorch.dataset2d.TransformationSampleDataset(dataset, transformations, device=o.data_device)
         iterator = PytorchActivationsIterator(model, dataset2d, o)

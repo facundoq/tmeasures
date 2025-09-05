@@ -1,4 +1,3 @@
-import tmeasures as tm
 from torch.utils.data import Dataset
 from .base import PyTorchMeasure, PyTorchMeasureOptions, PyTorchMeasureResult
 from .activations_iterator import PytorchActivationsIterator
@@ -6,13 +5,15 @@ from . import ActivationsModule
 from .layer_measures import Variance
 from .quotient import QuotientMeasure
 from .measure_transformer import MeasureTransformation, NoTransformation
+from .transformations import PyTorchTransformationSet
+from .dataset2d import TransformationSampleDataset, SampleTransformationDataset
 
 
 class TransformationVarianceInvariance(PyTorchMeasure):
 
-    def eval(self, dataset: Dataset, transformations: tm.pytorch.PyTorchTransformationSet, model: ActivationsModule,
+    def eval(self, dataset: Dataset, transformations: PyTorchTransformationSet, model: ActivationsModule,
              o: PyTorchMeasureOptions):
-        dataset2d = tm.pytorch.dataset2d.SampleTransformationDataset(dataset, transformations, device=o.data_device)
+        dataset2d = SampleTransformationDataset(dataset, transformations, device=o.data_device)
         iterator = PytorchActivationsIterator(model, dataset2d, o)
         results = iterator.evaluate(Variance())
         return PyTorchMeasureResult(results, model.activation_names(), self)
@@ -20,9 +21,9 @@ class TransformationVarianceInvariance(PyTorchMeasure):
 
 class SampleVarianceInvariance(PyTorchMeasure):
 
-    def eval(self, dataset: Dataset,  transformations:tm.pytorch.PyTorchTransformationSet, model: ActivationsModule,
+    def eval(self, dataset: Dataset,  transformations:PyTorchTransformationSet, model: ActivationsModule,
              o: PyTorchMeasureOptions):
-        dataset2d = tm.pytorch.dataset2d.TransformationSampleDataset(dataset, transformations, device=o.data_device)
+        dataset2d = TransformationSampleDataset(dataset, transformations, device=o.data_device)
         iterator = PytorchActivationsIterator(model, dataset2d, o)
         results = iterator.evaluate(Variance())
         return PyTorchMeasureResult(results, model.activation_names(), self)

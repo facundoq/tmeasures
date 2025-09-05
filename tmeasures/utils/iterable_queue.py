@@ -1,40 +1,67 @@
+from asyncio import QueueFull
 from queue import Queue, Empty
 from time import sleep
 from typing import Sized, Iterable
 
+class FullQueue(Exception):
+     def __init__(self, message):            
+        # Call the base class constructor with the parameters it needs
+        super().__init__(message)
+
 
 class IterableQueue(Sized, Iterable):
     """Queue supporting Iterator and Sized protocols.
-    Queue has a max size so it can be iterated upon with a for loop
+    Queue has a finite size so it can be iterated upon with a for loop
+    
     """
 
-    def __init__(self, n: int, maxsize=None,name=""):
-        if maxsize is None:
-            maxsize = n
-        self.queue = Queue(maxsize=maxsize)
+    def __init__(self, n: int, blocking_size=None,name=""):
+        if blocking_size is None:
+            blocking_size = n
+        self.queue = Queue(maxsize=blocking_size)
         self.name=name
         self.n = n
-        self.i = 0
         self.stop=False
+        self.extra=0
+        self.reset()
+
+    def reset(self):
+        self.removed= 0
+        self.added=self.extra
+        self.extra=0
 
     def __len__(self):
         return self.n
 
     def put(self, x,block=True,timeout=None):
+        
+        #     raise FullQueue(f"Queue {self.name} already has {self.n} items, no more can be added.")
+        if self.full():
+            self.extra+=1
+        else:
+            self.added+=1
         self.queue.put(x,block=block,timeout=timeout)
-
+        
     def __iter__(self):
-        self.i = 0
         return self
+    
     def get(self,block=True,timeout=None):
         return self.queue.get(block=block,timeout=timeout)
     
+    def fully_consumed(self):
+        return self.removed == self.n
+    
+    def full(self):
+        return self.added == self.n
+    
     def __next__(self):
         # print(f"next {self.i}/{self.n} (maxsize {self.maxsize})")
-        self.i += 1
-        if self.i == self.n + 1 or self.stop:
+        if self.fully_consumed() or self.stop:
+            if not self.stop:
+                self.reset()
             raise StopIteration()
-        # print(f"ITQUEUE {self.name}: Getting item...")
+        self.removed += 1
+
         # item = None
         # while item is None:
         #     try:

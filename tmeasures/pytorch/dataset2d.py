@@ -22,14 +22,14 @@ class Dataset2D(Dataset):
     def T(self):
         pass
 
-    def len(self):
+    def __len__(self):
         return self.len0 * self.len1
 
     def d1tod2(self,idx:int):
         return idx // self.len1, idx % self.len1
             
     def __getitem__(self, idx):
-        if len(idx) == 1:
+        if isinstance(idx, int):
             idx = self.d1tod2(idx)
         if len(idx) != 2:
             raise ValueError(f"Invalid index: {idx}")

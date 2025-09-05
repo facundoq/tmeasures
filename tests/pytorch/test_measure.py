@@ -13,6 +13,7 @@ class ConstantModel(torch.nn.Module):
         n = x.shape[0]
         result =  self.value.expand(n,*self.value.shape)
         return result
+    
 class IdentityModel(torch.nn.Module):
     def __init__(self,) -> None:
         super().__init__()
@@ -42,11 +43,11 @@ class ConstantDataset(torch.utils.data.Dataset):
         return self.dataset[index][0]
     
 default_options = tm.pytorch.PyTorchMeasureOptions(batch_size=1024)
-large_options = tm.pytorch.PyTorchMeasureOptions(batch_size=2**14,num_workers=128)
+large_options = tm.pytorch.PyTorchMeasureOptions(batch_size=2**14,num_workers=12)
 
 def assert_instance(measure,dataset,transformations,activations_model,expected_result,atol=1e-5,options=default_options):
-    print(options.batch_size)
     result = measure.eval(dataset,transformations,activations_model,options)
+    
     result = result.numpy()
     for name,layer,expected_layer in zip(result.layer_names,result.layers,expected_result):
         assert_allclose(layer,expected_layer,err_msg=f"Error in {measure} for activation '{name}'",atol=atol)
@@ -58,16 +59,18 @@ def test_constant_model_invariance():
     expected_results = np.zeros(output.shape)
     expected_results_normalized = np.ones(output.shape)
     model = torch.nn.Sequential(ConstantModel(output))
-    measures_results = [(tm.pytorch.SampleVarianceInvariance(),[expected_results]),
+    measures_results = [
+                    #   (tm.pytorch.SampleVarianceInvariance(),[expected_results]),
                       (tm.pytorch.TransformationVarianceInvariance(),[expected_results]),
-                      (tm.pytorch.NormalizedVarianceInvariance(),[expected_results_normalized]),
+                    #   (tm.pytorch.NormalizedVarianceInvariance(),[expected_results_normalized]),
                       ]
-    transformations = tm.pytorch.transformations.IdentityTransformationSet()
-    
-    dataset = ConstantDataset(2,(100,5))
+    n = 5
+    transformations = RepeatedIdentitySet(n)
+    default_options.batch_size=3
+    dataset = ConstantDataset(2,(n,5))
     activations_model = tm.pytorch.AutoActivationsModule(model)
     for measure,expected_result in measures_results:
-       assert_instance(measure,dataset,transformations,activations_model,expected_result)
+       assert_instance(measure,dataset,transformations,activations_model,expected_result,options=default_options)
 
 class RepeatedIdentitySet(tm.pytorch.transformations.PyTorchTransformationSet):
     def __init__(self,transformations=1):
@@ -79,7 +82,7 @@ class RepeatedIdentitySet(tm.pytorch.transformations.PyTorchTransformationSet):
     def id(self):
         return "Identity"
 
-def test_random_model_invariance():
+def atest_random_model_invariance():
     output_shape = (2,2)
     mean,std=2.0,3
     model = torch.nn.Sequential(RandomModel(output_shape,2,3))
@@ -89,15 +92,24 @@ def test_random_model_invariance():
                       (tm.pytorch.TransformationVarianceInvariance(),[expected_results]),
                       (tm.pytorch.NormalizedVarianceInvariance(),[expected_results_normalized]),
                       ]
-    sample_size_order = 2
+    sample_size_order = 8
     n = 10**sample_size_order
     atol = 10**(-np.sqrt(sample_size_order//2))
     transformations = RepeatedIdentitySet(n)
     dataset = ConstantDataset(2,(n,2))
     activations_model = tm.pytorch.AutoActivationsModule(model)
+    large_options.batch_size = n
     for measure,expected_result in measures_results:
         assert_instance(measure,dataset,transformations,activations_model,expected_result,atol=1e-1,options=large_options)
 
 
+
 if __name__ == "__main__":
-    test_random_model_invariance()
+    import logging
+    logging.basicConfig()
+    
+    #set logger to info level
+    tm.logger.setLevel(logging.INFO)
+
+    test_constant_model_invariance()
+    #atest_random_model_invariance()

@@ -1,15 +1,17 @@
-from typing import List
-from tmeasures import MeasureResult
-from .activations_iterator import ActivationsIterator
-from . import NumpyMeasure
-from .quotient import divide_activations
-
 from multiprocessing import Queue
-from .multithread.multithreaded_layer_measure import LayerMeasure,PerLayerMeasure,ActivationsOrder
+from typing import List
+
 import numpy as np
-from .stats_running import RunningMeanAndVarianceWelford,RunningMeanWelford
 from scipy.stats import norm
 from tqdm import tqdm
+
+from tmeasures import MeasureResult
+
+from . import NumpyMeasure
+from .activations_iterator import ActivationsIterator
+from .multithread.multithreaded_layer_measure import ActivationsOrder, LayerMeasure, PerLayerMeasure
+from .quotient import divide_activations
+from .stats_running import RunningMeanAndVarianceWelford, RunningMeanWelford
 
 default_alpha=0.99
 default_sign=1

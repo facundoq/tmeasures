@@ -1,17 +1,15 @@
-from tmeasures.np.activations_iterator import ActivationsIterator
-from .model import ActivationsModule
+import abc
+
 import torch
-from torch.utils.data import DataLoader,Dataset
-
-from tmeasures import TransformationSet, Transformation
-from tmeasures.adapters import TransformationAdapter
-
+from torch.utils.data import DataLoader, Dataset
 
 import tmeasures as tm
-import abc
+from tmeasures import Transformation, TransformationSet
+from tmeasures.adapters import TransformationAdapter
+from tmeasures.np.activations_iterator import ActivationsIterator
+
 from .activations_transformer import ActivationsTransformer
-
-
+from .model import ActivationsModule
 
 
 class PytorchActivationsIterator(ActivationsIterator):
@@ -72,14 +70,14 @@ class PytorchActivationsIterator(ActivationsIterator):
         return result
 
     def transform_batch(self, transformation, x: torch.Tensor):
-        if not self.adapter is None:
+        if self.adapter is not None:
             x = self.adapter.pre_adapt(x)
         results = []
         for i in range(x.shape[0]):
             results.append(transformation(x[i,:]))
         x = torch.stack(tuple(results),dim=0)
 
-        if not self.adapter is None:
+        if self.adapter is not None:
             x = self.adapter.post_adapt(x)
         return x
 

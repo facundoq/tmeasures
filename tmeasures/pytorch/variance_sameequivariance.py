@@ -1,14 +1,14 @@
-import tmeasures as tm
-from torch.utils.data import Dataset
-from .base import PyTorchMeasure, PyTorchMeasureOptions, PyTorchMeasureResult
-from .activations_iterator import PytorchActivationsIterator
-from . import ActivationsModule, Variance
-from .. import InvertibleTransformation
-from .quotient import QuotientMeasure
 import torch
+from torch.utils.data import Dataset
 
-from .activations_iterator import ActivationsTransformer
+import tmeasures as tm
+
+from .. import InvertibleTransformation
+from . import ActivationsModule, Variance
+from .activations_iterator import ActivationsTransformer, PytorchActivationsIterator
+from .base import PyTorchMeasure, PyTorchMeasureOptions, PyTorchMeasureResult
 from .measure_transformer import MeasureTransformation, NoTransformation
+from .quotient import QuotientMeasure
 
 
 class InverseTransformationTransformer(ActivationsTransformer):

@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 from skimage import transform as skimage_transform
 
-from ..affine import AffineTransformation,AffineParameters
+from ..affine import AffineParameters, AffineTransformation
 
 
 class AffineTransformationNumpy(AffineTransformation):

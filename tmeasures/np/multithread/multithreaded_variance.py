@@ -1,12 +1,16 @@
-from ..base import NumpyMeasure
-import numpy as np
-from ..layer_transformation import MeasureTransformation
-from ..stats_running import RunningMeanAndVarianceWelford,RunningMeanWelford
-import tmeasures as tm
 from multiprocessing import Queue
+
+import numpy as np
+
+import tmeasures as tm
+
+from ..base import NumpyMeasure
+from ..layer_transformation import MeasureTransformation
 from ..quotient import QuotientMeasure
+from ..stats_running import RunningMeanAndVarianceWelford, RunningMeanWelford
 from .functions import MeasureFunction
-from .multithreaded_layer_measure import LayerMeasure,PerLayerMeasure,ActivationsOrder
+from .multithreaded_layer_measure import ActivationsOrder, LayerMeasure, PerLayerMeasure
+
 
 class VarianceLayerMeasure(LayerMeasure):
 

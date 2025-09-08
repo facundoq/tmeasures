@@ -1,7 +1,11 @@
 from typing import Any, List
-from . import ActivationsModule
-from torch import nn
+
 import torch
+from torch import nn
+
+from . import ActivationsModule
+
+
 class SequentialWithIntermediates(nn.Sequential, ActivationsModule):
     def __init__(self,*args):
         super(SequentialWithIntermediates, self).__init__(*args)
@@ -74,4 +78,4 @@ class SequentialWithIntermediates(nn.Sequential, ActivationsModule):
         elif name == "Block":
             name = "b"
         return name
-    
+

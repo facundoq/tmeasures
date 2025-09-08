@@ -1,12 +1,14 @@
-import torch
-import tmeasures as tm
-from torch.utils.data import Dataset
-
-from . import ActivationsModule
-from .. import MeasureResult, StratifiedMeasureResult
 import abc
 import typing
 from typing import List
+
+import torch
+from torch.utils.data import Dataset
+
+import tmeasures as tm
+
+from .. import MeasureResult, StratifiedMeasureResult
+from . import ActivationsModule
 
 ActivationsByLayer = [torch.Tensor]
 
@@ -87,8 +89,9 @@ class PyTorchMeasure(tm.Measure):
 
 from tmeasures.pytorch.activations_iterator import PytorchActivationsIterator
 
+
 class PyTorchMeasureByLayer(PyTorchMeasure):
-    
+
     def __init__(self,layer_measure:PyTorchLayerMeasure) -> None:
         super().__init__()
         self.layer_measure=layer_measure

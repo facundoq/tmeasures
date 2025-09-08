@@ -23,16 +23,16 @@ class PyTorchTransformationSet(TransformationSet,Iterable[PyTorchTransformation]
 
 
 class IdentityTransformation(PyTorchTransformation):
-    
+
     def parameters(self) -> torch.Tensor:
         return torch.Tensor(0)
-     
+
     def __call__(self, x):
         return x
 
 
 class IdentityTransformationSet(PyTorchTransformationSet):
-    
+
     def __init__(self):
         super().__init__([IdentityTransformation()])
     def valid_input(self):
@@ -42,4 +42,3 @@ class IdentityTransformationSet(PyTorchTransformationSet):
     def id(self):
         return "Identity"
 
-    

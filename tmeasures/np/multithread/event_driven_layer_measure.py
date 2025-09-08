@@ -1,12 +1,15 @@
-from tmeasures import MeasureResult
-from ..base import NumpyMeasure
-from ..activations_iterator import ActivationsIterator
+from abc import abstractmethod
+from typing import Callable
+
 import numpy as np
+
+from tmeasures import MeasureResult
+
+from ..activations_iterator import ActivationsIterator
+from ..base import NumpyMeasure
 from ..stats_running import RunningMeanWelford
 
-from abc import abstractmethod
 
-from typing import Callable
 class EventDrivenLayerMeasure():
 
     def __init__(self,layer_index:int,layer_name:str):

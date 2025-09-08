@@ -1,10 +1,12 @@
 import tmeasures as tm
-from tmeasures import  MeasureResult
-from . import NumpyMeasure,MeasureTransformation,IdentityTransformation
+from tmeasures import MeasureResult
+
+from . import IdentityTransformation, MeasureTransformation, NumpyMeasure
 from .activations_iterator import ActivationsIterator
-from .stats_running import RunningMeanAndVarianceWelford, RunningMeanWelford
 from .base import NumpyMeasure
 from .quotient import divide_activations
+from .stats_running import RunningMeanAndVarianceWelford, RunningMeanWelford
+
 
 class TransformationVarianceSameEquivariance(NumpyMeasure):
     def __init__(self):

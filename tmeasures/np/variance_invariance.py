@@ -1,14 +1,15 @@
-import tmeasures as tm
-
-
-from tmeasures import MeasureResult
-from .activations_iterator import ActivationsIterator
-from .stats_running import RunningMeanAndVarianceWelford, RunningMeanWelford,RunningMeanVarianceSets
-from .base import NumpyMeasure
-from .quotient import divide_activations
-from tqdm import tqdm
-from .layer_transformation import MeasureTransformation,IdentityTransformation
 import numpy as np
+from tqdm import tqdm
+
+import tmeasures as tm
+from tmeasures import MeasureResult
+
+from .activations_iterator import ActivationsIterator
+from .base import NumpyMeasure
+from .layer_transformation import IdentityTransformation, MeasureTransformation
+from .quotient import divide_activations
+from .stats_running import RunningMeanAndVarianceWelford, RunningMeanVarianceSets, RunningMeanWelford
+
 
 class TransformationVarianceInvariance(NumpyMeasure):
     def __init__(self):

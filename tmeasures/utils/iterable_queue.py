@@ -1,10 +1,11 @@
 from asyncio import QueueFull
-from queue import Queue, Empty
+from queue import Empty, Queue
 from time import sleep
-from typing import Sized, Iterable
+from typing import Iterable, Sized
+
 
 class FullQueue(Exception):
-     def __init__(self, message):            
+     def __init__(self, message):
         # Call the base class constructor with the parameters it needs
         super().__init__(message)
 
@@ -34,26 +35,26 @@ class IterableQueue(Sized, Iterable):
         return self.n
 
     def put(self, x,block=True,timeout=None):
-        
+
         #     raise FullQueue(f"Queue {self.name} already has {self.n} items, no more can be added.")
         if self.full():
             self.extra+=1
         else:
             self.added+=1
         self.queue.put(x,block=block,timeout=timeout)
-        
+
     def __iter__(self):
         return self
-    
+
     def get(self,block=True,timeout=None):
         return self.queue.get(block=block,timeout=timeout)
-    
+
     def fully_consumed(self):
         return self.removed == self.n
-    
+
     def full(self):
         return self.added == self.n
-    
+
     def __next__(self):
         # print(f"next {self.i}/{self.n} (maxsize {self.maxsize})")
         if self.fully_consumed() or self.stop:

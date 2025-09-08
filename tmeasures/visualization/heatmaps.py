@@ -1,9 +1,10 @@
-import numpy as np
-import matplotlib.pyplot as plt
-from tmeasures import MeasureResult
-import tmeasures as tm
 from pathlib import Path
 
+import matplotlib.pyplot as plt
+import numpy as np
+
+import tmeasures as tm
+from tmeasures import MeasureResult
 
 
 def get_limit(m:MeasureResult, op_code:str):

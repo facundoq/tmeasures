@@ -1,5 +1,6 @@
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+
 
 def plot_images_rgb(images,row_context=None,labels=None,cols=None,cmap=None,label_color="blue",label_fontsize=None,dpi=200):
     N,C,H,W = images.shape
@@ -10,7 +11,7 @@ def plot_images_rgb(images,row_context=None,labels=None,cols=None,cmap=None,labe
         label_fontsize = np.sqrt(cols)*2.5
     cols_extra=0 if row_context is None else 1
     C_context=cols + cols_extra
-    
+
     f, subplots = plt.subplots(rows,C_context,dpi=dpi,figsize=(C_context,rows))
     if cmap is None:
         cmap = "gray"
@@ -26,7 +27,7 @@ def plot_images_rgb(images,row_context=None,labels=None,cols=None,cmap=None,labe
                 ax.imshow(filter_weights,cmap=cmap,interpolation='nearest')
                 if labels is not None:
                     ax.text(0.5, 0.5,labels[index], horizontalalignment='center',verticalalignment='center', transform=ax.transAxes,fontsize=label_fontsize,c="k")
-    
+
 def plot_images_multichannel(images,vmin,vmax,colorbar_space=1,labels=None):
     N,C,H,W = images.shape
     invariance_fontsize = np.sqrt(C)*2
@@ -40,7 +41,7 @@ def plot_images_multichannel(images,vmin,vmax,colorbar_space=1,labels=None):
             if labels is not None:
                 ax.text(0.5, 0.5,labels[i], horizontalalignment='center',verticalalignment='center', transform=ax.transAxes,fontsize=invariance_fontsize,c="k")
     right=colorbar_space/(C+colorbar_space)
-    
+
     f.subplots_adjust(right=1-right)
     gap = 0.2
     cbar_ax = f.add_axes([1-right*(1-gap), 0.15, right*(1-2*gap), 0.7])

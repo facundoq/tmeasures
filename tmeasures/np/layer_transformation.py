@@ -1,8 +1,11 @@
-import numpy as np
-from abc import ABC,abstractmethod
+from abc import ABC, abstractmethod
 from enum import Enum
-from .. import MeasureResult
 from typing import Tuple
+
+import numpy as np
+
+from .. import MeasureResult
+
 
 class MeasureTransformation(ABC):
 

@@ -1,13 +1,15 @@
 from __future__ import annotations
 
 from typing import List
-from .activations_iterator import ActivationsIterator
-from tmeasures import MeasureResult
-from . import NumpyMeasure,MeasureTransformation
-from .stats_running import RunningMeanWelford
-from .quotient import divide_activations
 
+from tmeasures import MeasureResult
+
+from . import MeasureTransformation, NumpyMeasure
+from .activations_iterator import ActivationsIterator
 from .distance_invariance import DistanceAggregation
+from .quotient import divide_activations
+from .stats_running import RunningMeanWelford
+
 
 def list_get_all(list:List,indices:List[int])->List:
     return [list[i] for i in indices]

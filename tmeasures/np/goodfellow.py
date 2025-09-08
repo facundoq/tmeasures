@@ -1,13 +1,16 @@
-from typing import Dict, List
-from tmeasures import MeasureResult
-from .activations_iterator import ActivationsIterator
-from . import NumpyMeasure
-
 from multiprocessing import Queue
-from .quotient import divide_activations
-from .multithread.multithreaded_layer_measure import LayerMeasure,PerLayerMeasure,ActivationsOrder
+from typing import Dict, List
+
 import numpy as np
+
+from tmeasures import MeasureResult
+
+from . import NumpyMeasure
+from .activations_iterator import ActivationsIterator
+from .multithread.multithreaded_layer_measure import ActivationsOrder, LayerMeasure, PerLayerMeasure
+from .quotient import divide_activations
 from .stats_running import RunningMeanWelford
+
 
 class GoodfellowGlobalInvariance(LayerMeasure):
 

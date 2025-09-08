@@ -1,10 +1,13 @@
 from typing import List, Tuple
-from .base import NumpyMeasure
-from ..measure import ActivationsByLayer
-from .. import MeasureResult
-from .activations_iterator import ActivationsIterator
-from .stats_running import RunningMeanWelford
+
 import scipy.stats
+
+from .. import MeasureResult
+from ..measure import ActivationsByLayer
+from .activations_iterator import ActivationsIterator
+from .base import NumpyMeasure
+from .stats_running import RunningMeanWelford
+
 
 class ANOVAInvariance(NumpyMeasure):
     # alpha = degree of confidence

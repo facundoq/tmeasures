@@ -1,7 +1,9 @@
-import numpy as np
 import abc
 import itertools
 from typing import Iterator
+
+import numpy as np
+
 
 class TransformationParameters(abc.ABC,list):
     def __init__(self,members:[]):

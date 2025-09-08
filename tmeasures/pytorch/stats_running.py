@@ -1,5 +1,6 @@
-import torch
 import abc
+
+import torch
 
 
 class RunningMeasure(abc.ABC):

@@ -1,12 +1,13 @@
+import math
+from typing import Iterator, List
+
+import numpy as np
 import torch
 from torch.nn import functional as F
-from typing import List, Iterator
-from tmeasures.transformations.affine import RotationParameter,ScaleParameter,TranslationParameter
-from tmeasures.transformations import affine
-import numpy as np
-import math
 
 from tmeasures.pytorch.transformations import PyTorchTransformation, PyTorchTransformationSet
+from tmeasures.transformations import affine
+from tmeasures.transformations.affine import RotationParameter, ScaleParameter, TranslationParameter
 
 
 class AffineTransformation(affine.AffineTransformation,PyTorchTransformation):

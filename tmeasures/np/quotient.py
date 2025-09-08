@@ -1,8 +1,9 @@
-from .base import NumpyMeasure
-from ..measure import ActivationsByLayer
-from .. import MeasureResult
-from .activations_iterator import ActivationsIterator
 import numpy as np
+
+from .. import MeasureResult
+from ..measure import ActivationsByLayer
+from .activations_iterator import ActivationsIterator
+from .base import NumpyMeasure
 
 
 def divide_activations(num:ActivationsByLayer, den:ActivationsByLayer)->ActivationsByLayer:

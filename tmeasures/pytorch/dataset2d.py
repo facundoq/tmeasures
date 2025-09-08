@@ -1,9 +1,12 @@
-from torch.utils.data import Dataset, IterableDataset, DataLoader
 import abc
 
-from tmeasures.transformation import Transformation
-from .transformations import PyTorchTransformation, PyTorchTransformationSet
 import torch
+from torch.utils.data import DataLoader, Dataset, IterableDataset
+
+from tmeasures.transformation import Transformation
+
+from .transformations import PyTorchTransformation, PyTorchTransformationSet
+
 
 class Dataset2D(Dataset):
 
@@ -27,7 +30,7 @@ class Dataset2D(Dataset):
 
     def d1tod2(self,idx:int):
         return idx // self.len1, idx % self.len1
-            
+
     def __getitem__(self, idx):
         if isinstance(idx, int):
             idx = self.d1tod2(idx)
@@ -46,7 +49,7 @@ class Dataset2D(Dataset):
     @abc.abstractmethod
     def get_transformations(self, rows:list[int],cols:list[int])->list[PyTorchTransformation]:
         pass
-    
+
 
 
 class STDataset(Dataset2D):
@@ -91,7 +94,7 @@ class SampleTransformationDataset(STDataset):
 
     def get_transformations(self, rows:list[int],cols:list[int])->list[PyTorchTransformation]:
         return [self.transformations[c] for c in cols]
-    
+
 
 class TransformationSampleDataset(STDataset):
 
@@ -113,7 +116,7 @@ class TransformationSampleDataset(STDataset):
 
     def get_transformations(self, rows:list[int],cols:list[int])->list[PyTorchTransformation]:
         return [self.transformations[r] for r in rows]
-    
+
 
 class RowDataset(Dataset):
 

@@ -1,12 +1,15 @@
-import numpy as np
-import matplotlib.pyplot as plt
-import tmeasures as tm
 from pathlib import Path
-from ..np import AggregateTransformation,AggregateFunction,MeasureTransformation
-from .. import MeasureResult
+
+import matplotlib.pyplot as plt
+import numpy as np
 import torch
 
+import tmeasures as tm
 from tmeasures.np.activations_iterator import ActivationsIterator
+
+from .. import MeasureResult
+from ..np import AggregateFunction, AggregateTransformation, MeasureTransformation
+
 
 def plot_activations(features:np.ndarray, feature_indices:[int], variance_scores:[float], x_transformed:np.ndarray, transformations:tm.TransformationSet, filepath:Path):
 
@@ -142,6 +145,7 @@ def select_feature_maps(measure_result: tm.MeasureResult, most_invariant_k:int, 
     '''
 
 from tmeasures.np import MeasureTransformation
+
 
 def plot_invariant_feature_maps(plot_folderpath:Path, activations_iterator:ActivationsIterator, result:tm.MeasureResult, most_invariant_k:int, least_invariant_k:int
                                 #, conv_aggregation:MeasureTransformation

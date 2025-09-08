@@ -1,9 +1,10 @@
 from __future__ import annotations
 
-from torch import  nn
-import torch
 import abc
-from typing import Callable, List,MutableMapping,Any, Tuple,Union
+from typing import Any, Callable, List, MutableMapping, Tuple, Union
+
+import torch
+from torch import nn
 
 from tmeasures.utils import get_all
 
@@ -114,14 +115,14 @@ class AutoActivationsModule(ActivationsModule):
         self.reset_values()
         self.module = module
         self.children_tree = named_children_deep(module)
-        
+
         self.names,self.activations = zip(*flatten_dict_list(self.children_tree,full_name=full_name))
         filter_indices = [i for i,a in enumerate(self.activations) if filter(a)]
         self.names=get_all(self.names,filter_indices)
         self.activations=get_all(self.activations,filter_indices)
 
         self.register_hooks(self.activations)
-        
+
 
     def register_hooks(self,activations:List[nn.Module]):
         def store_activation(index):
@@ -133,7 +134,7 @@ class AutoActivationsModule(ActivationsModule):
             v.register_forward_hook(store_activation(i))
 
     def reset_values(self):
-        self.values = {} 
+        self.values = {}
 
     def forward_activations(self, args) -> List[torch.Tensor]:
         '''
@@ -143,7 +144,7 @@ class AutoActivationsModule(ActivationsModule):
         self.reset_values()
         # call model, hooks are executed
         self.module.forward(args)
-        
+
         # Check that all original activations are present in the values
         nv,na = len(self.values),len(self.activations)
         if nv!=na:

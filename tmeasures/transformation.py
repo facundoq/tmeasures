@@ -1,8 +1,11 @@
 from __future__ import annotations
-from typing import List,Tuple,Sized,Iterable,Iterator
+
+import abc
+from typing import Iterable, Iterator, List, Sized, Tuple
+
 import numpy as np
 import torch
-import abc
+
 
 class Transformation:
 

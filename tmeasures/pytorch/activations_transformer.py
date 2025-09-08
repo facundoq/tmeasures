@@ -1,9 +1,12 @@
 from __future__ import annotations
 
 from typing import Tuple
+
 import torch
-from tmeasures import TransformationSet
+
 import tmeasures as tm
+from tmeasures import TransformationSet
+
 
 def list_get_all(list:list,indices:list[int])->[]:
     return [list[i] for i in indices]

@@ -1,10 +1,10 @@
-from . import PyTorchMeasure, ActivationsByLayer, PyTorchMeasureOptions, ActivationsModule, PyTorchMeasureResult
-from .. import MeasureResult, Measure
-from torch.utils.data import Dataset
 import torch
-from .. import TransformationSet
-from .measure_transformer import MeasureTransformation, NoTransformation
 import tqdm.auto as tqdm
+from torch.utils.data import Dataset
+
+from .. import Measure, MeasureResult, TransformationSet
+from . import ActivationsByLayer, ActivationsModule, PyTorchMeasure, PyTorchMeasureOptions, PyTorchMeasureResult
+from .measure_transformer import MeasureTransformation, NoTransformation
 
 
 def safe_divide(x: torch.Tensor, y: torch.Tensor):

@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 from typing import List
-from .base import NumpyMeasure
+
+import numpy as np
+
 from .. import MeasureResult
 from .activations_iterator import ActivationsIterator
+from .base import NumpyMeasure
 from .stats_running import RunningMeanWelford
-import numpy as np
+
 
 def list_get_all(list:List,indices:List[int])->List:
     return [list[i] for i in indices]

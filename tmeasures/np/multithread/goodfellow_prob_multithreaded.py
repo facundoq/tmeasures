@@ -1,12 +1,16 @@
+from multiprocessing import Queue
+
+import numpy as np
+from scipy.stats import norm
+
+import tmeasures as tm
 from tmeasures import MeasureResult
+
 from ..activations_iterator import ActivationsIterator
 from ..base import NumpyMeasure
-import tmeasures as tm
-from multiprocessing import Queue
-from .multithreaded_layer_measure import LayerMeasure,PerLayerMeasure,ActivationsOrder
-import numpy as np
-from ..stats_running import RunningMeanAndVarianceWelford, RunningMean
-from scipy.stats import norm
+from ..stats_running import RunningMean, RunningMeanAndVarianceWelford
+from .multithreaded_layer_measure import ActivationsOrder, LayerMeasure, PerLayerMeasure
+
 
 class GlobalVarianceNormal(LayerMeasure):
 

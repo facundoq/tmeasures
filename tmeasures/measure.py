@@ -1,8 +1,11 @@
 from __future__ import annotations
-from typing import List, Tuple
-import numpy as np
+
 import abc
 import re
+from typing import List, Tuple
+
+import numpy as np
+
 from .utils import get_all
 
 ## todo change np.ndarray to something more general
@@ -59,12 +62,12 @@ class MeasureResult:
 
     def layers_dict(self):
         return dict(zip(self.layer_names,self.layers))
-    
+
     def filter(self,f):
         layer_names,layers=list(zip(*filter(f,zip(self.layer_names,self.layers))))
-        
+
         return MeasureResult(list(layers),list(layer_names),self.measure,self.extra_values)
-    
+
 
 
 

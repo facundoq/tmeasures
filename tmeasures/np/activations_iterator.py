@@ -1,9 +1,10 @@
 #from __future__ import annotations
 import abc
 from typing import List
-from tmeasures.transformation import TransformationSet
 
 import numpy as np
+
+from tmeasures.transformation import TransformationSet
 
 
 class ActivationsIterator(abc.ABC):

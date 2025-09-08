@@ -1,12 +1,13 @@
 
 
-from .activations_iterator import ActivationsIterator
+import abc
+from typing import List
+
 import numpy as np
-from typing import  List
+
 from .. import MeasureResult, StratifiedMeasureResult
 from ..measure import Measure
-
-import abc
+from .activations_iterator import ActivationsIterator
 
 
 class NumpyMeasure(Measure):

@@ -1,13 +1,14 @@
-from typing import List
-from ..base import NumpyMeasure
-from tmeasures import MeasureResult
-from ..activations_iterator import ActivationsIterator
-
+import abc
 import multiprocessing
 from queue import Queue
 from threading import Thread
+from typing import List
 
-import abc
+from tmeasures import MeasureResult
+
+from ..activations_iterator import ActivationsIterator
+from ..base import NumpyMeasure
+
 
 class LayerMeasure(abc.ABC):
     def __init__(self,id:int,name:str):
@@ -32,6 +33,7 @@ class LayerMeasure(abc.ABC):
                 yield v
 
 from enum import Enum
+
 
 class ActivationsOrder(Enum):
     TransformationsFirst = "tf"

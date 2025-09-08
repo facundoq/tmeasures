@@ -1,18 +1,25 @@
 from math import floor
 from typing import Dict, List
-import tmeasures as tm
+
+import torch
 from torch.utils.data import Dataset
 
+import tmeasures as tm
 from tmeasures.pytorch.transformations import IdentityTransformationSet
 
-from .stats_running import RunningMeanAndVarianceWelford, RunningMeanWelford
-from .base import PyTorchLayerMeasure, PyTorchMeasure, PyTorchMeasureByLayer, PyTorchMeasureOptions, PyTorchMeasureResult, STMatrixIterator
-from .activations_iterator import PytorchActivationsIterator
 from . import ActivationsModule
+from .activations_iterator import PytorchActivationsIterator
+from .base import (
+    PyTorchLayerMeasure,
+    PyTorchMeasure,
+    PyTorchMeasureByLayer,
+    PyTorchMeasureOptions,
+    PyTorchMeasureResult,
+    STMatrixIterator,
+)
 from .layer_measures import Variance
-from .quotient import  divide_activations
-import torch
-
+from .quotient import divide_activations
+from .stats_running import RunningMeanAndVarianceWelford, RunningMeanWelford
 
 default_alpha=0.99
 default_sign=1
@@ -23,7 +30,7 @@ class PercentActivationThreshold(PyTorchLayerMeasure):
         super().__init__()
         self.percent=percent
         self.sign=sign
-    
+
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(sign={self.sign},p={self.percent})"
 
@@ -35,10 +42,10 @@ class PercentActivationThreshold(PyTorchLayerMeasure):
                 m = len(row_iterator)
             for batch_i, batch_activations in enumerate(row_iterator):
                 if row == 0 and batch_i == 0:
-                    # initialize matrix to store activation values 
+                    # initialize matrix to store activation values
                     # One row for each activation
                     values = torch.zeros((n,m,*batch_activations.shape))
-                    
+
                 values[row,batch_i,:] = batch_activations*self.sign
         # change shape of values to Activations x Samples
         # where each row has all the samples of a particular activation
@@ -66,22 +73,22 @@ class NormalPValueThreshold(PyTorchLayerMeasure):
         return f"{self.__class__.__name__}(sign={self.sign},alpha={self.alpha})"
 
     def eval(self, st_iterator: STMatrixIterator, layer_name: str):
-        
+
         mean = RunningMeanAndVarianceWelford()
         for row, row_iterator in enumerate(st_iterator):
             for batch_n, batch_activations in enumerate(row_iterator):
                 mean.update_batch(batch_activations.double()*self.sign)
 
-        
+
         # return mean.mean()
         μ,σ = mean.mean(),mean.std()
         original_shape = μ.shape
-        
+
         σ[σ<1e-16]=1e-16
         d = torch.distributions.Normal(μ,σ)
         alpha = torch.tensor([self.alpha]).to(μ.device)
         p_values = d.icdf(alpha)
-        
+
         # μ,σ = μ.reshape(μ.numel()),σ.reshape(σ.numel())
         # p_values=torch.zeros(μ.shape)
         # alpha = torch.tensor([self.alpha]).to(μ.device)
@@ -94,9 +101,9 @@ class NormalPValueThreshold(PyTorchLayerMeasure):
         #     p_values[j]=t
         # print(f"NormalPvalue {layer_name} p_values: {p_values.shape} ")
         # p_values = p_values.reshape(original_shape)
-        
+
         return p_values
-   
+
 class MeanFiringRate(PyTorchLayerMeasure):
     def __init__(self,sign:float,thresholds:Dict[str,torch.Tensor]) -> None:
         super().__init__()
@@ -127,20 +134,20 @@ class GoodfellowInvariance(PyTorchMeasure):
         self.sign=sign
         self.threshold_algorithm=threshold_algorithm
         self.global_transformations = global_transformations
-        
+
 
     def eval(self, dataset: Dataset, transformations: tm.TransformationSet, model: ActivationsModule,o: PyTorchMeasureOptions):
-        
+
         threshold_measures = PyTorchMeasureByLayer(self.threshold_algorithm)
-        
+
         thresholds = threshold_measures.eval(dataset,self.global_transformations,model,o)
-        
+
         mean_firing_rate = MeanFiringRate(self.sign,thresholds.layers_dict())
-        
+
         g_result = PyTorchMeasureByLayer(mean_firing_rate).eval(dataset,self.global_transformations,model,o)
-        
+
         l_result = PyTorchMeasureByLayer(mean_firing_rate).eval(dataset,transformations,model,o)
-        
+
         # self.g = GoodfellowNormalGlobalInvariance(self.alpha, self.sign)
         # g_result = self.g.eval(dataset, transformations, model,o)
         # thresholds = g_result.extra_values[GoodfellowNormalGlobalInvariance.thresholds_key]

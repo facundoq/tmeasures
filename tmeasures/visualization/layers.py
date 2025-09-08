@@ -1,18 +1,18 @@
 from __future__ import annotations
 
 import enum
-import tmeasures as tm
+from pathlib import Path
+from typing import List
+
 import matplotlib.pyplot as plt
 import numpy as np
-from typing import List
-from pathlib import Path
-from tmeasures.np.stats_running import  RunningMeanAndVarianceWelford
-import tmeasures as tm
 from matplotlib.lines import Line2D
-
-from scipy.stats import f_oneway, anderson_ksamp
-
+from scipy.stats import anderson_ksamp, f_oneway
 from statsmodels.stats.multicomp import pairwise_tukeyhsd
+
+import tmeasures as tm
+from tmeasures.np.stats_running import RunningMeanAndVarianceWelford
+
 
 def tukey_same_mean_test(results:List[tm.MeasureResult],alpha:float,max_samples_per_group=2000):
     n_layers = [len(r.layers) for r in results]
@@ -40,7 +40,7 @@ def anderson_ksamples_test(measures:List[tm.MeasureResult]):
         groups = [r.layers[i].flatten() for r in measures]
         f,critical,significance = anderson_ksamp()(*groups)
         results[i]=significance
-        
+
 
     return results
 
@@ -53,7 +53,7 @@ def anova_same_mean_test(measures:List[tm.MeasureResult]):
         groups = [r.layers[i].flatten() for r in measures]
         f,p_value = f_oneway(*groups)
         p_values[i]=p_value
-        
+
 
     return p_values
 
@@ -78,11 +78,11 @@ def plot_average_activations_different_models(results:List[tm.MeasureResult], la
     result_layers = np.array([len(r.layer_names) for r in results])
     min_n, max_n = result_layers.min(), result_layers.max()
     max_value=0
-    
+
     for i, result in enumerate(results):
         n_layers = len(result.layers)
         x = np.linspace(0,100,n_layers,endpoint=True)
-       
+
         y = result.per_layer_average()
         max_value = max(max_value, y.max())
         if labels is None:
@@ -94,7 +94,7 @@ def plot_average_activations_different_models(results:List[tm.MeasureResult], la
         color=colors[i, :]
         ax.plot(x, y, label=label, linestyle=linestyle, color=color,marker="o",markersize=3)
 
-        if not markers is None:
+        if markers is not None:
             mark_layers = markers[i]
             x_mark = x[mark_layers]
             y_mark = y[mark_layers]
@@ -113,7 +113,7 @@ def plot_average_activations_different_models(results:List[tm.MeasureResult], la
                      box.width, box.height * 0.9])
 
 
-    if not labels is None:
+    if labels is not None:
         # Put legend below current axis
         handles, labels = ax.get_legend_handles_labels()
         handles_new=[Line2D([0],[0]) for h in handles]
@@ -229,12 +229,12 @@ def scatter_same_model(results:List[tm.MeasureResult], labels:List[str]=None,col
     max_value=0
     for i in range(n_layers):
         y_results = [r.layers[i].flatten().squeeze() for r in results]
-        colors_results = [ np.array([c]*r.size)  for r,c in zip(y_results,colors) ]    
+        colors_results = [ np.array([c]*r.size)  for r,c in zip(y_results,colors) ]
         x = np.concatenate([np.zeros_like(r)+i+(j/(n+1))  for j,r in enumerate(y_results) ])
         x += np.random.rand(*x.shape)/(n*3)-0.5
         y = np.concatenate(y_results)
         colors_results = np.concatenate(colors_results)
-        
+
         max_value = max(max_value,y.max())
         # x = np.zeros_like(y)+i+np.random.rand(len(y))*0.9
         ax.scatter(x, y,color=colors_results,marker=",",s=0.5,linewidths=0)
@@ -249,7 +249,7 @@ def scatter_same_model(results:List[tm.MeasureResult], labels:List[str]=None,col
         tick_labels = results[0].layer_names
         tick_labels = shorten_layer_names(tick_labels)
         #labels = [f"${l}$" for l in labels]
-        x = np.arange(n_layers) 
+        x = np.arange(n_layers)
         ax.set_xticks(x)
         ax.set_xticklabels(tick_labels, rotation=90)
         ax.tick_params(axis='both', which='both', length=0)
@@ -272,11 +272,11 @@ def plot_average_activations_same_model(results:List[tm.MeasureResult], labels:L
         item.set_fontsize(7)
     f.suptitle(title)
 
-    
+
 
     if linestyles is None and n <= 4 and not plot_mean:
         linestyles = ["-", "--", ":", "-."]
-    
+
     mean_and_variance = RunningMeanAndVarianceWelford()
     max_value=0
     for i, result in enumerate(results):
@@ -306,7 +306,7 @@ def plot_average_activations_same_model(results:List[tm.MeasureResult], labels:L
         mean_color = (0,0,0)
         ax.errorbar(x, y,yerr=error, label=label, linewidth=1.5, linestyle=linestyle, color=mean_color)
         if plot_p_values:
-            p_values = tukey_same_mean_test(results,alpha=0.001) 
+            p_values = tukey_same_mean_test(results,alpha=0.001)
             print("p_values:",p_values)
             for p_value,xi,yi in zip (p_values,x,y):
                 p_value_str = f"{p_value*100:.1f}%"

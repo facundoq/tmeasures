@@ -1,10 +1,11 @@
-from . import MeasureTransformation, NumpyMeasure, IdentityTransformation
-from .activations_iterator import ActivationsIterator
-from tmeasures import MeasureResult
-from .stats_running import RunningMeanWelford
-from .quotient import divide_activations
-from .aggregation import DistanceAggregation
 import tmeasures as tm
+from tmeasures import MeasureResult
+
+from . import IdentityTransformation, MeasureTransformation, NumpyMeasure
+from .activations_iterator import ActivationsIterator
+from .aggregation import DistanceAggregation
+from .quotient import divide_activations
+from .stats_running import RunningMeanWelford
 
 
 class TransformationDistanceInvariance(NumpyMeasure):

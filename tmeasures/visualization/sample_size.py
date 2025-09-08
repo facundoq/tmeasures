@@ -1,8 +1,10 @@
-import numpy as np
-import matplotlib.pyplot as plt
-from .. import MeasureResult
 from pathlib import Path
 from typing import List
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+from .. import MeasureResult
 
 
 def relative_error(reference: MeasureResult, x: MeasureResult):
@@ -29,11 +31,11 @@ def get_relative_errors(results: 'np.ndarray[MeasureResult]', reference: Measure
 
 
 
-def plot_relative_error_heatmap(heatmap, 
+def plot_relative_error_heatmap(heatmap,
                                 labels_samples: List[str], labels_transformations: List[str]):
     # plot a heatmap of relative errors between the MeasureResults in `results` and `reference`
-    
-    
+
+
     f, ax = plt.subplots(dpi=300)
     im = ax.imshow(heatmap, cmap="magma",vmin=0,vmax=1)
     # ax.set_xticklabels(labels_samples)

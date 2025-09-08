@@ -1,6 +1,9 @@
-from ..stats_running import RunningMeanAndVarianceWelford,RunningMeanAndVarianceWelford
 from enum import Enum
+
 import numpy as np
+
+from ..stats_running import RunningMeanAndVarianceWelford
+
 
 class MeasureFunction(Enum):
     var = "var"

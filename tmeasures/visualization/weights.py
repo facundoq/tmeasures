@@ -1,8 +1,9 @@
-from sklearn.decomposition import NMF
-import torch
 import numpy as np
+import torch
+from sklearn.decomposition import NMF
 
 from tmeasures.visualization.images import plot_images_multichannel, plot_images_rgb
+
 
 def reorder_conv2d_weights(activation:torch.nn.Module,invariance:np.array):
     with torch.no_grad():
@@ -26,8 +27,8 @@ def weights_reduce_nmf(weights:np.array,n_components:int):
     model = NMF(n_components=n_components, init='random', random_state=0,max_iter=1000)
     nmf_weights = np.zeros((Fo,n_components,H,W))
     for i in range(Fo):
-        input_weights = weights[i,]    
-        flattened_weights = np.abs(input_weights.reshape(Fi,-1)) 
+        input_weights = weights[i,]
+        flattened_weights = np.abs(input_weights.reshape(Fi,-1))
         model.fit(flattened_weights)
         nmf_weights[i] = model.components_.reshape(n_components,H,W)
     return nmf_weights
@@ -50,7 +51,7 @@ def plot_conv2d_filters(conv2d:torch.nn.Module,invariance:np.array,sort=True, to
         weights, invariance = sort_weights_invariance(weights,invariance,top_k)
     if nmf_components is not None:
         weights = weights_reduce_nmf(weights,nmf_components)
-    if max_inputs is not None:   
+    if max_inputs is not None:
         weights = weight_inputs_filter_importance(weights,max_inputs)
     largest = max(abs(mi),abs(ma))
     vmin,vmax = -largest,largest
@@ -61,9 +62,9 @@ def plot_conv2d_filters(conv2d:torch.nn.Module,invariance:np.array,sort=True, to
 def plot_conv2d_filters_rgb(conv2d:torch.nn.Module,invariance:np.array):
     weights = dict(conv2d.named_parameters())["weight"].detach().numpy()
     weights, invariance = sort_weights_invariance(weights,invariance)
-    
+
     magnitudes = np.abs(weights).mean(axis=(1,2,3))
-    
+
     weights = weights_reduce_nmf(weights,3)
     labels = [f"{i:.02}" for i,m in zip(invariance,magnitudes)]
     plot_images_rgb(weights,labels=labels)

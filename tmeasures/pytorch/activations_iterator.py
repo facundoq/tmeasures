@@ -1,19 +1,18 @@
-from collections.abc import Generator
+import concurrent.futures
 import typing
+from collections.abc import Generator
 
-from .threads_manager import ThreadsManager
-
-from .transformations import PyTorchTransformation
-from .dataset2d import STDataset, Dataset2D
 import torch
+import tqdm.auto as tqdm
 from torch.utils.data import DataLoader
-from . import ActivationsModule
-from .base import PyTorchMeasureOptions, PyTorchLayerMeasure, PyTorchMeasure
 
 # from .activations_transformer import ActivationsTransformer
-from .. import Transformation, InvertibleTransformation
-import tqdm.auto as tqdm
-import concurrent.futures
+from .. import InvertibleTransformation, Transformation
+from . import ActivationsModule
+from .base import PyTorchLayerMeasure, PyTorchMeasure, PyTorchMeasureOptions
+from .dataset2d import Dataset2D, STDataset
+from .threads_manager import ThreadsManager
+from .transformations import PyTorchTransformation
 
 try:
     import namedthreads
@@ -21,9 +20,8 @@ try:
 except ImportError: pass
 
 
-from typing import Callable, List
-
 import abc
+from typing import Callable, List
 
 
 class ActivationsTransformer(abc.ABC):
@@ -38,9 +36,11 @@ class IdentityActivationsTransformer(ActivationsTransformer):
         return activations
 
 from .. import logger as tm_logger
+
 logger = tm_logger.getChild("pytorch.activations_iterator")
-from concurrent.futures import ThreadPoolExecutor
 import threading
+from concurrent.futures import ThreadPoolExecutor
+
 
 class PytorchActivationsIterator:
 
@@ -63,7 +63,7 @@ class PytorchActivationsIterator:
         self.dataset = dataset
         self.o = o
         self.activations_transformer = activations_transformer
-    
+
     def move_activations_to_measure_device(self,activations:list[torch.Tensor]):
         for i, layer_activations in enumerate(activations):
                 if self.o.model_device != self.o.measure_device:
@@ -79,8 +79,8 @@ class PytorchActivationsIterator:
         actual_batch_size = x_transformed.shape[0]
         i_samples = [self.dataset.d1tod2(i) for i in range(sample_i_start,sample_i_start+actual_batch_size)]
         return zip(*i_samples)
-    
-            
+
+
     @torch.no_grad
     def feed_threads2(self,tm:ThreadsManager):
         layers = self.model.activation_names()
@@ -106,7 +106,7 @@ class PytorchActivationsIterator:
             # print("AI: got activations")
 
             transformations = self.dataset.get_transformations(i_rows,i_cols)
-            
+
             self.move_activations_to_measure_device(activations)
             activations = self.transform_activations(activations,x_transformed,transformations)
             if tm.stop:
@@ -149,7 +149,7 @@ class PytorchActivationsIterator:
     #     for row in tqdm.trange(rows, disable=not self.o.verbose, leave=False):
     #         row_dataset = self.dataset.row_dataset(row)
     #         row_dataloader = DataLoader(row_dataset, batch_size=self.o.batch_size, shuffle=False, num_workers=0,pin_memory=True)
-            
+
     #         for k, q in tm.qs.items():
     #             logger.info(f"AI: putting row {row} dataloader for  layer {k}")
     #             q.put(tm.row_qs[k])
@@ -162,14 +162,14 @@ class PytorchActivationsIterator:
     #                 return
     #         col = 0
     #         # print("col",col)
-            
+
     #         for batch_i,x_transformed in enumerate(row_dataloader):
     #             # print(f"AI: {batch_i}: moving to device {self.o.model_device}... ")
     #             x_transformed = x_transformed.to(self.o.model_device,non_blocking=True)
     #             # print("AI: getting activations..")
     #             activations = self.model.forward_activations(x_transformed)
     #             # print("AI: got activations")
-                
+
     #             n_batch = x_transformed.shape[0]
     #             col_to = col + n_batch
     #             i_rows = [row]*n_batch
@@ -181,14 +181,14 @@ class PytorchActivationsIterator:
     #                 if self.o.model_device != self.o.measure_device:
     #                     layer_activations=layer_activations.to(self.o.measure_device,non_blocking=True)
 
-                    
-                    
+
+
     #                 layer_activations = self.activations_transformer.transform(layer_activations, x_transformed,transformations)
     #                 # print(f"AI: act it, shape {layer_activations.shape}")
     #                 # print(f"AI: putting col {col} batch for layer {i} ({layers[i]})")
     #                 tm.row_qs[layers[i]].put(layer_activations)
     #                 # print(f"put {layer_activations.shape} into {layers[i]} {row_qs[layers[i]]}")
-    #                 # Check if there's been an exception 
+    #                 # Check if there's been an exception
     #                 if tm.stop:
     #                     logger.info("Server thread stopping, exception detected")
     #                     return

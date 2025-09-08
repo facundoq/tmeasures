@@ -1,12 +1,13 @@
 from torch.utils.data import Dataset
-from .base import PyTorchMeasure, PyTorchMeasureOptions, PyTorchMeasureResult
-from .activations_iterator import PytorchActivationsIterator
+
 from . import ActivationsModule
+from .activations_iterator import PytorchActivationsIterator
+from .base import PyTorchMeasure, PyTorchMeasureOptions, PyTorchMeasureResult
+from .dataset2d import SampleTransformationDataset, TransformationSampleDataset
 from .layer_measures import Variance
-from .quotient import QuotientMeasure
 from .measure_transformer import MeasureTransformation, NoTransformation
+from .quotient import QuotientMeasure
 from .transformations import PyTorchTransformationSet
-from .dataset2d import TransformationSampleDataset, SampleTransformationDataset
 
 
 class TransformationVarianceInvariance(PyTorchMeasure):
@@ -17,7 +18,7 @@ class TransformationVarianceInvariance(PyTorchMeasure):
         iterator = PytorchActivationsIterator(model, dataset2d, o)
         results = iterator.evaluate(Variance())
         return PyTorchMeasureResult(results, model.activation_names(), self)
-    
+
 
 class SampleVarianceInvariance(PyTorchMeasure):
 

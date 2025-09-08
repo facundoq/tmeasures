@@ -11,13 +11,10 @@ import queue
 
 class ComputationModel(abc.ABC):
 
-    def __init__(self,server_function:Callable,worker_functions:dict[str,Callable],rows:int,n_batch:int,max_workers:int) -> None:
+    def __init__(self,server_function:Callable,worker_functions:dict[str,Callable],rows:int,cols:int,batch_size:int) -> None:
         self.server_function = server_function
         self.worker_functions = worker_functions
-        self.max_workers = max_workers
-        self.rows=rows
-        self.n_batch=n_batch
-
+        self.batch_calculator = RowBatchCalculator(rows,cols,batch_size)
     @abc.abstractmethod
     def execute(self,server_,prefix="tm"):
         pass
@@ -26,32 +23,87 @@ class ComputationModel(abc.ABC):
     def put(self,worker:str,row:int,x:Any):
         pass
 
+class RowBatchCalculator():
+    def __init__(self,rows:int,cols:int,batch_size:int) -> None:
+        self.rows=rows
+        self.cols=cols
+        self.batch_size = batch_size
+        logger.info(f"rows {rows} cols {cols} bs {batch_size}")
+        self.reset()
+    
+    def reset(self):
+        self.previous_batch_remanent= 0
+        self.row_batches=None
+    
+    def update_to_row_formula(self,row:int):
+        cols,batch_size = self.cols,self.batch_size
+        start = row * cols
+        end = start + cols - 1
+        self.row_batches =  end // batch_size - start // batch_size + 1
+        # logger.info(f"RBC: row {row}, {formula_row_batches} formula row batches")
+        
+    def update_to_row(self,row:int):
+        if self.previous_batch_remanent >= self.cols:
+            self.previous_batch_remanent -= self.cols
+            self.row_batches = 1
+        else:
+            self.row_batches=0
+            # if there are previous row remanents, there will be a batch for these
+            if self.previous_batch_remanent>0:
+                self.row_batches+=1
+            # discount cols that were computed in a previous batch
+            actual_cols = self.cols-self.previous_batch_remanent
+
+            # "normal" number of batches
+            self.row_batches += actual_cols // self.batch_size
+            
+            # add an extra batch if the actual cols is not divisible by batch_size
+            extra = actual_cols % self.batch_size
+            if extra>0:
+                self.row_batches+=1
+            # compute how many "cols" remain for the next row(s)
+            # total batch size - cols for this row for the last batch
+            self.previous_batch_remanent = max(0,self.batch_size-extra)
+        # logger.info(f"RBC: row {row}, {self.row_batches} iterative row batches")
+
 class ThreadsManager(ComputationModel):
 
-    def __init__(self,server_function:Callable,worker_functions:dict[str,Callable],max_workers:int,rows:int,n_batch:int) -> None:
-        super(ThreadsManager, self).__init__(server_function,worker_functions,rows,n_batch,max_workers)
+    def __init__(self,server_function:Callable,worker_functions:dict[str,Callable],max_workers:int,rows:int,cols:int,batch_size:int) -> None:
+        super(ThreadsManager, self).__init__(server_function,worker_functions,rows,cols,batch_size)
         self.stop=False
-        names = self.worker_functions.keys()
-        self.qs = {n: IterableQueue(rows,blocking_size=rows,name=f"q({n})") for n in names}
-        self.row_qs = {n: IterableQueue(n_batch,blocking_size=1,name=f"q_row({n})") for n in names}
-        self.last_row = {n:0 for n in names}
-        for q,row_q in zip(self.qs.values(),self.row_qs.values()):
-            for i in range(rows):
-                q.put(row_q)
+        self.max_workers = max_workers
+        self.reset()
             
-    
-    def put(self,worker:str,row:int,x:Any):
-        # last_row = self.last_row[worker]
-        worker_row_q = self.row_qs[worker]
-        logger.info(f"put {worker}, row: {row}/{self.rows}, queue {worker_row_q.added}/{worker_row_q.n}/{worker_row_q.removed}, shape {x.shape}")
-        # if last_row!=row:
-        #     if not worker_row_q.fully_consumed():
-        #         worker_row_q.queue
-        #     self.last_row[worker]=row
-        #     worker_row_q.reset()
-        # if worker_row_q.full() and not worker_row_q.fully_consumed():
-        #     worker_row_q.queue.join()
-        worker_row_q.put(x)
+    def reset(self):
+        names = self.worker_functions.keys()
+        rows = self.batch_calculator.rows
+        self.qs = {n: IterableQueue(rows,blocking_size=1,name=f"q({n})") for n in names}
+        self.last_row = 0
+        self.batch_calculator.reset()
+        self.reset_row(0)
+        
+    def reset_row(self,row):
+        self.batch_calculator.update_to_row(row)
+        names = self.worker_functions.keys()
+        batch_n = self.batch_calculator.row_batches
+        self.row_qs = {n: IterableQueue(batch_n,blocking_size=1,name=f"q_row({n})") for n in names}
+
+        for q,row_q in zip(self.qs.values(),self.row_qs.values()):
+            q.put(row_q)
+        self.row_batch = 0
+        
+    def put(self,row:int,x:dict[str,Any]):
+        
+        if self.last_row!=row:
+            assert self.last_row+1==row
+            self.last_row=row
+            self.reset_row(row)
+        # logger.info(f"putting row {row} (batch {self.row_batch}/{self.batch_calculator.row_batches}) to workers")
+        self.row_batch+=1
+        for worker_name,q in self.row_qs.items():
+
+            # logger.info(f"put {worker_name}, row: {row}/{self.batch_calculator.rows}, queue {q.added}/{q.n}/{q.removed}, shape {x[worker_name].shape}")
+            q.put(x[worker_name])
 
     def execute(self,prefix="tm"):
         

@@ -1,7 +1,7 @@
 from collections.abc import Generator
 import typing
 
-from tmeasures.pytorch.threads_manager import ThreadsManager
+from .threads_manager import ThreadsManager
 
 from .transformations import PyTorchTransformation
 from .dataset2d import STDataset, Dataset2D
@@ -10,7 +10,7 @@ from torch.utils.data import DataLoader
 from . import ActivationsModule
 from .base import PyTorchMeasureOptions, PyTorchLayerMeasure, PyTorchMeasure
 
-from .activations_transformer import ActivationsTransformer
+# from .activations_transformer import ActivationsTransformer
 from .. import Transformation, InvertibleTransformation
 import tqdm.auto as tqdm
 import concurrent.futures
@@ -59,9 +59,6 @@ class PytorchActivationsIterator:
         :param activations_transformer: ActivationsTransformer
             An optional transformer to apply to the activations after they have been computed.
         """
-        if o.batch_size > dataset.len1:
-            if o.batch_size % dataset.len1 != 0:
-                raise ValueError(f"Batch size {o.batch_size} is larger than the number of dataset columns {dataset.len1} but is not a multiple .")
         self.model = model
         self.dataset = dataset
         self.o = o
@@ -77,6 +74,13 @@ class PytorchActivationsIterator:
             activations[i] = self.activations_transformer.transform(layer_activations, x_transformed,transformations)
         return activations
 
+    def get_rows_cols(self,batch_i,x_transformed)->tuple[list[int],list[int]]:
+        sample_i_start = batch_i*self.o.batch_size
+        actual_batch_size = x_transformed.shape[0]
+        i_samples = [self.dataset.d1tod2(i) for i in range(sample_i_start,sample_i_start+actual_batch_size)]
+        return zip(*i_samples)
+    
+            
     @torch.no_grad
     def feed_threads2(self,tm:ThreadsManager):
         layers = self.model.activation_names()
@@ -93,50 +97,47 @@ class PytorchActivationsIterator:
             return
             # print("col",col)
         for batch_i,x_transformed in tqdm.tqdm(enumerate(dataloader), disable=not self.o.verbose, leave=False):
-            sample_i_start = batch_i*self.o.batch_size
-            i_samples = [self.dataset.d1tod2(i) for i in range(sample_i_start,sample_i_start+self.o.batch_size)]
-            i_rows, i_cols = typing.cast(tuple[list[int],list[int]], zip(*i_samples))
+            i_rows,i_cols = self.get_rows_cols(batch_i,x_transformed)
+            logger.info(f"Rows/cols {i_rows}, {i_cols}")
             # print(f"AI: {batch_i}: moving to device {self.o.model_device}... ")
             x_transformed = x_transformed.to(self.o.model_device,non_blocking=True)
             # print("AI: getting activations..")
             activations = self.model.forward_activations(x_transformed)
             # print("AI: got activations")
-            #logger.info("Rows/cols",i_rows,i_cols)
 
             transformations = self.dataset.get_transformations(i_rows,i_cols)
             
             self.move_activations_to_measure_device(activations)
             activations = self.transform_activations(activations,x_transformed,transformations)
             if tm.stop:
-                    logger.info("Server thread stopping, exception detected")
-                    return
+                logger.info("Server thread stopping, exception detected")
+                return
                 # print(f"AI: act it, shape {layer_activations.shape}")
                 # print(f"AI: putting col {col} batch for layer {i} ({layers[i]})")
             for row, row_activations in self.split_activations_by_row(activations,i_rows):
-                for i,layer_activations in enumerate(row_activations):
-                    # logger.info(f"putting row {row} layer {layers[i]}")
-                    tm.put(layers[i],row,layer_activations)
-                
-
+                tm.put(row,row_activations)
+            if tm.stop:
+                logger.info("Server thread stopping, exception detected")
+                return
                 # print("AI: finished row")
             # print("AI: finished all rows")
 
-    def split_activations_by_row(self,activations:list[torch.Tensor],i_rows:list[int])->Generator[tuple[int,list[torch.Tensor]]]:
+    def split_activations_by_row(self,activations:list[torch.Tensor],i_rows:list[int])->Generator[tuple[int,dict[str,torch.Tensor]]]:
+        layers = self.model.activation_names()
         all_rows = list(range(min(i_rows),max(i_rows)+1))
         start = 0
         last = all_rows[-1]
-        # print(all_rows,last,activations[0].shape)
+        logger.info(f"rows: {all_rows}, last {last}")
         for current_row in all_rows:
             if current_row == last:
                 end = len(i_rows)
             else:
                 end = i_rows.index(current_row+1)
-
             activations_row = [a[start:end,] for a in activations]
+            activations_row_dict = { layers[i]:a for i,a in enumerate(activations_row)}
             # print(activations_row[0].shape,i_rows,start,end)
             start=end
-            
-            yield current_row,activations_row
+            yield current_row,activations_row_dict
 
 
     # @torch.no_grad
@@ -194,7 +195,6 @@ class PytorchActivationsIterator:
     #             col = col_to
     #             # print("AI: finished row")
     #         # print("AI: finished all rows")
-   
 
     def evaluate(self, m: PyTorchLayerMeasure):
         layers = self.model.activation_names()
@@ -203,14 +203,8 @@ class PytorchActivationsIterator:
         logger.info(f"Main thread {threading.get_ident()}")
         # calculate number of batches per row
         # if batch_size > cols, then note that n_batch = 1
-        n_batch = cols // self.o.batch_size 
-        if (cols % self.o.batch_size) > 0:
-            n_batch+=1
-
         measure_functions = {l:m.eval for l in layers}
         model_evaluating_function = self.feed_threads2
         max_workers = len(layers)+1
-        tm = ThreadsManager(model_evaluating_function,measure_functions,max_workers,rows,n_batch)
+        tm = ThreadsManager(model_evaluating_function,measure_functions,max_workers,rows,cols,self.o.batch_size)
         return tm.execute()
-
-    

@@ -43,7 +43,7 @@ class ConstantDataset(torch.utils.data.Dataset):
         return self.dataset[index][0]
     
 default_options = tm.pytorch.PyTorchMeasureOptions(batch_size=1024)
-large_options = tm.pytorch.PyTorchMeasureOptions(batch_size=2**14,num_workers=12)
+large_options = tm.pytorch.PyTorchMeasureOptions(batch_size=2**14,num_workers=0)
 
 def assert_instance(measure,dataset,transformations,activations_model,expected_result,atol=1e-5,options=default_options):
     result = measure.eval(dataset,transformations,activations_model,options)
@@ -60,17 +60,18 @@ def test_constant_model_invariance():
     expected_results_normalized = np.ones(output.shape)
     model = torch.nn.Sequential(ConstantModel(output))
     measures_results = [
-                    #   (tm.pytorch.SampleVarianceInvariance(),[expected_results]),
+                       (tm.pytorch.SampleVarianceInvariance(),[expected_results]),
                       (tm.pytorch.TransformationVarianceInvariance(),[expected_results]),
-                    #   (tm.pytorch.NormalizedVarianceInvariance(),[expected_results_normalized]),
+                       (tm.pytorch.NormalizedVarianceInvariance(),[expected_results_normalized]),
                       ]
-    n = 5
-    transformations = RepeatedIdentitySet(n)
-    default_options.batch_size=3
-    dataset = ConstantDataset(2,(n,5))
-    activations_model = tm.pytorch.AutoActivationsModule(model)
-    for measure,expected_result in measures_results:
-       assert_instance(measure,dataset,transformations,activations_model,expected_result,options=default_options)
+    
+    for n,bs in [(1,1),(5,3),(5,11),(100,20),(20,100)]:
+        o = tm.pytorch.PyTorchMeasureOptions(batch_size=bs)
+        transformations = RepeatedIdentitySet(n)
+        dataset = ConstantDataset(2,(n,5))
+        activations_model = tm.pytorch.AutoActivationsModule(model)
+        for measure, expected_result in measures_results:
+            assert_instance(measure,dataset,transformations,activations_model,expected_result,options=o)
 
 class RepeatedIdentitySet(tm.pytorch.transformations.PyTorchTransformationSet):
     def __init__(self,transformations=1):
@@ -82,17 +83,19 @@ class RepeatedIdentitySet(tm.pytorch.transformations.PyTorchTransformationSet):
     def id(self):
         return "Identity"
 
-def atest_random_model_invariance():
+def test_random_model_invariance():
     output_shape = (2,2)
+    o = tm.pytorch.PyTorchMeasureOptions(batch_size=2**14,num_workers=0)
     mean,std=2.0,3
     model = torch.nn.Sequential(RandomModel(output_shape,2,3))
     expected_results = np.ones(output_shape)*std
     expected_results_normalized = np.ones(output_shape)
-    measures_results = [(tm.pytorch.SampleVarianceInvariance(),[expected_results]),
+    measures_results = [
+                    #(tm.pytorch.SampleVarianceInvariance(),[expected_results]),
                       (tm.pytorch.TransformationVarianceInvariance(),[expected_results]),
-                      (tm.pytorch.NormalizedVarianceInvariance(),[expected_results_normalized]),
+                      #(tm.pytorch.NormalizedVarianceInvariance(),[expected_results_normalized]),
                       ]
-    sample_size_order = 8
+    sample_size_order = 5
     n = 10**sample_size_order
     atol = 10**(-np.sqrt(sample_size_order//2))
     transformations = RepeatedIdentitySet(n)
@@ -100,16 +103,15 @@ def atest_random_model_invariance():
     activations_model = tm.pytorch.AutoActivationsModule(model)
     large_options.batch_size = n
     for measure,expected_result in measures_results:
-        assert_instance(measure,dataset,transformations,activations_model,expected_result,atol=1e-1,options=large_options)
-
-
+        assert_instance(measure,dataset,transformations,activations_model,expected_result,atol=1e-1,options=o)
 
 if __name__ == "__main__":
     import logging
-    logging.basicConfig()
+    # logging.basicConfig()
     
     #set logger to info level
-    tm.logger.setLevel(logging.INFO)
+    # tm.logger.setLevel(logging.INFO)
 
-    test_constant_model_invariance()
-    #atest_random_model_invariance()
+
+#    test_constant_model_invariance()
+    test_random_model_invariance()

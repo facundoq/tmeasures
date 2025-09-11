@@ -130,7 +130,7 @@ doctest_optionflags = "NORMALIZE_WHITESPACE"
 executor.type = "uv"
 
 [tool.poe.tasks]
-test = "uv run pytest tmeasures"
+test = "uv run pytest"
 lint = "uvx ruff check --fix tmeasures "
 format = "uvx ruff format tmeasures"
 build = "uv build"

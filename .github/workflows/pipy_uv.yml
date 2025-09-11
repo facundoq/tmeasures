@@ -1,0 +1,42 @@
+name: Publish Python Package
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write  # Required for trusted publishing
+    steps:
+      - uses: actions/checkout@v4
+      - name: setup
+        uses: ./.github/actions/setup 
+      - run: uv build
+      - name: Publish package
+        run: uv publish --verbose
+        env:
+          # This requires a PyPI project-scoped token with `Publish` access,
+          # stored in your GitHub repository as a secret named `PYPI_TOKEN`
+          # See: https://packaging.python.org/en/latest/guides/publishing-package-distribution-releases-using-github-actions-ci-cd-workflows/
+          # and https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions
+          # for instructions on how to add a secret to your repository.
+          # NOTE: uv publish does not require a username/password or token for
+          #       trusted publishing using OpenID Connect (OIDC)
+          # See: https://docs.astral.sh/uv/guides/package/#publishing
+          #      and https://packaging.python.org/en/latest/guides/publishing-package-distribution-releases-using-github-actions-ci-cd-workflows/#:~:text=do%20not%20need%20to%20set%20any%20credentials%20for%20PyPI%20publishing
+          #      to get more information about how to publish without secrets using OIDC
+          #      and to enable OIDC for your repository.
+          # To use trusted publishing, remove this `env` section entirely and
+          # uncomment lines 15-17 of the guide.
+          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+
+      # Optional: Create a GitHub release
+      - name: Create GitHub Release
+        if: ${{ github.event.release.published }}
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "dist/*"
+          body: ${{ github.event.release.body }}
+          token: ${{ secrets.GITHUB_TOKEN }}

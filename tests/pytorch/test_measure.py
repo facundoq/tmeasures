@@ -51,7 +51,7 @@ def random_model_invariance_options():
                     (model, tm.pytorch.SampleVarianceInvariance(),[expected_results]),
                       (model, tm.pytorch.TransformationVarianceInvariance(),[expected_results]),
                       (model, tm.pytorch.NormalizedVarianceInvariance(),[expected_results_normalized]),
-                      ]
+        ]
     
 @pytest.mark.parametrize("model,measure,expected_result",random_model_invariance_options())
 def test_random_model_invariance(model,measure,expected_result):
@@ -71,5 +71,6 @@ if __name__ == "__main__":
     
     #set logger to info level
     # tm.logger.setLevel(logging.INFO)
-    # test_constant_model_invariance()
+    for p in constant_model_invariance_options():
+        test_constant_model_invariance(*p)
     # test_random_model_invariance()

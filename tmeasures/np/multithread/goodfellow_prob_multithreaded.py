@@ -54,7 +54,7 @@ class LocalVarianceNormal(LayerMeasure):
     def eval(self,q:Queue,inner_q:Queue):
         running_mean = RunningMean()
         # activation_sum=0
-        n=0
+
         for transformation in self.queue_as_generator(q):
             for activations in self.queue_as_generator(inner_q):
                 if self.sign != 1:

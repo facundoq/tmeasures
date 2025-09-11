@@ -1,4 +1,6 @@
 import abc
+import concurrent.futures
+import queue
 import threading
 from typing import Any, Callable
 
@@ -8,8 +10,6 @@ from .. import logger as tm_logger
 
 logger = tm_logger.getChild("pytorch.threads_manager")
 
-import concurrent.futures
-import queue
 
 
 class ComputationModel(abc.ABC):
@@ -109,15 +109,21 @@ class ThreadsManager(ComputationModel):
 
     def empty_all(self):
         for q in self.queues:
-            try: q.get(block=False)
-            except queue.Empty: pass
+            try:
+                q.get(block=False)
+            except queue.Empty:
+                pass
 
 
     def stop_all(self):
         for q in self.queues:
-            try: q.put(None,block=False)
-            except queue.Full: pass
-            except FullQueue: pass
+            try:
+                q.put(None,block=False)
+            except queue.Full:
+                pass
+            except FullQueue:
+                pass
+
 
     def check_finished(self,worker_futures,server_future):
         futures = [server_future]+list(worker_futures.values())

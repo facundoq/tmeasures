@@ -5,7 +5,7 @@ from typing import Iterable, Sized
 
 
 class FullQueue(Exception):
-     def __init__(self, message):
+    def __init__(self, message):
         # Call the base class constructor with the parameters it needs
         super().__init__(message)
 
@@ -13,7 +13,6 @@ class FullQueue(Exception):
 class IterableQueue(Sized, Iterable):
     """Queue supporting Iterator and Sized protocols.
     Queue has a finite size so it can be iterated upon with a for loop
-    
     """
 
     def __init__(self, n: int, blocking_size=None,name=""):

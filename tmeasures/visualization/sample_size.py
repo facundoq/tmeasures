@@ -36,19 +36,19 @@ def plot_relative_error_heatmap(heatmap,
     # plot a heatmap of relative errors between the MeasureResults in `results` and `reference`
 
 
-    f, ax = plt.subplots(dpi=300)
-    im = ax.imshow(heatmap, cmap="magma",vmin=0,vmax=1)
+    _, ax = plt.subplots(dpi=300)
+    _ = ax.imshow(heatmap, cmap="magma",vmin=0,vmax=1)
     # ax.set_xticklabels(labels_samples)
     # ax.set_yticklabels(labels_transformations)
     plt.xticks(range(len(labels_samples)),labels_samples)
     plt.yticks(range(len(labels_transformations)),labels_transformations)
     ax.set_xlabel("Samples")
     ax.set_ylabel("Transformations")
-    cbar = ax.figure.colorbar(im, ax=ax)
+    # cbar = ax.figure.colorbar(im, ax=ax)
 
     for i in range(heatmap.shape[0]):
         for j in range(heatmap.shape[1]):
             value_str = f"{heatmap[i, j]:.3f}"
-            text = ax.text(j, i, value_str,
+            _ = ax.text(j, i, value_str,
                            ha="center", va="center", color="#8aff66")
 

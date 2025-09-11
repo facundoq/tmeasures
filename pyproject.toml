@@ -131,6 +131,7 @@ executor.type = "uv"
 
 [tool.poe.tasks]
 test = "uv run pytest"
+cov-test = "uv run pytest --cov=tmeasures --cov-report=xml"
 lint = "uvx ruff check --fix tmeasures "
 format = "uvx ruff format tmeasures"
 build = "uv build"

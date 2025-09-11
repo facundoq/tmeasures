@@ -97,6 +97,10 @@ venv.bak/
 # Rope project settings
 .ropeproject
 
+
+
+
+
 # mkdocs documentation
 /site
 
@@ -107,5 +111,5 @@ venv.bak/
 .idea/
 .vscode/
 
-
-
+# ruff
+.ruff_cache/

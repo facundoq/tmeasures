@@ -3,7 +3,6 @@ from tmeasures import MeasureResult
 
 from . import IdentityTransformation, MeasureTransformation, NumpyMeasure
 from .activations_iterator import ActivationsIterator
-from .base import NumpyMeasure
 from .quotient import divide_activations
 from .stats_running import RunningMeanAndVarianceWelford, RunningMeanWelford
 
@@ -51,7 +50,7 @@ class SampleVarianceSameEquivariance(NumpyMeasure):
 
     def eval(self, activations_iterator: ActivationsIterator,verbose=False) -> MeasureResult:
         activations_iterator:ActivationsIterator = activations_iterator.get_inverted_activations_iterator()
-        ts = list(map(str, (activations_iterator.get_transformations())))
+        #ts = list(map(str, (activations_iterator.get_transformations())))
 
 
         mean_variances_running = None

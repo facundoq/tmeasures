@@ -22,10 +22,13 @@ Variance-Based Same-Equivariance Measures
 """
 
 from .model import ActivationsModule,AutoActivationsModule
-from .base import PyTorchMeasure,PyTorchMeasureOptions,ActivationsByLayer,PyTorchMeasureResult
+from .base import PyTorchMeasure,PyTorchMeasureOptions,ActivationsByLayer,PyTorchMeasureResult,STMatrixIterator,PyTorchLayerMeasure
 from .transformations import PyTorchTransformationSet,PyTorchTransformation
 
 from .activations_iterator_base import PytorchActivationsIterator,InvertedPytorchActivationsIterator,BothPytorchActivationsIterator,NormalPytorchActivationsIterator
+
+from .by_layer import PyTorchMeasureByLayer
+
 from .measure_transformer import MeasureTransformation,NoTransformation,AverageFeatureMaps
 from .util import SequentialWithIntermediates
 from . import dataset2d

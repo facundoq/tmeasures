@@ -9,7 +9,6 @@ from tmeasures.transformation import TransformationSet
 
 class ActivationsIterator(abc.ABC):
     """
-    .. 
         Iterate over the ST matrix of activations of a network, varying the samples and transformations.
         The iteration is in both orders:
         1) transformations_first:  column indexes first, then row indices indices

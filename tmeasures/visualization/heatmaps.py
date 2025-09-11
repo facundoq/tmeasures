@@ -28,7 +28,8 @@ def plot_heatmap(m:MeasureResult, vmin=None, vmax=None,sort=True):
             layer.sort()
         layers.append(layer)
 
-    if vmax is None: vmax = get_limit(m, "max")
+    if vmax is None:
+        vmax = get_limit(m, "max")
     if vmin is None:
         vmin = get_limit(m, "min")
         if vmin > 0:

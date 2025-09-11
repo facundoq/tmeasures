@@ -51,5 +51,4 @@ class NormalizedVarianceSameEquivariance(QuotientMeasure):
                          measure_transformation=measure_transformation)
 
     def __repr__(self):
-        extra =""
         return f"{self.abbreviation()}({self.measure_transformation})"

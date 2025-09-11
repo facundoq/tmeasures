@@ -7,9 +7,8 @@ from torch.utils.data import Dataset
 import tmeasures as tm
 from tmeasures.pytorch.transformations import IdentityTransformationSet
 
-from . import ActivationsModule
-from .activations_iterator import PytorchActivationsIterator
-from .base import (
+from . import (
+    ActivationsModule,
     PyTorchLayerMeasure,
     PyTorchMeasure,
     PyTorchMeasureByLayer,
@@ -17,6 +16,7 @@ from .base import (
     PyTorchMeasureResult,
     STMatrixIterator,
 )
+from .activations_iterator import PytorchActivationsIterator
 from .layer_measures import Variance
 from .quotient import divide_activations
 from .stats_running import RunningMeanAndVarianceWelford, RunningMeanWelford
@@ -50,7 +50,7 @@ class PercentActivationThreshold(PyTorchLayerMeasure):
         # change shape of values to Activations x Samples
         # where each row has all the samples of a particular activation
         original_shape = values.shape[3:]
-        print("before",values.shape)
+        #print("before",values.shape)
         samples_n = values.shape[0]*values.shape[1]*values.shape[2]
         values = values.reshape((samples_n,-1)).transpose(1,0)
         # sort rows, one for each activation
@@ -82,7 +82,7 @@ class NormalPValueThreshold(PyTorchLayerMeasure):
 
         # return mean.mean()
         μ,σ = mean.mean(),mean.std()
-        original_shape = μ.shape
+        #original_shape = μ.shape
 
         σ[σ<1e-16]=1e-16
         d = torch.distributions.Normal(μ,σ)

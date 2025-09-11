@@ -12,10 +12,10 @@ from . import ActivationsModule
 
 ActivationsByLayer = [torch.Tensor]
 
-
+CPU = torch.device("cpu")
 class PyTorchMeasureOptions:
-    def __init__(self, batch_size=32, num_workers=0, verbose=True, model_device="cpu", measure_device="cpu",
-                 data_device="cpu"):
+    def __init__(self, batch_size=32, num_workers=0, verbose=True, model_device=CPU, measure_device=CPU,
+                 data_device=CPU):
         self.batch_size = batch_size
         self.num_workers = num_workers
         self.verbose = verbose
@@ -86,19 +86,3 @@ class PyTorchMeasure(tm.Measure):
         return layer_vars
 
 
-
-from tmeasures.pytorch.activations_iterator import PytorchActivationsIterator
-
-
-class PyTorchMeasureByLayer(PyTorchMeasure):
-
-    def __init__(self,layer_measure:PyTorchLayerMeasure) -> None:
-        super().__init__()
-        self.layer_measure=layer_measure
-
-    def eval(self, dataset: Dataset, transformations: tm.TransformationSet, model: ActivationsModule,
-             o: PyTorchMeasureOptions) -> PyTorchMeasureResult:
-        dataset2d = tm.pytorch.dataset2d.TransformationSampleDataset(dataset, transformations, device=o.data_device)
-        iterator = PytorchActivationsIterator(model, dataset2d, o)
-        results = iterator.evaluate(self.layer_measure)
-        return PyTorchMeasureResult(results, model.activation_names(), self)

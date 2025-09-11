@@ -1,7 +1,9 @@
 # ✴ Transformational Measures 📏
 
 
-![](https://img.shields.io/pypi/v/tmeasures) | ![](https://img.shields.io/codecov/c/github/facundoq/tmeasures) | ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/facundoq/tmeasures/pipy_uv.yml) | [![Tests](https://github.com/facundoq/tmeasures/actions/workflows/lint_test.yml/badge.svg)](https://github.com/facundoq/tmeasures/actions/workflows/lint_test.yml)
+![](https://img.shields.io/pypi/v/tmeasures) 
+| ![](https://img.shields.io/codecov/c/github/facundoq/tmeasures) 
+| [![Tests](https://github.com/facundoq/tmeasures/actions/workflows/lint_test.yml/badge.svg)](https://github.com/facundoq/tmeasures/actions/workflows/lint_test.yml)
 
 
 The Transformational Measures (`tmeasures`) library allows neural network designers to evaluate the invariance, equivariance and other properties of their models with respect to a set of transformations. Support for Pytorch. 

@@ -1,5 +1,6 @@
 import abc
 import multiprocessing
+from enum import Enum
 from queue import Queue
 from threading import Thread
 from typing import List
@@ -32,7 +33,7 @@ class LayerMeasure(abc.ABC):
             else:
                 yield v
 
-from enum import Enum
+
 
 
 class ActivationsOrder(Enum):

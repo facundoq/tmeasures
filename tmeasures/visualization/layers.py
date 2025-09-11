@@ -75,8 +75,6 @@ def plot_average_activations_different_models(results:List[tm.MeasureResult], la
     if linestyles is None and n<=4:
         linestyles=["-","--",":","-."]
 
-    result_layers = np.array([len(r.layer_names) for r in results])
-    min_n, max_n = result_layers.min(), result_layers.max()
     max_value=0
 
     for i, result in enumerate(results):
@@ -172,7 +170,8 @@ def shorten_layer_names(labels:List[str])->List[str]:
         i=0
         # get the index of the first letter after the last _
         chars=[str(n) for n in range(9)]+["_"]
-        while i<len(label) and label[i] in chars: i+=1
+        while i<len(label) and label[i] in chars:
+            i+=1
         # remove all chars before the last _
         label=label[i:]
 
@@ -204,7 +203,7 @@ def get_dpi(n:int):
     return min(400, max(300, n * 15))
 
 def none_list(v):
-    if v == None:
+    if v is None:
         return None
     else:
         return [v]

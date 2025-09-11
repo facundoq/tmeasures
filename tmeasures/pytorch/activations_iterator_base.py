@@ -37,13 +37,14 @@ class PytorchActivationsIterator(ActivationsIterator):
 
     def get_transformations(self) ->tm.TransformationSet:
         return self.transformations
+
     def transformations_first(self):
         for t_i, transformation in enumerate(self.transformations):
             dataloader = DataLoader(self.dataset, batch_size=self.batch_size, shuffle=False,num_workers=self.num_workers, drop_last=False, pin_memory=True)
             yield transformation, self.samples_activation(t_i, transformation, dataloader)
 
     '''
-         Returns the activations of the models by iterating first over transformations and 
+         Returns the activations of the models by iterating first over transformations and
          then, for each transformation, over samples
      '''
 
@@ -144,7 +145,7 @@ class InvertedPytorchActivationsIterator(PytorchActivationsIterator):
                 yield batch, batch_activations
 
     '''
-         Returns the activations of the models by iterating first over transformations and 
+         Returns the activations of the models by iterating first over transformations and
          then, for each transformation, over samples
      '''
 
@@ -203,7 +204,7 @@ class BothPytorchActivationsIterator(PytorchActivationsIterator):
             yield batch, pre_transformed_activations, post_transformed_activations
 
     '''
-         Returns the activations of the models by iterating first over transformations and 
+         Returns the activations of the models by iterating first over transformations and
          then, for each transformation, over samples
      '''
 

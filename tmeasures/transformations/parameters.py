@@ -6,7 +6,7 @@ import numpy as np
 
 
 class TransformationParameters(abc.ABC,list):
-    def __init__(self,members:[]):
+    def __init__(self,members:list):
         super().__init__(members)
 
     @abc.abstractmethod
@@ -74,8 +74,10 @@ class ConstantParameters(TransformationParameters):
 class UniformRotation(TransformationParameters):
     def __init__(self, n:int=1,angles:float=0):
         self.n=n
-        if n<0: raise ValueError(f"Wrong value for n")
-        if  angles <0 or angles >1: raise ValueError(f"Wrong angle range {angles}")
+        if n<0:
+            raise ValueError(f"Wrong value for n")
+        if  angles <0 or angles >1:
+            raise ValueError(f"Wrong angle range {angles}")
         self.angles=angles
         super().__init__(self.values())
 
@@ -95,7 +97,7 @@ class UniformRotation(TransformationParameters):
 
 class ScaleParameters(TransformationParameters):
     pass
-
+Scale2D = list[tuple[float,float]]
 class ScaleUniform(ScaleParameters):
     def __init__(self, n:int=0, min_downscale:float=1, max_upscale:float=1,include_identity=True):
         # generates n*2*3+1=n*6+1 scales
@@ -106,14 +108,15 @@ class ScaleUniform(ScaleParameters):
         # s -> [ (1,s), (s,1), (s,s)]
         # The identity transform is also included
         self.n=n
-        if  min_downscale <0 or min_downscale>1 or max_upscale<1: raise ValueError(f"Values must satisfy  0<{min_downscale}<=1<={max_upscale}")
+        if  min_downscale <0 or min_downscale>1 or max_upscale<1:
+            raise ValueError(f"Values must satisfy  0<{min_downscale}<=1<={max_upscale}")
         self.min_downscale, self.max_upscale= min_downscale, max_upscale
         self.include_identity=include_identity
         super().__init__(self.values())
 
-    def values(self) ->[float,float]:
+    def values(self) ->Scale2D:
         if self.n==0:
-            return (1,1)
+            return [(1,1)]
         upscale = np.linspace(1,self.max_upscale,self.n+1,endpoint=True)
         upscale=upscale[1:]# remove scale=1
         downscale = np.linspace(self.min_downscale,1,self.n,endpoint=False)
@@ -133,7 +136,7 @@ class TranslationUniform(TransformationParameters):
         self.max_intensity=max_intensity
         super().__init__(self.values())
 
-    def values(self):
+    def values(self)->Scale2D:
         if self.n==0:
             return [(0,0)]
         values=np.linspace(0, self.max_intensity, self.n+1,endpoint=True)

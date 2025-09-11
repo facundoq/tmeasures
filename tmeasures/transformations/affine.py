@@ -5,11 +5,13 @@ from typing import Iterator, Tuple
 
 import torch
 
-from tmeasures.transformation import Transformation, TransformationSet
+from .. import Transformation, TransformationSet
+from .parameters import NoRotation, NoScale, NoTranslation
 
 TranslationParameter = Tuple[float, float]
 ScaleParameter = Tuple[float, float]
 RotationParameter = float
+
 
 
 class AffineParameters:
@@ -63,7 +65,7 @@ def ifnone(x,v):
     else:
         return x
 
-from .parameters import NoRotation, NoScale, NoTranslation
+
 
 
 class AffineGenerator(TransformationSet):

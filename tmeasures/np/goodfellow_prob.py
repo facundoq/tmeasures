@@ -39,7 +39,8 @@ class GoodfellowNormalGlobalInvariance(NumpyMeasure):
         for transformation, samples_activations_iterator in tqdm(activations_iterator.transformations_first(),disable=not verbose):
             for x, batch_activations in samples_activations_iterator:
                 for j, activations in enumerate(batch_activations):
-                    if self.sign != 1: activations *= self.sign
+                    if self.sign != 1:
+                        activations *= self.sign
                     running_means[j].update_all(activations)
 
         stds  = [running_mean.std() for running_mean in running_means]

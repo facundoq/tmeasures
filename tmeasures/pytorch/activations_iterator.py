@@ -17,12 +17,16 @@ from .transformations import PyTorchTransformation
 try:
     import namedthreads
     namedthreads.patch()
-except ImportError: pass
-
+except ImportError:
+    pass
 
 import abc
+import threading
 from typing import Callable, List
 
+from .. import logger as tm_logger
+
+logger = tm_logger.getChild("pytorch.activations_iterator")
 
 class ActivationsTransformer(abc.ABC):
 
@@ -35,11 +39,8 @@ class IdentityActivationsTransformer(ActivationsTransformer):
     def transform(self, activations: torch.Tensor, x: torch.Tensor, transformations: List[PyTorchTransformation]) -> torch.Tensor:
         return activations
 
-from .. import logger as tm_logger
 
-logger = tm_logger.getChild("pytorch.activations_iterator")
-import threading
-from concurrent.futures import ThreadPoolExecutor
+
 
 
 class PytorchActivationsIterator:
@@ -82,13 +83,12 @@ class PytorchActivationsIterator:
 
 
     @torch.no_grad
-    def feed_threads2(self,tm:ThreadsManager):
-        layers = self.model.activation_names()
+    def feed_threads(self,tm:ThreadsManager):
         rows, cols = self.dataset.len0, self.dataset.len1
         logger.info(f"rows {rows} cols {cols}")
         # print(f"act it starting,num workers {self.o.num_workers}:")
         dataloader = DataLoader(self.dataset, batch_size=self.o.batch_size, shuffle=False, num_workers=self.o.num_workers,pin_memory=True)
-        i=0
+
         # print(f"AI: finished putting row {row} dataloaders for all layers")
         # for k,q in qs.items():
         #     print(f"AI: {k}→ {q.queue.qsize()} items")
@@ -142,10 +142,9 @@ class PytorchActivationsIterator:
     def evaluate(self, m: PyTorchLayerMeasure):
         layers = self.model.activation_names()
         rows, cols = self.dataset.len0, self.dataset.len1
-        prefix = f"{m.__class__.__name__}_"
         logger.info(f"Main thread {threading.get_ident()}")
         measure_functions = {l:m.eval for l in layers}
-        model_evaluating_function = self.feed_threads2
+        model_evaluating_function = self.feed_threads
         max_workers = len(layers)+1
         tm = ThreadsManager(model_evaluating_function,measure_functions,max_workers,rows,cols,self.o.batch_size)
         return tm.execute()

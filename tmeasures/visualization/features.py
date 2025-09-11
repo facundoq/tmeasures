@@ -108,7 +108,7 @@ def plot_feature_maps(feature_maps:np.ndarray, feature_indices:[int], variance_s
 def indices_of_smallest_k(a,k):
 
     indices = np.argpartition(a, k)[:k]
-    values = a[indices]
+    #values = a[indices]
     indices = np.argsort(a)
 
     # ind.sort()
@@ -143,9 +143,6 @@ def select_feature_maps(measure_result: tm.MeasureResult, most_invariant_k:int, 
     Plots the best :param features_per_layer feature maps, ie the most invariant
     Creates a plot for each sample image/transformation pair
     '''
-
-from tmeasures.np import MeasureTransformation
-
 
 def plot_invariant_feature_maps(plot_folderpath:Path, activations_iterator:ActivationsIterator, result:tm.MeasureResult, most_invariant_k:int, least_invariant_k:int
                                 #, conv_aggregation:MeasureTransformation

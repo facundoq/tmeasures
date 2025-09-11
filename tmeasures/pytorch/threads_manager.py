@@ -42,7 +42,7 @@ class RowBatchCalculator():
         cols,batch_size = self.cols,self.batch_size
         start = row * cols
         end = start + cols - 1
-        self.row_batches =  end // batch_size - start // batch_size + 1
+        return end // batch_size - start // batch_size + 1
         # logger.info(f"RBC: row {row}, {formula_row_batches} formula row batches")
 
     def update_to_row(self,row:int):
@@ -67,6 +67,7 @@ class RowBatchCalculator():
             # compute how many "cols" remain for the next row(s)
             # total batch size - cols for this row for the last batch
             self.previous_batch_remanent = max(0,self.batch_size-extra)
+        print(self.row_batches,self.update_to_row_formula(row))
         # logger.info(f"RBC: row {row}, {self.row_batches} iterative row batches")
 
 class ThreadsManager(ComputationModel):

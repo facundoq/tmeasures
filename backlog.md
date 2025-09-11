@@ -1,4 +1,3 @@
-3. Pull request to `torchvision` for TinyImageNet
 4. Redesign TransformationSet, make it just a list of transformations, remove the parameters and valid_transformation methods. Move parameters to tmexp.
 5. Add documentation to classes and functions
 6. Generate html docs from docstrings

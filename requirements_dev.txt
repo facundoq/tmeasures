@@ -1,7 +1,0 @@
-twine
-setuptools
-wheel
-sphinx
-codecov
-pytest-cov
-namedthreads

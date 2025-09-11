@@ -1,6 +1,10 @@
 # ✴ Transformational Measures 📏
 
-The Transformational Measures (`tmeasures`) library allows neural network designers to evaluate the invariance, equivariance and other properties of their models with respect to a set of transformations. Support for Pytorch (current) and Tensorflow/Keras (coming). 
+
+![](https://img.shields.io/pypi/v/tmeasures) | ![](https://img.shields.io/codecov/c/github/facundoq/tmeasures) | ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/facundoq/tmeasures/pipy_uv.yml)
+
+
+The Transformational Measures (`tmeasures`) library allows neural network designers to evaluate the invariance, equivariance and other properties of their models with respect to a set of transformations. Support for Pytorch. 
 
 ## 🔎 Visualizations
 
@@ -35,10 +39,6 @@ These notebooks contain step-by-step code and explanations to measure invariance
 
 Other examples with multiple measures and pretrained models can be found in the [doc](/doc) folder of this repository.
 
-
-## 💻 TensorFlow API
-
-We are still developing the Tensorflow API. 
 
 ## 📋 Examples
 

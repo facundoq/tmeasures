@@ -19,7 +19,7 @@ class TransformationVarianceInvariance(NumpyMeasure):
         return f"{self.abbreviation()}"
 
     def eval(self, activations_iterator: ActivationsIterator,verbose=False) -> MeasureResult:
-        layer_names = activations_iterator.layer_names()
+        layer_names = activations_iterator.activation_names()
         n_layers = len(layer_names)
         mean_running = [RunningMeanWelford() for i in range(n_layers)]
 
@@ -53,7 +53,7 @@ class SampleVarianceInvariance(NumpyMeasure):
 
 
     def eval(self, activations_iterator: ActivationsIterator,verbose=False) -> MeasureResult:
-        layer_names = activations_iterator.layer_names()
+        layer_names = activations_iterator.activation_names()
         n_layers = len(layer_names)
         mean_variances_running = [RunningMeanWelford() for i in range(n_layers)]
 
@@ -89,7 +89,7 @@ class NormalizedVarianceInvariance(NumpyMeasure):
         sv_result = self.pre_normalization_transformation.apply(sv_result)
 
         result=divide_activations(tv_result.layers, sv_result.layers)
-        return MeasureResult(result, activations_iterator.layer_names(), self)
+        return MeasureResult(result, activations_iterator.activation_names(), self)
 
     def __repr__(self):
         ca = f"pnt={self.pre_normalization_transformation}"

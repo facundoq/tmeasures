@@ -69,6 +69,6 @@ class DistanceSameEquivarianceSimple(NumpyMeasure):
                     self.distance_function.distance(layer_activations,inverted_layer_activations,mean_running[j])
         # calculate the final mean over all samples (and layers)
         means = [b.mean() for b in mean_running]
-        return MeasureResult(means,activations_iterator.layer_names(),self)
+        return MeasureResult(means,activations_iterator.activation_names(),self)
 
 

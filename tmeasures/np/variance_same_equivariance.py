@@ -38,7 +38,7 @@ class TransformationVarianceSameEquivariance(NumpyMeasure):
 
         # calculate the final mean over all samples (for each layer)
         mean_variances = [b.mean() for b in mean_running]
-        return MeasureResult(mean_variances, activations_iterator.layer_names(), self)
+        return MeasureResult(mean_variances, activations_iterator.activation_names(), self)
 
 
 class SampleVarianceSameEquivariance(NumpyMeasure):
@@ -74,7 +74,7 @@ class SampleVarianceSameEquivariance(NumpyMeasure):
         # calculate the final mean over all transformations (and layers)
 
         mean_variances = [b.mean() for b in mean_variances_running]
-        return MeasureResult(mean_variances, activations_iterator.layer_names(), self)
+        return MeasureResult(mean_variances, activations_iterator.activation_names(), self)
 
 
 

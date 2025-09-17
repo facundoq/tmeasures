@@ -129,7 +129,7 @@ class GoodfellowInvariance(NumpyMeasure):
         l_result = self.l.eval(activations_iterator)
 
         ratio = divide_activations(l_result.layers,g_result.layers)
-        return MeasureResult(ratio, activations_iterator.layer_names(), self)
+        return MeasureResult(ratio, activations_iterator.activation_names(), self)
 
     def __repr__(self):
         return f"Goodfellow(gp={self.activations_percentage})"

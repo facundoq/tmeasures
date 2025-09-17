@@ -33,7 +33,7 @@ class LayerTransformationMeasure(NumpyMeasure):
         self.layer_measure_generator=layer_measure_generator
 
     def eval(self,activations_iterator:ActivationsIterator)->MeasureResult:
-        layer_names=activations_iterator.layer_names()
+        layer_names=activations_iterator.activation_names()
 
         layer_measures = [self.layer_measure_generator(i,n) for i,n in enumerate(layer_names)]
 

@@ -44,7 +44,7 @@ class TransformationDistanceSameEquivariance(BaseDistanceSameEquivarianceMeasure
                     mean_running[j].update(layer_measure)
         # calculate the final mean over all samples (and layers)
         means = [b.mean() for b in mean_running]
-        return MeasureResult(means,activations_iterator.layer_names(),self)
+        return MeasureResult(means,activations_iterator.activation_names(),self)
 
 
 
@@ -75,7 +75,7 @@ class SampleDistanceSameEquivariance(BaseDistanceSameEquivarianceMeasure):
                     mean_running[j].update(layer_measure)
         # calculate the final mean over all samples (and layers)
         means = [b.mean() for b in mean_running]
-        return MeasureResult(means,activations_iterator.layer_names(),self)
+        return MeasureResult(means,activations_iterator.activation_names(),self)
 
 
 class NormalizedDistanceSameEquivariance(NumpyMeasure):

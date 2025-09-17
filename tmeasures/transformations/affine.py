@@ -1,15 +1,14 @@
 
 import abc
 import itertools
-from typing import Iterator, Tuple
 
 import torch
 
 from .. import Transformation, TransformationSet
 from .parameters import NoRotation, NoScale, NoTranslation
 
-TranslationParameter = Tuple[float, float]
-ScaleParameter = Tuple[float, float]
+TranslationParameter = tuple[float, float]
+ScaleParameter = tuple[float, float]
 RotationParameter = float
 
 
@@ -69,17 +68,14 @@ def ifnone(x,v):
 
 
 class AffineGenerator(TransformationSet):
-    def __init__(self, r:[RotationParameter]=None, s:[ScaleParameter]=None, t:[TranslationParameter]=None):
-        r=ifnone(r,NoRotation())
-        s=ifnone(s,NoScale())
-        t=ifnone(t,NoTranslation())
+    def __init__(self, r:list[RotationParameter]=NoRotation(), s:list[ScaleParameter]=NoScale(), t:list[TranslationParameter]=NoTranslation()):
         self.r,self.s,self.t=r,s,t
         parameters = itertools.product(r,s,t)
         parameters = [AffineParameters(r,s,t) for r,s,t in parameters]
         self.transformations = [self.make_transformation(p) for p in parameters]
         super().__init__(self.transformations)
 
-    def valid_input(self,shape:Tuple[int, ]) -> bool:
+    def valid_input(self,shape:tuple[int, ]) -> bool:
         return len(shape) == 4
 
     @abc.abstractmethod
@@ -97,6 +93,6 @@ class AffineGenerator(TransformationSet):
     def id(self):
         return str(self)
 
-    def inverse(self)->[Transformation]:
+    def inverse(self)->list[Transformation]:
         return [t.inverse() for t in self]
 

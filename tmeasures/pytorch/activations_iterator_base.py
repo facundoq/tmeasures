@@ -82,7 +82,7 @@ class PytorchActivationsIterator(ActivationsIterator):
             x = self.adapter.post_adapt(x)
         return x
 
-    def layer_names(self):
+    def activation_names(self):
         return self.model.activation_names()
 
     def get_inverted_activations_iterator(self) -> ActivationsIterator:
@@ -173,7 +173,7 @@ class InvertedPytorchActivationsIterator(PytorchActivationsIterator):
     def get_inverted_activations_iterator(self) -> ActivationsIterator:
         return self
 
-    def layer_names(self) -> [str]:
+    def activation_names(self) -> [str]:
         return self.activations_transformer.layer_names
 
 
@@ -245,6 +245,6 @@ class BothPytorchActivationsIterator(PytorchActivationsIterator):
     def get_both_iterator(self) -> ActivationsIterator:
         return self
 
-    def layer_names(self) -> [str]:
+    def activation_names(self) -> [str]:
         return self.activations_transformer.layer_names
 

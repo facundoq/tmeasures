@@ -32,7 +32,7 @@ class ActivationsIterator(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def layer_names(self) -> List[str]:
+    def activation_names(self) -> List[str]:
         pass
 
     @abc.abstractmethod
@@ -52,7 +52,7 @@ class ActivationsIterator(abc.ABC):
         Get a row of the ST matrix from the :param transformation_activations_iterator
         :return: row of the ST matrix with the  activations for all the transformations of sample, and also the transformed samples
         '''
-        activations=[[] for i in range(len(self.layer_names()))]
+        activations=[[] for i in range(len(self.activation_names()))]
         x_transformed=[]
         for  x_transformed_batch,activations_batch in transformation_activations_iterator:
             x_transformed.append(x_transformed_batch)

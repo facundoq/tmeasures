@@ -34,7 +34,7 @@ class GoodfellowNormalGlobalInvariance(NumpyMeasure):
         self.sign=sign
 
     def eval(self,activations_iterator: ActivationsIterator,verbose=False)->MeasureResult:
-        running_means = [RunningMeanAndVarianceWelford() for i in activations_iterator.layer_names()]
+        running_means = [RunningMeanAndVarianceWelford() for i in activations_iterator.activation_names()]
 
         for transformation, samples_activations_iterator in tqdm(activations_iterator.transformations_first(),disable=not verbose):
             for x, batch_activations in samples_activations_iterator:
@@ -63,7 +63,7 @@ class GoodfellowNormalGlobalInvariance(NumpyMeasure):
         # set g(i) equal to the activations_percentage
         layers_g= [np.zeros_like(threshold) + (1-self.alpha) for threshold in thresholds]
 
-        return MeasureResult(layers_g, activations_iterator.layer_names(), self,extra_values={self.thresholds_key:thresholds})
+        return MeasureResult(layers_g, activations_iterator.activation_names(), self,extra_values={self.thresholds_key:thresholds})
 
 class GoodfellowNormalLocalInvariance(NumpyMeasure):
 
@@ -76,7 +76,7 @@ class GoodfellowNormalLocalInvariance(NumpyMeasure):
         return f"{self.__class__.__name__}"
 
     def eval(self,activations_iterator: ActivationsIterator,verbose=False)->MeasureResult:
-        running_means = [RunningMeanWelford() for i in activations_iterator.layer_names()]
+        running_means = [RunningMeanWelford() for i in activations_iterator.activation_names()]
 
         for x,transformation_activations  in tqdm(activations_iterator.samples_first(),disable=not verbose):
             for x_transformed, activations in transformation_activations:
@@ -93,7 +93,7 @@ class GoodfellowNormalLocalInvariance(NumpyMeasure):
 
         layers_l = [m.mean() for m in running_means]
 
-        return MeasureResult(layers_l, activations_iterator.layer_names(), self)
+        return MeasureResult(layers_l, activations_iterator.activation_names(), self)
 
 
 
@@ -120,7 +120,7 @@ class GoodfellowNormalInvariance(NumpyMeasure):
         ratio = divide_activations(l_result.layers,g_result.layers)
         extra = {self.g_key:g_result,self.l_key:l_result}
 
-        return MeasureResult(ratio, activations_iterator.layer_names(), self,extra_values=extra)
+        return MeasureResult(ratio, activations_iterator.activation_names(), self,extra_values=extra)
 
 
     def __repr__(self):

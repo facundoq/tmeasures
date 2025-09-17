@@ -60,7 +60,7 @@ class ANOVAFInvariance(NumpyMeasure):
 
         # calculate mean(X_t)
         u_t,n_t=self.eval_means_per_transformation(activations_iterator)
-        n_layers=len(activations_iterator.layer_names())
+        n_layers=len(activations_iterator.activation_names())
         # Calculate mean(X)
         u=self.eval_global_means(u_t,n_layers)
         # Calculate  mean_t[ (mean(X_t)-mean(X))^2], that is Var( mean(X_t) ). Normalized with T-1
@@ -71,13 +71,13 @@ class ANOVAFInvariance(NumpyMeasure):
         # calculate
         f_score=self.divide_per_layer(ssb,ssw)
 
-        return MeasureResult(f_score, activations_iterator.layer_names(), self, extra_values={"d_b":d_b, "d_w":d_w})
+        return MeasureResult(f_score, activations_iterator.activation_names(), self, extra_values={"d_b":d_b, "d_w":d_w})
 
     def divide_per_layer(self,a_per_layer:ActivationsByLayer,b_per_layer:ActivationsByLayer)->Tuple[ActivationsByLayer,int]:
         return [a/b for (a,b) in zip(a_per_layer,b_per_layer)]
 
     def eval_within_transformations_ssd(self,activations_iterator:ActivationsIterator,means_per_layer_and_transformation:List[ActivationsByLayer],)->ActivationsByLayer:
-            n_layers = len(activations_iterator.layer_names())
+            n_layers = len(activations_iterator.activation_names())
 
             ssdw_per_layer = [0] * n_layers
             samples_per_transformation = []
@@ -141,7 +141,7 @@ class ANOVAFInvariance(NumpyMeasure):
         return A list of mean activation values for each activation in each layer
         The list of samples per transformation
         '''
-        n_layers = len(activations_iterator.layer_names())
+        n_layers = len(activations_iterator.activation_names())
         means_per_transformation = []
         samples_per_transformation=[]
         for transformation, transformation_activations in activations_iterator.transformations_first():

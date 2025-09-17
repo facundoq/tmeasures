@@ -115,10 +115,10 @@ if __name__ == '__main__':
 
     # Create a set of rotation transformations
     from tmeasures.transformations.parameters import UniformRotation
-    from tmeasures.pytorch.transformations.affine import AffineGenerator
+    from tmeasures.pytorch.transformations.affine import AffineTransformationSet
 
     rotation_parameters = UniformRotation(n=128, angles=1.0)
-    transformations = AffineGenerator(r=rotation_parameters)
+    transformations = AffineTransformationSet(r=rotation_parameters)
 
 
 

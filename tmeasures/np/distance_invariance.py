@@ -17,7 +17,7 @@ class TransformationDistanceInvariance(NumpyMeasure):
         return f"{self.abbreviation()}(da={self.distance_aggregation})"
 
     def eval(self, activations_iterator: ActivationsIterator, verbose=False) -> MeasureResult:
-        layer_names = activations_iterator.layer_names()
+        layer_names = activations_iterator.activation_names()
         n_intermediates = len(layer_names)
         mean_running = [RunningMeanWelford() for i in range(n_intermediates)]
         for x, transformation_activations_iterator in activations_iterator.samples_first():
@@ -49,7 +49,7 @@ class SampleDistanceInvariance(NumpyMeasure):
         return f"{self.abbreviation()}(da={self.distance_aggregation})"
 
     def eval(self, activations_iterator: ActivationsIterator, verbose=False) -> MeasureResult:
-        layer_names = activations_iterator.layer_names()
+        layer_names = activations_iterator.activation_names()
         n_layers = len(layer_names)
         mean_running = [RunningMeanWelford() for i in range(n_layers)]
 
@@ -81,7 +81,7 @@ class NormalizedDistanceInvariance(NumpyMeasure):
         sd_result = self.pre_normalization_transformation.apply(sd_result)
 
         result = divide_activations(td_result.layers, sd_result.layers)
-        return MeasureResult(result, activations_iterator.layer_names(), self)
+        return MeasureResult(result, activations_iterator.activation_names(), self)
 
     def __repr__(self):
         return f"{self.abbreviation()}(pnt={self.pre_normalization_transformation},da={self.distance_aggregation})"

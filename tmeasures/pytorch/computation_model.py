@@ -10,8 +10,6 @@ from .. import logger as tm_logger
 
 logger = tm_logger.getChild("pytorch.threads_manager")
 
-
-
 class ComputationModel(abc.ABC):
 
     def __init__(self,server_function:Callable,worker_functions:dict[str,Callable],rows:int,cols:int,batch_size:int) -> None:
@@ -34,10 +32,10 @@ class ComputationModel(abc.ABC):
         end = start + cols - 1
         return end // batch_size - start // batch_size + 1
 
-class ThreadsManager(ComputationModel):
+class ThreadsComputationModel(ComputationModel):
 
     def __init__(self,server_function:Callable,worker_functions:dict[str,Callable],max_workers:int,rows:int,cols:int,batch_size:int) -> None:
-        super(ThreadsManager, self).__init__(server_function,worker_functions,rows,cols,batch_size)
+        super(ThreadsComputationModel, self).__init__(server_function,worker_functions,rows,cols,batch_size)
         self.stop=False
         self.max_workers = max_workers
         self.reset()
@@ -94,18 +92,18 @@ class ThreadsManager(ComputationModel):
         return list(self.qs.values())+list(self.row_qs.values())
 
     def cancel(self,server_future):
-        logger.info("Exception raised when computing measure, shutting down all computing threads...")
+        logger.debug("Exception raised when computing measure, shutting down all computing threads...")
         self.stop=True
         for q in self.queues:
             q.stop=True
-        logger.info(f"Emptying queues to ensure server can move on and stop..")
+        logger.debug(f"Emptying queues to ensure server can move on and stop..")
         self.empty_all()
         # wait for server thread to finish
         concurrent.futures.wait([server_future], return_when=concurrent.futures.ALL_COMPLETED)
         # threading.Event().wait(0.1)
-        logger.info("Server stopped. Pushing values to queues to ensure workers can consume and stop..")
+        logger.debug("Server stopped. Pushing values to queues to ensure workers can consume and stop..")
         self.stop_all()
-        logger.info("Workers stopped")
+        logger.debug("Workers stopped")
 
     def empty_all(self):
         for q in self.queues:
@@ -139,20 +137,20 @@ class ThreadsManager(ComputationModel):
         worker_exceptions = [f.exception() if f in done else None for f in worker_futures.values()]
         worker_failure = any([e is not None for e in worker_exceptions])
         if server_exception is None and not worker_failure:
-            logger.info("No exceptions found, threads finished.")
+            logger.debug("No exceptions found, threads finished.")
             return None
         else: # we have some exceptions
             # signal stop for server
-            logger.info("Some threads failed, terminating")
+            logger.debug("Some threads failed, terminating")
             self.cancel(server_future)
             done, not_done = concurrent.futures.wait(futures, return_when=concurrent.futures.ALL_COMPLETED)
 
             if server_exception is not None:
-                logger.info(f"Server exception, about to re raise from main thread\n{server_exception}\n")
+                logger.debug(f"Server exception, about to re raise from main thread\n{server_exception}\n")
                 raise server_exception
             else:
                 for e in worker_exceptions:
                     if e is not None:
-                        logger.info(f"Worker exception, about to re raise from main thread\n{e}\n thread id {threading.get_ident()}\n")
+                        logger.debug(f"Worker exception, about to re raise from main thread\n{e}\n thread id {threading.get_ident()}\n")
                         raise e
 

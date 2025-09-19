@@ -1,6 +1,26 @@
+from attr import dataclass
+import numpy as np
 import torch
 import tmeasures as tm
+from numpy.testing import assert_allclose
 
+@dataclass
+class MeasureFixture:
+    model:torch.nn.Module
+    measure:tm.pytorch.PyTorchMeasure
+    expected_result:list[np.ndarray]
+    dataset:torch.utils.data.Dataset
+    transformations:tm.pytorch.transformations.PyTorchTransformationSet
+    options:tm.pytorch.PyTorchMeasureOptions = tm.pytorch.PyTorchMeasureOptions(batch_size=32,num_workers=0)
+
+    def assert_fixture(self,atol=1e-5):
+        activations_model = tm.pytorch.AutoActivationsModule(self.model)
+        result = self.measure.eval(self.dataset,self.transformations,activations_model,self.options)
+        
+        result = result.numpy()
+        for name,layer,expected_layer in zip(result.layer_names,result.layers,self.expected_result):
+            assert_allclose(layer,expected_layer,err_msg=f"Error in {self.measure} for activation '{name}'",atol=atol)
+        
 class ConstantModel(torch.nn.Module):
     def __init__(self,value=torch.Tensor(0)) -> None:
         super().__init__()

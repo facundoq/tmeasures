@@ -11,6 +11,8 @@ import torch
 import matplotlib.pyplot as plt
 from torch import nn
 
+from tmeasures.pytorch.model import AutoActivationsModule, ManualActivationsModule
+
 class Flatten(nn.Module):
     def forward(self, input: torch.Tensor):
         return input.view(input.size(0), -1)
@@ -123,18 +125,19 @@ if __name__ == '__main__':
 
 
     model.eval()
-    activations_module = tm.pytorch.AutoActivationsModule(model)
+    activations = tm.pytorch.get_activations(model)
+    # remove activations that cant be inverted for SameEquivariance
+    for i in range(6):
+        activations.pop(next(iter(activations)))
+                        
     print("Activations in model:")
-    print(activations_module.activation_names())
+    print(activations.keys())
+    filtered_model = ManualActivationsModule(model,activations)
+    activations_module = AutoActivationsModule(model)
     
-    # FilteredActivationsModel to filter out some activations from the analysis
-    from tmeasures.pytorch.model import FilteredActivationsModule
-    # filter activations that cant be inverted for SameEquivariance
-    filtered_model = FilteredActivationsModule(activations_module,lambda m,name: m.activation_names().index(name) <6)
-
     average_fm=tm.pytorch.AverageFeatureMaps()
     measures = [
-        (tm.pytorch.TransformationVarianceInvariance(),activations_module),
+        (tm.pytorch.TransformationVarianceInvariance(),),
         # (tm.pytorch.SampleVarianceInvariance(),activations_module),
         # (tm.pytorch.NormalizedVarianceInvariance(),activations_module),
         # (tm.pytorch.NormalizedVarianceInvariance(average_fm), activations_module),

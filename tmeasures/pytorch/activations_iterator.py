@@ -6,6 +6,8 @@ import torch
 import tqdm.auto as tqdm
 from torch.utils.data import DataLoader
 
+from tmeasures.pytorch.model import ActivationValues
+
 # from .activations_transformer import ActivationsTransformer
 from .. import InvertibleTransformation, Transformation
 from . import ActivationsModule
@@ -65,14 +67,14 @@ class PytorchActivationsIterator:
         self.o = o
         self.activations_transformer = activations_transformer
 
-    def move_activations_to_measure_device(self,activations:list[torch.Tensor]):
-        for i, layer_activations in enumerate(activations):
-                if self.o.model_device != self.o.measure_device:
-                    layer_activations=layer_activations.to(self.o.measure_device,non_blocking=True)
+    def move_activations_to_measure_device(self,activations:ActivationValues):
+        for a in activations.values():
+            if self.o.model_device != self.o.measure_device:
+                a=a.to(self.o.measure_device,non_blocking=True)
 
-    def transform_activations(self,activations:list[torch.Tensor],x_transformed,transformations)->list[torch.Tensor]:
-        for i, layer_activations in enumerate(activations):
-            activations[i] = self.activations_transformer.transform(layer_activations, x_transformed,transformations)
+    def transform_activations(self,activations:ActivationValues,x_transformed,transformations)->ActivationValues:
+        for k, a in activations.items():
+            activations[k] = self.activations_transformer.transform(a, x_transformed,transformations)
         return activations
 
     def get_rows_cols(self,batch_i,x_transformed)->tuple[list[int],list[int]]:
@@ -107,8 +109,7 @@ class PytorchActivationsIterator:
             if tm.stop:
                 return
 
-    def split_activations_by_row(self,activations:list[torch.Tensor],i_rows:list[int])->Generator[tuple[int,dict[str,torch.Tensor]]]:
-        layers = self.model.activation_names()
+    def split_activations_by_row(self,activations:ActivationValues,i_rows:list[int])->Generator[tuple[int,ActivationValues]]:
         all_rows = list(range(min(i_rows),max(i_rows)+1))
         start = 0
         last = all_rows[-1]
@@ -118,11 +119,10 @@ class PytorchActivationsIterator:
                 end = len(i_rows)
             else:
                 end = i_rows.index(current_row+1)
-            activations_row = [a[start:end,] for a in activations]
-            activations_row_dict = { layers[i]:a for i,a in enumerate(activations_row)}
+            activations_row = {k:a[start:end,] for k,a in activations.items()}
             # print(activations_row[0].shape,i_rows,start,end)
             start=end
-            yield current_row,activations_row_dict
+            yield current_row,activations_row
 
     def evaluate(self, m: PyTorchLayerMeasure):
         layers = self.model.activation_names()

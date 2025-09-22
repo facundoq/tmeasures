@@ -49,7 +49,7 @@ class ThreadsComputationModel(ComputationModel):
 
 
 
-    def reset_row(self,row):
+    def reset_row(self,row:int):
         names = self.worker_functions.keys()
         batch_n = self.row_batches(row)
         self.row_qs = {n: IterableQueue(batch_n,blocking_size=1,name=f"q_row({n})") for n in names}

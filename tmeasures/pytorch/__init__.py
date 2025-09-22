@@ -21,7 +21,7 @@ Variance-Based Same-Equivariance Measures
 * :class:`.NormalizedVarianceSameEquivariance`
 """
 
-from .model import ActivationsModule,AutoActivationsModule
+from .model import ActivationsModule,AutoActivationsModule,get_activations,ManualActivationsModule
 from .base import PyTorchMeasure,PyTorchMeasureOptions,ActivationsByLayer,PyTorchMeasureResult,STMatrixIterator,PyTorchLayerMeasure
 from .transformations import PyTorchTransformationSet,PyTorchTransformation
 

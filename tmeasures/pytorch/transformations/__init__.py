@@ -13,7 +13,7 @@ class PyTorchTransformation(torch.nn.Module,abc.ABC):
     def parameters(self)->torch.Tensor:
         pass
 
-    @abc.abstractmethod        
+    @abc.abstractmethod
     def __call__(self, x:torch.Tensor)->torch.Tensor:
         pass
 
@@ -32,7 +32,7 @@ class PyTorchTransformationSet(TransformationSet,Iterable[PyTorchTransformation]
 
 class PyTorchInvertibleTransformationSet(PyTorchTransformationSet,Iterable[PyTorchInvertibleTransformation]):
     pass
-    
+
 
 
 class IdentityTransformation(PyTorchInvertibleTransformation):

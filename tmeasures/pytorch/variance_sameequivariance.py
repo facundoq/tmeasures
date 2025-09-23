@@ -4,12 +4,12 @@ from torch.utils.data import Dataset
 import tmeasures as tm
 from tmeasures.pytorch.dataset2d import TransformationSampleDataset
 
-from .transformations import PyTorchInvertibleTransformation, PyTorchInvertibleTransformationSet, PyTorchTransformation
 from . import ActivationsModule, Variance
 from .activations_iterator import ActivationsTransformer, PytorchActivationsIterator
 from .base import PyTorchMeasure, PyTorchMeasureOptions, PyTorchMeasureResult
 from .measure_transformer import MeasureTransformation, NoTransformation
 from .quotient import QuotientMeasure, QuotientMeasureResult
+from .transformations import PyTorchInvertibleTransformation, PyTorchInvertibleTransformationSet, PyTorchTransformation
 
 
 class InverseTransformationTransformer(ActivationsTransformer):
@@ -54,7 +54,6 @@ class NormalizedVarianceSameEquivariance(QuotientMeasure):
     def eval(self, dataset: Dataset, transformations: PyTorchInvertibleTransformationSet, model: ActivationsModule,
              o: PyTorchMeasureOptions) -> QuotientMeasureResult:
         return super().eval(dataset, transformations, model, o)
-        
+
     def __repr__(self):
         return f"{self.abbreviation()}({self.measure_transformation})"
-    

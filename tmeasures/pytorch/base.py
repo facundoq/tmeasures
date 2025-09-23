@@ -30,7 +30,7 @@ STRowIterator = typing.Union[typing.Iterable[torch.Tensor], typing.Sized]
 STMatrixIterator = typing.Union[typing.Iterable[STRowIterator], typing.Sized]
 
 
-class PyTorchLayerMeasure:
+class PyTorchActivationMeasure:
 
     @abc.abstractmethod
     def eval(self, iterator: STMatrixIterator,layer_name:str) -> torch.Tensor:

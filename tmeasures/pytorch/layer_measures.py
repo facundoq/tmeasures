@@ -1,11 +1,11 @@
 from .. import logger as tm_logger
-from .base import PyTorchLayerMeasure, STMatrixIterator
+from .base import PyTorchActivationMeasure, STMatrixIterator
 from .stats_running import RunningMeanAndVarianceWelford, RunningMeanWelford
 
 logger = tm_logger.getChild("pytorch.layer_measures")
 
 
-class Variance(PyTorchLayerMeasure):
+class Variance(PyTorchActivationMeasure):
     def eval(self, st_iterator: STMatrixIterator, layer_name: str):
         mean = RunningMeanWelford()
 

@@ -1,7 +1,7 @@
 from torch.utils.data import Dataset
 
 from .activations_iterator import PytorchActivationsIterator
-from .base import PyTorchLayerMeasure, PyTorchMeasure, PyTorchMeasureOptions, PyTorchMeasureResult
+from .base import PyTorchActivationMeasure, PyTorchMeasure, PyTorchMeasureOptions, PyTorchMeasureResult
 from .dataset2d import TransformationSampleDataset
 from .model import ActivationsModule
 from .transformations import PyTorchTransformationSet
@@ -9,7 +9,7 @@ from .transformations import PyTorchTransformationSet
 
 class PyTorchMeasureByLayer(PyTorchMeasure):
 
-    def __init__(self,layer_measure:PyTorchLayerMeasure) -> None:
+    def __init__(self,layer_measure:PyTorchActivationMeasure) -> None:
         super().__init__()
         self.layer_measure=layer_measure
 

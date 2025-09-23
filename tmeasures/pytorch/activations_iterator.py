@@ -11,7 +11,7 @@ from tmeasures.pytorch.model import ActivationValues
 # from .activations_transformer import ActivationsTransformer
 from .. import InvertibleTransformation, Transformation
 from . import ActivationsModule
-from .base import PyTorchLayerMeasure, PyTorchMeasure, PyTorchMeasureOptions
+from .base import PyTorchActivationMeasure, PyTorchMeasure, PyTorchMeasureOptions
 from .computation_model import ThreadsComputationModel
 from .dataset2d import Dataset2D, STDataset
 from .transformations import PyTorchTransformation
@@ -124,12 +124,12 @@ class PytorchActivationsIterator:
             start=end
             yield current_row,activations_row
 
-    def evaluate(self, m: PyTorchLayerMeasure):
-        layers = self.model.activation_names()
+    def evaluate(self, m: PyTorchActivationMeasure):
+        activation_names = self.model.activation_names()
         rows, cols = self.dataset.len0, self.dataset.len1
         logger.debug(f"Main thread {threading.get_ident()}")
-        measure_functions = {l:m.eval for l in layers}
+        measure_functions = {l:m.eval for l in activation_names}
         model_evaluating_function = self.feed_measures
-        max_workers = len(layers)+1
+        max_workers = len(activation_names)+1
         tm = ThreadsComputationModel(model_evaluating_function,measure_functions,max_workers,rows,cols,self.o.batch_size)
         return tm.execute()

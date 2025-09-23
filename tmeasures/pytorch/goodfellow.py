@@ -9,7 +9,7 @@ from tmeasures.pytorch.transformations import IdentityTransformationSet
 
 from . import (
     ActivationsModule,
-    PyTorchLayerMeasure,
+    PyTorchActivationMeasure,
     PyTorchMeasure,
     PyTorchMeasureByLayer,
     PyTorchMeasureOptions,
@@ -25,7 +25,7 @@ default_alpha=0.99
 default_sign=1
 
 
-class PercentActivationThreshold(PyTorchLayerMeasure):
+class PercentActivationThreshold(PyTorchActivationMeasure):
     def __init__(self,sign:float=1,percent:torch.DoubleTensor=0.99) -> None:
         super().__init__()
         self.percent=percent
@@ -63,7 +63,7 @@ class PercentActivationThreshold(PyTorchLayerMeasure):
         thresholds = thresholds.reshape(original_shape)
         return thresholds
 
-class NormalPValueThreshold(PyTorchLayerMeasure):
+class NormalPValueThreshold(PyTorchActivationMeasure):
     def __init__(self,sign:float=1,alpha:torch.DoubleTensor=0.99) -> None:
         super().__init__()
         self.alpha=alpha
@@ -104,7 +104,7 @@ class NormalPValueThreshold(PyTorchLayerMeasure):
 
         return p_values
 
-class MeanFiringRate(PyTorchLayerMeasure):
+class MeanFiringRate(PyTorchActivationMeasure):
     def __init__(self,sign:float,thresholds:Dict[str,torch.Tensor]) -> None:
         super().__init__()
         self.sign=sign

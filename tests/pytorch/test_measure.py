@@ -3,7 +3,7 @@ import pytest
 import tmeasures as tm
 import numpy as np
 from numpy.testing import assert_allclose
-from .utils import ConstantModel,ConstantDataset,RandomModel,RepeatedIdentitySet,MeasureFixture
+from .utils import ConstantModel,ConstantDataset, IdentityModel,RandomModel,RepeatedIdentitySet,MeasureFixture
 from torch import nn
 
 default_options = tm.pytorch.PyTorchMeasureOptions(batch_size=32)
@@ -14,13 +14,12 @@ def constant_model_invariance(n:int,bs:int):
     o = tm.pytorch.PyTorchMeasureOptions(batch_size=bs)
     transformations = RepeatedIdentitySet(n)
     dataset = ConstantDataset(n,torch.Tensor((1,)))
-    transformations = RepeatedIdentitySet(n)
     output_shape = (2,2)
     output = torch.rand(output_shape)
     result = np.zeros(output.shape)
     result_nv = np.ones(output.shape)
     model = torch.nn.Sequential(ConstantModel(output))
-    sv,tv,nv = measures
+    sv,tv,nv = invariance_measures
     return [
             MeasureFixture(model, sv,[result],dataset,transformations,options=o),
             MeasureFixture(model, tv,[result],dataset,transformations,options=o),
@@ -34,9 +33,14 @@ def constant_model_invariance_options():
 def test_constant_model_invariance(f:MeasureFixture):
     f.assert_fixture(atol=1e-5) 
         
-measures = [tm.pytorch.SampleVarianceInvariance(),
+invariance_measures = [tm.pytorch.SampleVarianceInvariance(),
             tm.pytorch.TransformationVarianceInvariance(),
             tm.pytorch.NormalizedVarianceInvariance()
+            ]
+
+same_equivariance_measures = [tm.pytorch.SampleVarianceSameEquivariance(),
+            tm.pytorch.TransformationVarianceSameEquivariance(),
+            tm.pytorch.NormalizedVarianceSameEquivariance()
             ]
 
 def random_model_invariance_options():
@@ -52,7 +56,7 @@ def random_model_invariance_options():
     model = torch.nn.Sequential(RandomModel(output_shape,2,3))
     result = np.ones(output_shape)*std
     result_nv = np.ones(output_shape)
-    sv,tv,nv = measures
+    sv,tv,nv = invariance_measures
     return [
             MeasureFixture(model, sv,[result],dataset,transformations,options=o),
             MeasureFixture(model, tv,[result],dataset,transformations,options=o),
@@ -62,6 +66,26 @@ def random_model_invariance_options():
 @pytest.mark.parametrize("f",random_model_invariance_options())
 def test_random_model_invariance(f:MeasureFixture):
     f.assert_fixture(atol=1e-1)
+
+
+
+def constant_model_same_equivariance_options(n:int=16,bs:int=4):
+    o = tm.pytorch.PyTorchMeasureOptions(batch_size=bs)
+    transformations = RepeatedIdentitySet(n)
+    value = torch.Tensor(((2,3),(4,5)))
+    dataset = ConstantDataset(n,value)
+    result = np.zeros(value.shape)
+    result_nv = np.ones(value.shape)
+    model = torch.nn.Sequential(IdentityModel())
+    sev,tev,nev = same_equivariance_measures
+    return [
+            MeasureFixture(model, sev,[result],dataset,transformations,options=o),
+            MeasureFixture(model, tev,[result],dataset,transformations,options=o),
+            MeasureFixture(model, nev,[result_nv],dataset,transformations,options=o),
+    ]   
+@pytest.mark.parametrize("f",constant_model_same_equivariance_options())
+def test_constant_model_same_equivariance(f:MeasureFixture):
+    f.assert_fixture(atol=1e-5)
 
 if __name__ == "__main__":
     import logging

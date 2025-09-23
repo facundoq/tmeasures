@@ -60,7 +60,7 @@ class ConstantDataset(torch.utils.data.Dataset):
         return self.value
     
 
-class RepeatedIdentitySet(tm.pytorch.transformations.PyTorchTransformationSet):
+class RepeatedIdentitySet(tm.pytorch.transformations.PyTorchInvertibleTransformationSet):
     def __init__(self,transformations=1):
         super().__init__([tm.pytorch.transformations.IdentityTransformation()]*transformations)
     def valid_input(self):

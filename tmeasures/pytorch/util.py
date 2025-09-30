@@ -3,10 +3,10 @@ from typing import Any, List
 import torch
 from torch import nn
 
-from . import ActivationsModule
+from . import BaseActivationsModule
 
 
-class SequentialWithIntermediates(nn.Sequential, ActivationsModule):
+class SequentialWithIntermediates(nn.Sequential, BaseActivationsModule):
     def __init__(self,*args):
         super(SequentialWithIntermediates, self).__init__(*args)
 
@@ -17,7 +17,7 @@ class SequentialWithIntermediates(nn.Sequential, ActivationsModule):
 
         outputs=[]
         for module in submodules:
-            if isinstance(module, ActivationsModule):
+            if isinstance(module, BaseActivationsModule):
                 intermediates=module.forward_activations(input_tensor)
                 outputs+=(intermediates)
             else:
@@ -32,7 +32,7 @@ class SequentialWithIntermediates(nn.Sequential, ActivationsModule):
         if len(submodules) == 1:
             module = list(submodules)[0]
 
-            if isinstance(module, ActivationsModule):
+            if isinstance(module, BaseActivationsModule):
                 return ["0_"+name for name in module.activation_names()]
             else:
                 name = module.__class__.__name__
@@ -43,7 +43,7 @@ class SequentialWithIntermediates(nn.Sequential, ActivationsModule):
         index=0
 
         for module in submodules:
-            if isinstance(module, ActivationsModule):
+            if isinstance(module, BaseActivationsModule):
                 index += 1
                 module_name=self.abbreviation(module.__class__.__name__)
                 names=[f"{module_name}{index}_{name}" for name in module.activation_names()]

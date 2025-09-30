@@ -12,7 +12,7 @@ from ..utils import DuplicateKeyError, Graph, flatten_dict_list, get_all
 ActivationValues:TypeAlias = dict[str,torch.Tensor]
 FlatActivations:TypeAlias = dict[str,nn.Module]
 
-class ActivationsModule(abc.ABC):
+class BaseActivationsModule(abc.ABC):
 
     @abc.abstractmethod
     def activation_names(self) -> List[str]:
@@ -31,7 +31,7 @@ class ActivationsModule(abc.ABC):
     def n_activations(self):
         return len(self.activation_names())
 
-class ManualActivationsModule(ActivationsModule):
+class ActivationsModule(BaseActivationsModule):
     def __init__(self,module:nn.Module,activations:FlatActivations):
         super().__init__()
         self._activations = activations
@@ -106,7 +106,7 @@ def named_children_deep(m: torch.nn.Module,separator:str="_")->Graph[nn.Module]:
                     output[key] = named_children_deep(child,separator)
             return output
 
-class AutoActivationsModule(ManualActivationsModule):
+class AutoActivationsModule(ActivationsModule):
     def __init__(self,module:nn.Module,full_name=True,separator="_",filter:ActivationFilter=lambda x,y: True) -> None:
         activations = get_activations(module,full_name=full_name,separator=separator)
         activations = {k:v for k,v in activations.items() if filter(k,v)}

@@ -1,6 +1,6 @@
 from torch.utils.data import Dataset
 
-from . import ActivationsModule
+from . import BaseActivationsModule
 from .activations_iterator import PytorchActivationsIterator
 from .base import PyTorchMeasure, PyTorchMeasureOptions, PyTorchMeasureResult
 from .dataset2d import SampleTransformationDataset, TransformationSampleDataset
@@ -12,7 +12,7 @@ from .transformations import PyTorchTransformationSet
 
 class TransformationVarianceInvariance(PyTorchMeasure):
 
-    def eval(self, dataset: Dataset, transformations: PyTorchTransformationSet, model: ActivationsModule,
+    def eval(self, dataset: Dataset, transformations: PyTorchTransformationSet, model: BaseActivationsModule,
              o: PyTorchMeasureOptions):
         dataset2d = SampleTransformationDataset(dataset, transformations, device=o.data_device)
         iterator = PytorchActivationsIterator(model, dataset2d, o)
@@ -22,7 +22,7 @@ class TransformationVarianceInvariance(PyTorchMeasure):
 
 class SampleVarianceInvariance(PyTorchMeasure):
 
-    def eval(self, dataset: Dataset,  transformations:PyTorchTransformationSet, model: ActivationsModule,
+    def eval(self, dataset: Dataset,  transformations:PyTorchTransformationSet, model: BaseActivationsModule,
              o: PyTorchMeasureOptions):
         dataset2d = TransformationSampleDataset(dataset, transformations, device=o.data_device)
         iterator = PytorchActivationsIterator(model, dataset2d, o)

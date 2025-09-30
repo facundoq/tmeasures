@@ -8,7 +8,7 @@ import tmeasures as tm
 from tmeasures.pytorch.transformations import IdentityTransformationSet
 
 from . import (
-    ActivationsModule,
+    BaseActivationsModule,
     PyTorchActivationMeasure,
     PyTorchMeasure,
     PyTorchMeasureByLayer,
@@ -136,7 +136,7 @@ class GoodfellowInvariance(PyTorchMeasure):
         self.global_transformations = global_transformations
 
 
-    def eval(self, dataset: Dataset, transformations: tm.TransformationSet, model: ActivationsModule,o: PyTorchMeasureOptions):
+    def eval(self, dataset: Dataset, transformations: tm.TransformationSet, model: BaseActivationsModule,o: PyTorchMeasureOptions):
 
         threshold_measures = PyTorchMeasureByLayer(self.threshold_algorithm)
 

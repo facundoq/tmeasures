@@ -10,7 +10,7 @@ from tmeasures.pytorch.model import ActivationValues
 
 # from .activations_transformer import ActivationsTransformer
 from .. import InvertibleTransformation, Transformation
-from . import ActivationsModule
+from . import BaseActivationsModule
 from .base import PyTorchActivationMeasure, PyTorchMeasure, PyTorchMeasureOptions
 from .computation_model import ThreadsComputationModel
 from .dataset2d import Dataset2D, STDataset
@@ -48,7 +48,7 @@ class IdentityActivationsTransformer(ActivationsTransformer):
 class PytorchActivationsIterator:
 
 
-    def __init__(self, model: ActivationsModule, dataset: Dataset2D, o: PyTorchMeasureOptions,
+    def __init__(self, model: BaseActivationsModule, dataset: Dataset2D, o: PyTorchMeasureOptions,
                  activations_transformer: ActivationsTransformer = IdentityActivationsTransformer()):
         """
         Constructor for PytorchActivationsIterator.

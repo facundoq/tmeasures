@@ -8,14 +8,15 @@
 # %pip install tinyimagenet
 # %pip install scikit-learn
 
-# %load_ext autoreload
-# %autoreload 2
+from tempfile import TemporaryDirectory
 import torch 
 
 from pathlib import Path
 
-results_path = Path("~/tm_example_pytorch/").expanduser()
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+results_path = Path(TemporaryDirectory().name)/"tm_example_pytorch"
 results_path.mkdir(parents=True, exist_ok=True)
+print(f"Saving results to {results_path}")
 
 from torchvision import models
 
@@ -86,7 +87,9 @@ print(model)
 def filter_stochastic(a):
     return not str(a).startswith("StochasticDepth")
 
-activations_module = tm.pytorch.AutoActivationsModule(model,filter=filter_stochastic)
+activations = tm.pytorch.get_activations(model)
+activations = {k:v for k,v in activations.items() if filter_stochastic(k)}
+activations_module = tm.pytorch.ActivationsModule(model,activations)
 
     # a.training=False
 """# Computing the measure

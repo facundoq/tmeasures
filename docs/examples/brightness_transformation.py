@@ -1,4 +1,5 @@
 #%%
+from tempfile import TemporaryDirectory
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -20,8 +21,9 @@ import tinyimagenet
 import torchvision
 #%%
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-results_path = Path("~/tm_example_pytorch/").expanduser()
+results_path = Path(TemporaryDirectory().name)/"tm_example_pytorch"
 results_path.mkdir(parents=True, exist_ok=True)
+print(f"Saving results to {results_path}")
 # %%
 
 model = models.efficientnet_b0(weights=models.EfficientNet_B0_Weights.IMAGENET1K_V1)
@@ -97,11 +99,13 @@ def filter_stochastic(a):
         return True
     else:
         return False
-def filter_vit(a):
-    return str(a).startswith("GELU")
-    #and (not str(a).startswith("NonDynamicallyQuantizableLinear"))
 
-activations_module = tm.pytorch.AutoActivationsModule(model,filter=filter_stochastic)
+activations = tm.pytorch.get_activations(model)
+activations = {k:v for k,v in activations.items() if filter_stochastic(k)}
+activations_module = tm.pytorch.ActivationsModule(model,activations)
+
+
+    
 
 #%%
 # Define options for computing the measure

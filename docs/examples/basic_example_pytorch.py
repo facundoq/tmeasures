@@ -11,7 +11,7 @@ import torch
 import matplotlib.pyplot as plt
 from torch import nn
 
-from tmeasures.pytorch.model import AutoActivationsModule, ManualActivationsModule
+from tmeasures.pytorch.model import AutoActivationsModule, ActivationsModule
 
 class Flatten(nn.Module):
     def forward(self, input: torch.Tensor):
@@ -132,7 +132,7 @@ if __name__ == '__main__':
                         
     print("Activations in model:")
     print(activations.keys())
-    filtered_model = ManualActivationsModule(model,activations)
+    filtered_model = ActivationsModule(model,activations)
     activations_module = AutoActivationsModule(model)
     
     average_fm=tm.pytorch.AverageFeatureMaps()

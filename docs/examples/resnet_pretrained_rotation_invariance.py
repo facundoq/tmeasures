@@ -6,6 +6,7 @@
 
 # # Define a CNN model that implements ObservableLayersModule
 import os
+from tempfile import TemporaryDirectory
 import tmeasures as tm
 import torch
 from torchvision import transforms,datasets, models
@@ -15,7 +16,9 @@ import matplotlib.pyplot as plt
 if __name__ == '__main__':
     torch.manual_seed(0)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    data_path = Path("~/tm_example_pretrained/").expanduser()
+    data_path = Path(TemporaryDirectory().name)/"tm_example_pytorch"
+    data_path.mkdir(parents=True, exist_ok=True)
+    print(f"Saving results to {data_path}")
 
     # MODEL
     
@@ -57,7 +60,9 @@ if __name__ == '__main__':
 
     # evaluate measure
     model.eval()
-    activations_module = tm.pytorch.AutoActivationsModule(model)
+    
+    activations = tm.pytorch.get_activations(model)
+    activations_module = tm.pytorch.ActivationsModule(model,activations)
     
     print("Activations in model:")
     print(activations_module.activation_names())

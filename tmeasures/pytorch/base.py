@@ -8,7 +8,7 @@ from torch.utils.data import Dataset
 import tmeasures as tm
 
 from .. import MeasureResult, StratifiedMeasureResult
-from . import ActivationsModule
+from . import BaseActivationsModule
 
 ActivationsByLayer = [torch.Tensor]
 
@@ -53,7 +53,7 @@ class PyTorchMeasure(tm.Measure):
         return f"{self.abbreviation()}"
 
     @abc.abstractmethod
-    def eval(self, dataset: Dataset, transformations: tm.TransformationSet, model: ActivationsModule,
+    def eval(self, dataset: Dataset, transformations: tm.TransformationSet, model: BaseActivationsModule,
              o: PyTorchMeasureOptions) -> PyTorchMeasureResult:
         '''
 
@@ -61,7 +61,7 @@ class PyTorchMeasure(tm.Measure):
         pass
 
     def eval_stratified(self, datasets: typing.List[Dataset], transformations: tm.TransformationSet,
-                        model: ActivationsModule, o: PyTorchMeasureOptions,
+                        model: BaseActivationsModule, o: PyTorchMeasureOptions,
                         labels: typing.List[str]) -> StratifiedMeasureResult:
         '''
         Calculate the `variance_measure` for each class separately

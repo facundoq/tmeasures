@@ -3,7 +3,7 @@ import tqdm.auto as tqdm
 from torch.utils.data import Dataset
 
 from .. import Measure, MeasureResult, TransformationSet
-from . import ActivationsByLayer, ActivationsModule, PyTorchMeasure, PyTorchMeasureOptions, PyTorchMeasureResult
+from . import ActivationsByLayer, BaseActivationsModule, PyTorchMeasure, PyTorchMeasureOptions, PyTorchMeasureResult
 from .measure_transformer import MeasureTransformation, NoTransformation
 
 
@@ -56,7 +56,7 @@ class QuotientMeasure(PyTorchMeasure):
     def __repr__(self):
         return f"QM({self.numerator_measure}_DIV_{self.denominator_measure},{self.measure_transformation})"
 
-    def eval(self, dataset: Dataset, transformations: TransformationSet, model: ActivationsModule,
+    def eval(self, dataset: Dataset, transformations: TransformationSet, model: BaseActivationsModule,
              o: PyTorchMeasureOptions) -> QuotientMeasureResult:
         with tqdm.tqdm(total=2, disable=not o.verbose, colour='green') as pbar:
             v_transformations = self.numerator_measure.eval(dataset, transformations, model, o)

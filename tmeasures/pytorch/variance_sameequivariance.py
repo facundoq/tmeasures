@@ -4,7 +4,7 @@ from torch.utils.data import Dataset
 import tmeasures as tm
 from tmeasures.pytorch.dataset2d import TransformationSampleDataset
 
-from . import ActivationsModule, Variance
+from . import BaseActivationsModule, Variance
 from .activations_iterator import ActivationsTransformer, PytorchActivationsIterator
 from .base import PyTorchMeasure, PyTorchMeasureOptions, PyTorchMeasureResult
 from .measure_transformer import MeasureTransformation, NoTransformation
@@ -25,7 +25,7 @@ class InverseTransformationTransformer(ActivationsTransformer):
 
 class TransformationVarianceSameEquivariance(PyTorchMeasure):
 
-    def eval(self, dataset: Dataset, transformations: PyTorchInvertibleTransformationSet, model: ActivationsModule,
+    def eval(self, dataset: Dataset, transformations: PyTorchInvertibleTransformationSet, model: BaseActivationsModule,
              o: PyTorchMeasureOptions):
         dataset2d = tm.pytorch.dataset2d.SampleTransformationDataset(dataset, transformations, device=o.data_device)
         iterator = PytorchActivationsIterator(model, dataset2d, o,
@@ -36,7 +36,7 @@ class TransformationVarianceSameEquivariance(PyTorchMeasure):
 
 class SampleVarianceSameEquivariance(PyTorchMeasure):
 
-    def eval(self, dataset: Dataset, transformations: PyTorchInvertibleTransformationSet, model: ActivationsModule,
+    def eval(self, dataset: Dataset, transformations: PyTorchInvertibleTransformationSet, model: BaseActivationsModule,
              o: PyTorchMeasureOptions):
         dataset2d = TransformationSampleDataset(dataset, transformations, device=o.data_device)
         iterator = PytorchActivationsIterator(model, dataset2d, o,
@@ -51,7 +51,7 @@ class NormalizedVarianceSameEquivariance(QuotientMeasure):
         super().__init__(TransformationVarianceSameEquivariance(), SampleVarianceSameEquivariance(),
                          measure_transformation=measure_transformation)
 
-    def eval(self, dataset: Dataset, transformations: PyTorchInvertibleTransformationSet, model: ActivationsModule,
+    def eval(self, dataset: Dataset, transformations: PyTorchInvertibleTransformationSet, model: BaseActivationsModule,
              o: PyTorchMeasureOptions) -> QuotientMeasureResult:
         return super().eval(dataset, transformations, model, o)
 

@@ -3,7 +3,7 @@ from torch.utils.data import Dataset
 from .activations_iterator import PytorchActivationsIterator
 from .base import PyTorchActivationMeasure, PyTorchMeasure, PyTorchMeasureOptions, PyTorchMeasureResult
 from .dataset2d import TransformationSampleDataset
-from .model import ActivationsModule
+from .model import BaseActivationsModule
 from .transformations import PyTorchTransformationSet
 
 
@@ -14,7 +14,7 @@ class PyTorchMeasureByLayer(PyTorchMeasure):
         self.layer_measure=layer_measure
 
     def eval(self, dataset: Dataset, transformations: PyTorchTransformationSet
-    , model: ActivationsModule,
+    , model: BaseActivationsModule,
              o: PyTorchMeasureOptions) -> PyTorchMeasureResult:
         dataset2d = TransformationSampleDataset(dataset, transformations, device=o.data_device)
         iterator = PytorchActivationsIterator(model, dataset2d, o)

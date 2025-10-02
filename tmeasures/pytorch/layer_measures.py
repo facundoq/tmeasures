@@ -1,6 +1,6 @@
 from .. import logger as tm_logger
 from .base import PyTorchActivationMeasure, STMatrixIterator
-from .stats_running import RunningMeanAndVarianceWelford, RunningMeanWelford
+from .measures.stats_running import RunningMeanAndVarianceWelford, RunningMeanWelford
 
 logger = tm_logger.getChild("pytorch.layer_measures")
 

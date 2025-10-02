@@ -90,6 +90,12 @@ class AffineGenerator(TransformationSet):
     #         other:SimpleAffineTransformationGenerator = other
     #         return self.r == other.r and self.s==other.s and self.t==other.t
 
+    def __iter__(self) -> itertools.Iterator:
+        return self.transformations.__iter__()
+    
+    def __len__(self) -> int:
+        return len(self.transformations)
+    
     def id(self):
         return str(self)
 

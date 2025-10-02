@@ -30,11 +30,10 @@ from .transformations import PyTorchTransformationSet,PyTorchTransformation
 from .by_layer import PyTorchMeasureByLayer
 
 from .measure_transformer import MeasureTransformation,NoTransformation,AverageFeatureMaps
-from .util import SequentialWithIntermediates
 from . import dataset2d
 
 from .layer_measures import Variance
 
-from .variance_invariance import SampleVarianceInvariance,TransformationVarianceInvariance,NormalizedVarianceInvariance
-from .variance_sameequivariance import  SampleVarianceSameEquivariance,TransformationVarianceSameEquivariance, NormalizedVarianceSameEquivariance
-from .goodfellow import GoodfellowInvariance,NormalPValueThreshold,PercentActivationThreshold
+from .measures.variance_invariance import SampleVarianceInvariance,TransformationVarianceInvariance,NormalizedVarianceInvariance
+from .measures.variance_sameequivariance import  SampleVarianceSameEquivariance,TransformationVarianceSameEquivariance, NormalizedVarianceSameEquivariance
+from .measures.goodfellow import GoodfellowInvariance,NormalPValueThreshold,PercentActivationThreshold

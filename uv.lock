@@ -2696,6 +2696,18 @@ wheels = [
 ]
 
 [[package]]
+name = "tinyimagenet"
+version = "0.9.9"
+source = { registry = "https://pypi.org/simple/" }
+dependencies = [
+    { name = "torchvision" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/1e/79/a9284fd961664d6c23a4f85ca6ee7db82273f37d61cd7317bab83e4b223f/tinyimagenet-0.9.9.tar.gz", hash = "sha256:bcbd21749abc63138fedf213501fd509c3e8495f2e78b8af5492338f876cc07a", size = 11323 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/5d/07/91f5937864082de49f5c32d2d79983829d38a1b911f5e0dc719e8cf16eb1/tinyimagenet-0.9.9-py2.py3-none-any.whl", hash = "sha256:941c7d3b19cb2f3fa719799530745a3cc0e7095a1990f2f5be107d355ec359df", size = 9162 },
+]
+
+[[package]]
 name = "tmeasures"
 version = "1.3.0"
 source = { editable = "." }
@@ -2721,6 +2733,7 @@ torch = [
 [package.dev-dependencies]
 dev = [
     { name = "data-science-types" },
+    { name = "ipython" },
     { name = "jupyter" },
     { name = "microsoft-python-type-stubs" },
     { name = "pandas-stubs" },
@@ -2729,6 +2742,7 @@ dev = [
     { name = "pre-commit" },
     { name = "pytest" },
     { name = "scipy-stubs" },
+    { name = "tinyimagenet" },
     { name = "tmeasures" },
     { name = "torch" },
     { name = "torchvision" },
@@ -2763,6 +2777,7 @@ provides-extras = ["torch", "dev"]
 [package.metadata.requires-dev]
 dev = [
     { name = "data-science-types" },
+    { name = "ipython", specifier = ">=9.0.2" },
     { name = "jupyter", specifier = ">=1.1.1" },
     { name = "microsoft-python-type-stubs", git = "https://github.com/microsoft/python-type-stubs.git" },
     { name = "pandas-stubs", specifier = ">=2.2.3.250308" },
@@ -2771,6 +2786,7 @@ dev = [
     { name = "pre-commit", specifier = ">=4.2.0" },
     { name = "pytest", specifier = ">=8.4.1" },
     { name = "scipy-stubs", specifier = ">=1.15.2.1" },
+    { name = "tinyimagenet", specifier = ">=0.9.9" },
     { name = "tmeasures", editable = "." },
     { name = "torch", specifier = ">=2" },
     { name = "torchvision" },

@@ -35,6 +35,8 @@ dev = [
     "poethepoet>=0.35.0",
     "data-science-types",
     "poutyne",
+    "ipython>=9.0.2",
+    "tinyimagenet>=0.9.9",
 ]
 docs = [
     "sphinx>=8.2.3",

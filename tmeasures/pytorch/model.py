@@ -87,7 +87,7 @@ def get_activations(module:nn.Module,full_name=True,separator="_",)->FlatActivat
     activations = dict(flatten_dict_list(children_tree,full_name=full_name))
     return activations
 
-def named_children_deep(m: torch.nn.Module,separator:str="_")->Graph[nn.Module]:
+def named_children_deep(m: torch.nn.Module,separator:str=".")->Graph[nn.Module]:
         children = dict(m.named_children())
         if children == {}:
             return m

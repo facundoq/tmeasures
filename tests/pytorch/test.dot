@@ -1,0 +1,73 @@
+digraph {
+	graph [color=blue rankdir=TD splines=ortho]
+	node [shape=rect style=rounded]
+	compound=true
+	label=Network
+	color=blue
+	subgraph align {
+		al [label=Input rank=0]
+		subgraph cluster_network {
+			graph [label=network]
+			subgraph network {
+				rank=same
+				subgraph "cluster_network.features" {
+					graph [label="network.features"]
+					subgraph "network.features" {
+						rank=same
+						"network.features.Conv2d.0" [label="Conv2d.0"]
+						al_network -> "network.features.Conv2d.0"
+						"network.features.ReLU.1" [label="ReLU.1"]
+						"network.features.Conv2d.0" -> "network.features.ReLU.1"
+						"network.features.MaxPool2d.2" [label="MaxPool2d.2"]
+						"network.features.ReLU.1" -> "network.features.MaxPool2d.2"
+						"network.features.Conv2d.3" [label="Conv2d.3"]
+						"network.features.MaxPool2d.2" -> "network.features.Conv2d.3"
+						"network.features.ReLU.4" [label="ReLU.4"]
+						"network.features.Conv2d.3" -> "network.features.ReLU.4"
+						"network.features.MaxPool2d.5" [label="MaxPool2d.5"]
+						"network.features.ReLU.4" -> "network.features.MaxPool2d.5"
+						"network.features.Conv2d.6" [label="Conv2d.6"]
+						"network.features.MaxPool2d.5" -> "network.features.Conv2d.6"
+						"network.features.ReLU.7" [label="ReLU.7"]
+						"network.features.Conv2d.6" -> "network.features.ReLU.7"
+						"network.features.Conv2d.8" [label="Conv2d.8"]
+						"network.features.ReLU.7" -> "network.features.Conv2d.8"
+						"network.features.ReLU.9" [label="ReLU.9"]
+						"network.features.Conv2d.8" -> "network.features.ReLU.9"
+						"network.features.Conv2d.10" [label="Conv2d.10"]
+						"network.features.ReLU.9" -> "network.features.Conv2d.10"
+						"network.features.ReLU.11" [label="ReLU.11"]
+						"network.features.Conv2d.10" -> "network.features.ReLU.11"
+						"network.features.MaxPool2d.12" [label="MaxPool2d.12"]
+						"network.features.ReLU.11" -> "network.features.MaxPool2d.12"
+					}
+				}
+				al -> "network.features.Conv2d.0"
+				"network.avgpool" [label=avgpool]
+				"network.features.MaxPool2d.12" -> "network.avgpool"
+				subgraph "cluster_network.classifier" {
+					graph [label="network.classifier"]
+					subgraph "network.classifier" {
+						rank=same
+						"network.classifier.Dropout.0" [label="Dropout.0"]
+						al_network -> "network.classifier.Dropout.0"
+						"network.classifier.Linear.1" [label="Linear.1"]
+						"network.classifier.Dropout.0" -> "network.classifier.Linear.1"
+						"network.classifier.ReLU.2" [label="ReLU.2"]
+						"network.classifier.Linear.1" -> "network.classifier.ReLU.2"
+						"network.classifier.Dropout.3" [label="Dropout.3"]
+						"network.classifier.ReLU.2" -> "network.classifier.Dropout.3"
+						"network.classifier.Linear.4" [label="Linear.4"]
+						"network.classifier.Dropout.3" -> "network.classifier.Linear.4"
+						"network.classifier.ReLU.5" [label="ReLU.5"]
+						"network.classifier.Linear.4" -> "network.classifier.ReLU.5"
+						"network.classifier.Linear.6" [label="Linear.6"]
+						"network.classifier.ReLU.5" -> "network.classifier.Linear.6"
+					}
+				}
+				"network.avgpool" -> "network.classifier"
+			}
+		}
+		al -> "network.features.Conv2d.0"
+	}
+}

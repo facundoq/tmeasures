@@ -9,6 +9,28 @@ T = TypeVar('T')
 
 Graph:TypeAlias = dict[str,'Graph[T]'] | T
 
+def graph_str(t:Graph[T],depth=0,pad="----")->str:
+  if not isinstance(t,dict):
+     return str(t)
+  result = ""
+  for k,v in t.items():
+    if isinstance(v,dict):
+      result += f"{pad*depth}{k}\n"
+      result += graph_str(v,depth+1,pad)
+    else:
+      result+= f"{pad*depth}{k}\n"
+  return result
+
+def make_names_unique(t:Graph[T],prefix:str="",separator="."):
+  if not isinstance(t,dict):
+     return
+  for k in list(t.keys()):
+      v = t[k]
+      del t[k]
+      new_k=prefix+separator+k
+      t[new_k] = v
+      if isinstance(v,dict):
+        make_names_unique(v,prefix=new_k,separator=separator)
 
 def indices_of(l:list,value)->list[int]:
     return [i for i,l in enumerate(l) if value == l]
